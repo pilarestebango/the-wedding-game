@@ -58,7 +58,7 @@
     background: none;
     border: none;
     color: var(--muted);
-    font-family: inherit;
+    font-family: 'Press Start 2P', monospace;
     font-size: inherit;
     cursor: pointer;
     display: inline-flex;
@@ -351,12 +351,12 @@
       <button type="button" class="level-card" data-level="wedding" data-i18n="levelWedding">
         <span class="kicker">THE WEDDING</span>
         <span class="title2">MADRID</span>
-        <span class="caption">19 SEPT 2027</span>
+        <span class="caption">19.09.27</span>
       </button>
       <button type="button" class="level-card" data-level="afterparty" data-i18n="levelAfterparty">
         <span class="kicker">AFTER PARTY</span>
         <span class="title2">SYDNEY</span>
-        <span class="caption">23 DEC 2027</span>
+        <span class="caption">23.10.27</span>
       </button>
       <button type="button" class="level-card" data-level="both" data-i18n="levelBoth">
         <span class="kicker">BOTH!</span>
@@ -401,14 +401,14 @@
       headingWho: 'WHO IS<br />COMING?',
       lead: 'ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.',
       playerOneLabel: 'PLAYER 1',
-      plusOneLabel: 'PLUS ONE {n}',
+      plusOneLabel: 'PLAYER {n}',
       removeLabel: '− REMOVE',
       namePlaceholder: 'YOUR NAME',
       childLabel: 'SMALL HUMAN?',
       addPlusOne: '+ ADD PLUS ONE',
       headingLevels: 'PICK YOUR<br />LEVELS',
-      levelWedding: '<span class="kicker">THE WEDDING</span><span class="title2">MADRID</span><span class="caption">19 SEPT 2027</span>',
-      levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">SYDNEY</span><span class="caption">23 DEC 2027</span>',
+      levelWedding: '<span class="kicker">THE WEDDING</span><span class="title2">MADRID</span><span class="caption">19.09.27</span>',
+      levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">SYDNEY</span><span class="caption">23.10.27</span>',
       levelBoth: '<span class="kicker">BOTH!</span><span class="title2">LEGEND MODE</span><span class="caption">TWO CONTINENTS</span>',
       dietaryHeading: 'ANY SPECIAL DIETARY REQUIREMENTS?',
       dietaryCaption: 'ALLERGIES, VEGAN, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.',
@@ -426,19 +426,19 @@
       topbarTitle: 'NIVEL 0 &middot; RSVP',
       creditsLabel: 'CRÉDITOS {n}',
       headingWho: '&iquest;QUIEN<br />VIENE?',
-      lead: 'UNA FILA POR HUMANO. MARCA LA CASILLA SI ES PEQUE&Ntilde;O.',
+      lead: 'UNA FILA POR HUMANO. MARCA LA CASILLA SI ES UN PEQUE.',
       playerOneLabel: 'JUGADOR 1',
-      plusOneLabel: 'ACOMPAÑANTE {n}',
+      plusOneLabel: 'JUGADOR {n}',
       removeLabel: '− QUITAR',
       namePlaceholder: 'TU NOMBRE',
-      childLabel: '¿HUMANO PEQUEÑO?',
+      childLabel: '¿ES PEQUE?',
       addPlusOne: '+ A&Ntilde;ADIR ACOMPA&Ntilde;ANTE',
       headingLevels: 'ELIGE TU<br />NIVEL',
-      levelWedding: '<span class="kicker">LA BODA</span><span class="title2">MADRID</span><span class="caption">19 SEP 2027</span>',
-      levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">S&Iacute;DNEY</span><span class="caption">23 DIC 2027</span>',
+      levelWedding: '<span class="kicker">LA BODA</span><span class="title2">MADRID</span><span class="caption">19.09.27</span>',
+      levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">S&Iacute;DNEY</span><span class="caption">23.10.27</span>',
       levelBoth: '<span class="kicker">&iexcl;AMBOS!</span><span class="title2">MODO LEYENDA</span><span class="caption">DOS CONTINENTES</span>',
       dietaryHeading: '&#191;ALG&Uacute;N REQUISITO DIET&Eacute;TICO ESPECIAL?',
-      dietaryCaption: 'ALERGIAS, VEGANO, &laquo;NUNCA CILANTRO&raquo;. S&Eacute; SINCERO.',
+      dietaryCaption: 'ALERGIAS, VEGANO, &laquo;NUNCA ESPECIALITO&raquo;. S&Eacute; SINCERO.',
       dietaryPlaceholder: 'ESCRIBE AQUÍ_',
       sendLabel: 'ENVIAR ▸',
       sendingLabel: 'ENVIANDO…',
@@ -493,7 +493,7 @@
 
       const label = document.createElement('span');
       label.className = 'player-label';
-      label.textContent = i === 0 ? t('playerOneLabel') : format(t('plusOneLabel'), i);
+      label.textContent = i === 0 ? t('playerOneLabel') : format(t('plusOneLabel'), i + 1);
       header.appendChild(label);
 
       if (i > 0) {
@@ -522,15 +522,17 @@
       });
       box.appendChild(input);
 
-      const checkRow = document.createElement('label');
-      checkRow.className = 'child-check';
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.checked = player.child;
-      checkbox.addEventListener('change', () => { player.child = checkbox.checked; });
-      checkRow.appendChild(checkbox);
-      checkRow.appendChild(document.createTextNode(t('childLabel')));
-      box.appendChild(checkRow);
+      if (i > 0) {
+        const checkRow = document.createElement('label');
+        checkRow.className = 'child-check';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = player.child;
+        checkbox.addEventListener('change', () => { player.child = checkbox.checked; });
+        checkRow.appendChild(checkbox);
+        checkRow.appendChild(document.createTextNode(t('childLabel')));
+        box.appendChild(checkRow);
+      }
 
       playersEl.appendChild(box);
     });

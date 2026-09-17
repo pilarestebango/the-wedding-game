@@ -62,6 +62,8 @@
 
   .topbar .dates { color: var(--gold); }
 
+  .dates-mobile { display: none; }
+
   @media (max-width: 720px) {
     .topbar { justify-content: center; }
     /* 1UP/2UP labels give way to the wedding/after-party dates, the more
@@ -71,6 +73,9 @@
     /* Full-width + centered so it still reads centered if it wraps to two
        lines on a narrow phone. */
     .topbar .dates { width: 100%; text-align: center; }
+    /* Shorter city codes + numeric dates so it fits on one line on a phone. */
+    .dates-full { display: none; }
+    .dates-mobile { display: inline; }
   }
 
   .hero-row {
@@ -172,6 +177,15 @@
     font-size: 12px;
     margin-top: min(26px, 3vh);
     animation: blink 1.1s step-end infinite;
+    color: inherit;
+    text-decoration: none;
+    display: inline-block;
+    transition: color 120ms steps(2);
+  }
+
+  a.rsvp-prompt:hover,
+  a.rsvp-prompt:active {
+    color: var(--gold);
   }
 
   .lang-toggle {
@@ -277,9 +291,12 @@
   <div class="topbar">
     <span class="p1">1UP&nbsp; JOE</span>
     <span class="dates">
-      <span class="date-madrid">MADRID 09&middot;19&middot;27</span>
-      <span class="sep">&nbsp;&mdash;&nbsp;</span>
-      <span class="date-sydney">SYDNEY 23&middot;12&middot;27</span>
+      <span class="dates-full">
+        <span class="date-madrid">MADRID 19&middot;09&middot;27</span>
+        <span class="sep">&nbsp;&mdash;&nbsp;</span>
+        <span class="date-sydney">SYDNEY 23&middot;10&middot;27</span>
+      </span>
+      <span class="dates-mobile">MAD 19.09.27 &ndash; SYD 23.10.27</span>
     </span>
     <span class="p2">2UP&nbsp; PILAR</span>
   </div>
@@ -293,7 +310,7 @@
     <div class="title-block">
       <h1>PILAR<br />VS<br />JOE</h1>
       <a class="subtitle" href="game/" data-i18n="subtitle">FINAL BOSS:<br />PLAY THE GAME</a>
-      <div class="rsvp-prompt" data-i18n="rsvpPrompt">&#9656; PRESS RSVP TO CONTINUE</div>
+      <a class="rsvp-prompt" href="rsvp/" data-i18n="rsvpPrompt">&#9656; PRESS RSVP TO CONTINUE</a>
       <div class="lang-toggle">
         <button type="button" class="active" data-lang="en">ENGLISH<span class="underline"></span></button>
         <span style="padding-bottom:6px;">&middot;</span>
@@ -310,9 +327,9 @@
   <div class="hover-hint" data-i18n="hoverHint">HOVER A PLAYER TO CHANGE OUTFIT</div>
 
   <div class="cards">
-    <a class="card card--rsvp" href="rsvp/" data-i18n="cardRsvp">LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 09&middot;19&middot;27</span></a>
-    <div class="card card--wedding" data-i18n="cardWedding">LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">09&middot;19&middot;27 &middot; MADRID</span></div>
-    <div class="card card--afterparty" data-i18n="cardAfterparty">LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;12&middot;27 &middot; SYDNEY</span></div>
+    <a class="card card--rsvp" href="rsvp/" data-i18n="cardRsvp">LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 07&middot;01&middot;27</span></a>
+    <div class="card card--wedding" data-i18n="cardWedding">LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span></div>
+    <div class="card card--afterparty" data-i18n="cardAfterparty">LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; SYDNEY</span></div>
     <a class="card card--game" href="game/" data-i18n="cardGame">ARCADE<br /><span class="title">PLAY THE GAME</span><br /><span class="caption">TAP TO START</span></a>
   </div>
 
@@ -330,20 +347,20 @@
       subtitle: 'FINAL BOSS:<br />PLAY THE GAME',
       rsvpPrompt: '&#9656; PRESS RSVP TO CONTINUE',
       hoverHint: 'HOVER A PLAYER TO CHANGE OUTFIT',
-      cardRsvp: 'LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 09&middot;19&middot;27</span>',
-      cardWedding: 'LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">09&middot;19&middot;27 &middot; MADRID</span>',
-      cardAfterparty: 'LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;12&middot;27 &middot; SYDNEY</span>',
+      cardRsvp: 'LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 07&middot;01&middot;27</span>',
+      cardWedding: 'LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span>',
+      cardAfterparty: 'LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; SYDNEY</span>',
       cardGame: 'ARCADE<br /><span class="title">PLAY THE GAME</span><br /><span class="caption">TAP TO START</span>',
     },
     es: {
       title: 'Pilar y Joe — Boda',
       subtitle: 'JEFE FINAL:<br />DALE AL PLAY',
-      rsvpPrompt: '&#9656; PULSA RSVP PARA CONTINUAR',
+      rsvpPrompt: '&#9656; CONFIRMA PARA CONTINUAR',
       hoverHint: 'PASA EL RAT&Oacute;N: &iexcl;CAMBIO DE LOOK!',
-      cardRsvp: 'NIVEL 0<br /><span class="title">&iexcl;CONFIRMA QUE VIENES!</span><br /><span class="caption">ANTES DEL 09&middot;19&middot;27</span>',
-      cardWedding: 'NIVEL 1<br /><span class="title">LA BODA</span><br /><span class="caption">09&middot;19&middot;27 &middot; MADRID</span>',
-      cardAfterparty: 'NIVEL 2<br /><span class="title">LA AFTER PARTY</span><br /><span class="caption">23&middot;12&middot;27 &middot; S&Iacute;DNEY</span>',
-      cardGame: 'ARCADE<br /><span class="title">JUEGA YA</span><br /><span class="caption">TOCA PARA EMPEZAR</span>',
+      cardRsvp: 'NIVEL 0<br /><span class="title">&iexcl;CONFIRMA QUE VIENES!</span><br /><span class="caption">ANTES DEL 07&middot;01&middot;27</span>',
+      cardWedding: 'NIVEL 1<br /><span class="title">LA BODA</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span>',
+      cardAfterparty: 'NIVEL 2<br /><span class="title">LA AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; S&Iacute;DNEY</span>',
+      cardGame: 'ARCADE<br /><span class="title">EL JUEGO</span><br /><span class="caption">PULSA PARA EMPEZAR</span>',
     },
   };
 

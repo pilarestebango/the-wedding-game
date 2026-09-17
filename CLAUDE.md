@@ -70,7 +70,8 @@ the diff into `index.html` by hand rather than embedding the runtime.
 
 Real event details pulled from that handoff (confirm before changing):
 - **Wedding:** Madrid, 2027-09-19
-- **After Party:** Sydney, 2027-12-23
+- **After Party:** Sydney, 2027-10-23
+- **RSVP deadline:** 2027-01-07
 
 The site is being built **iteratively, section by section** — the current
 `index.html` only implements the hero. Don't invent additional sections

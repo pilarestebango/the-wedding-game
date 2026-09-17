@@ -62,6 +62,27 @@
 
   .topbar .dates { color: var(--gold); }
 
+  @media (max-width: 720px) {
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "p1 p2" "dates dates";
+      row-gap: 8px;
+      column-gap: 12px;
+    }
+    .topbar .p1 { grid-area: p1; text-align: left; }
+    .topbar .p2 { grid-area: p2; text-align: right; }
+    .topbar .dates {
+      grid-area: dates;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2px;
+    }
+    .topbar .dates .sep { display: none; }
+  }
+
   .hero-row {
     flex: 1 1 auto;
     min-height: 0;
@@ -91,6 +112,10 @@
   @media (max-width: 720px) {
     .sprite { width: 46%; height: 30vh; flex: 0 0 46%; }
     .sprite--pilar { order: 2; }
+    /* Anchor each sprite toward the shared middle edge instead of centering
+       it in its own wide box, so the two characters sit close together. */
+    .sprite--joe img { left: auto; right: 6px; transform: none; }
+    .sprite--pilar img { left: 6px; transform: none; }
   }
 
   .sprite img {
@@ -231,9 +256,13 @@
 <div class="hero">
 
   <div class="topbar">
-    <span>1UP&nbsp; JOE</span>
-    <span class="dates">MADRID 09&middot;19&middot;27 &nbsp;&mdash;&nbsp; SYDNEY 23&middot;12&middot;27</span>
-    <span>2UP&nbsp; PILAR</span>
+    <span class="p1">1UP&nbsp; JOE</span>
+    <span class="dates">
+      <span class="date-madrid">MADRID 09&middot;19&middot;27</span>
+      <span class="sep">&nbsp;&mdash;&nbsp;</span>
+      <span class="date-sydney">SYDNEY 23&middot;12&middot;27</span>
+    </span>
+    <span class="p2">2UP&nbsp; PILAR</span>
   </div>
 
   <div class="hero-row">

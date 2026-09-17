@@ -55,6 +55,9 @@ function injectStyles() {
     }
     .tc-group-right { justify-content: flex-end; }
     .tc-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       pointer-events: auto;
       min-width: 56px;
       min-height: 56px;

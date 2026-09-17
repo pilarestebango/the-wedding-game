@@ -37,7 +37,7 @@ export class Level3WaitScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 18, 11, 46);
 
     const title = this.add
-      .text(centerX, 40, t('theWaitTitle'), {
+      .text(centerX, 54, t('theWaitTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '18px',
         color: CSS_COLORS.gold,

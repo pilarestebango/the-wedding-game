@@ -104,7 +104,7 @@ export class Level1DatingRaceScene extends Phaser.Scene {
     this.events.once('shutdown', () => touchControls.unbind());
 
     const levelTitle = this.add
-      .text(width / 2, 30, t('level1Title'), {
+      .text(width / 2, 44, t('level1Title'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
         color: CSS_COLORS.gold,

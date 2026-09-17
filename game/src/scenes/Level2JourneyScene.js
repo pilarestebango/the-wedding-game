@@ -74,7 +74,7 @@ export class Level2JourneyScene extends Phaser.Scene {
     this.stageComplete = false;
 
     this.titleText = this.add
-      .text(this.centerX, 40, t('level2Title'), {
+      .text(this.centerX, 54, t('level2Title'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
         color: CSS_COLORS.gold,

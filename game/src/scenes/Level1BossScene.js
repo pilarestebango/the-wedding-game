@@ -39,7 +39,7 @@ export class Level1BossScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 18, 11, 46);
 
     const title = this.add
-      .text(this.centerX, 40, t('firstDateTitle'), {
+      .text(this.centerX, 54, t('firstDateTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '16px',
         color: CSS_COLORS.gold,

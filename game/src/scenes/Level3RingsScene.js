@@ -96,7 +96,7 @@ export class Level3RingsScene extends Phaser.Scene {
     this.events.once('shutdown', () => touchControls.unbind());
 
     const levelTitle = this.add
-      .text(width / 2, 30, t('level3RingsTitle'), {
+      .text(width / 2, 44, t('level3RingsTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
         color: CSS_COLORS.gold,
@@ -106,7 +106,7 @@ export class Level3RingsScene extends Phaser.Scene {
     fitTopTitle(this, levelTitle);
 
     this.ringCountText = this.add
-      .text(width / 2, 54, t('ringLabel', { count: 0, total: RINGS.count }), {
+      .text(width / 2, 74, t('ringLabel', { count: 0, total: RINGS.count }), {
         fontFamily: FONTS.body,
         fontSize: '20px',
         fontStyle: 'bold',

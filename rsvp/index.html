@@ -44,6 +44,40 @@
   .topbar .exit:hover { color: var(--gold); }
   .topbar .credits { color: var(--gold); font-weight: bold; }
 
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 9px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .lang-toggle button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+  }
+
+  .lang-toggle .underline {
+    width: 22px;
+    height: 2px;
+    background: transparent;
+  }
+
+  .lang-toggle button.active .underline {
+    background: var(--muted);
+  }
+
   h1.heading {
     font-family: 'Press Start 2P', monospace;
     font-size: clamp(26px, 4.4vw, 46px);
@@ -266,6 +300,11 @@
     text-align: center;
     padding: 60px 20px;
   }
+  .success img {
+    width: min(320px, 70vw);
+    image-rendering: pixelated;
+    margin-bottom: 24px;
+  }
   .success .checkmark {
     font-family: 'Press Start 2P', monospace;
     font-size: clamp(20px, 3.6vw, 32px);
@@ -285,35 +324,41 @@
 <div class="page">
 
   <div class="topbar">
-    <a class="exit" href="../">&lsaquo; EXIT</a>
-    <span>LVL 0 &middot; RSVP</span>
+    <a class="exit" href="../" data-i18n="exit">&lsaquo; EXIT</a>
+    <span data-i18n="topbarTitle">LVL 0 &middot; RSVP</span>
     <span class="credits" id="credits">CREDITS 01</span>
   </div>
 
+  <div class="lang-toggle">
+    <button type="button" class="active" data-lang="en">ENGLISH<span class="underline"></span></button>
+    <span style="padding-bottom:6px;">&middot;</span>
+    <button type="button" data-lang="es">ESPA&Ntilde;OL<span class="underline"></span></button>
+  </div>
+
   <form id="rsvp-form">
-    <h1 class="heading">WHO IS<br />COMING?</h1>
-    <p class="lead">ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.</p>
+    <h1 class="heading" data-i18n="headingWho">WHO IS<br />COMING?</h1>
+    <p class="lead" data-i18n="lead">ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.</p>
 
     <div class="players" id="players"></div>
 
-    <button type="button" class="add-plus-one" id="add-plus-one">+ ADD PLUS ONE</button>
+    <button type="button" class="add-plus-one" id="add-plus-one" data-i18n="addPlusOne">+ ADD PLUS ONE</button>
 
     <hr class="divider" />
 
-    <h1 class="heading">PICK YOUR<br />LEVELS</h1>
+    <h1 class="heading" data-i18n="headingLevels">PICK YOUR<br />LEVELS</h1>
 
     <div class="levels">
-      <button type="button" class="level-card" data-level="wedding">
+      <button type="button" class="level-card" data-level="wedding" data-i18n="levelWedding">
         <span class="kicker">THE WEDDING</span>
         <span class="title2">MADRID</span>
         <span class="caption">19 SEPT 2027</span>
       </button>
-      <button type="button" class="level-card" data-level="afterparty">
+      <button type="button" class="level-card" data-level="afterparty" data-i18n="levelAfterparty">
         <span class="kicker">AFTER PARTY</span>
         <span class="title2">SYDNEY</span>
         <span class="caption">23 DEC 2027</span>
       </button>
-      <button type="button" class="level-card" data-level="both">
+      <button type="button" class="level-card" data-level="both" data-i18n="levelBoth">
         <span class="kicker">BOTH!</span>
         <span class="title2">LEGEND MODE</span>
         <span class="caption">TWO CONTINENTS</span>
@@ -322,15 +367,16 @@
 
     <hr class="divider" />
 
-    <h2 class="field-heading">ANY SPECIAL DIETARY REQUIREMENTS?</h2>
-    <p class="field-caption">ALLERGIES, VEGAN, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.</p>
-    <textarea class="dietary" id="dietary" placeholder="TYPE HERE_"></textarea>
+    <h2 class="field-heading" data-i18n="dietaryHeading">ANY SPECIAL DIETARY REQUIREMENTS?</h2>
+    <p class="field-caption" data-i18n="dietaryCaption">ALLERGIES, VEGAN, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.</p>
+    <textarea class="dietary" id="dietary" placeholder="TYPE HERE_" data-i18n-placeholder="dietaryPlaceholder"></textarea>
 
     <button type="button" class="send-btn" id="send-btn" disabled>SEND &#9656;</button>
     <p class="send-hint" id="send-hint">ENTER AT LEAST ONE NAME TO CONTINUE</p>
   </form>
 
   <div class="success" id="rsvp-success" hidden>
+    <img src="../assets/site/rsvp-success.png" alt="Pilar and Joe, pixel art" decoding="async" />
     <div class="checkmark">GG!</div>
     <p>RSVP RECEIVED &mdash; SEE YOU THERE.</p>
   </div>
@@ -341,10 +387,90 @@
   // Google Apps Script Web App deployment (see rsvp/google-apps-script.gs).
   const RSVP_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzDaqij-lDDiusKhQbK4ZN6emuMoHLIZEgHYcJihCynHkdRdwGyYVFcG8XcH62WkjPP/exec';
 
+  // EN/ES copy. Shared LANG_KEY with the main site (/index.html) and the
+  // game (game/src/config/i18n.js) — localStorage is scoped per-origin, not
+  // per-path, so a language choice made anywhere carries over automatically.
+  const LANG_KEY = 'wedding-lang';
+
+  const STRINGS = {
+    en: {
+      title: 'RSVP — Pilar &amp; Joe',
+      exit: '&lsaquo; EXIT',
+      topbarTitle: 'LVL 0 &middot; RSVP',
+      creditsLabel: 'CREDITS {n}',
+      headingWho: 'WHO IS<br />COMING?',
+      lead: 'ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.',
+      playerOneLabel: 'PLAYER 1',
+      plusOneLabel: 'PLUS ONE {n}',
+      removeLabel: '− REMOVE',
+      namePlaceholder: 'YOUR NAME',
+      childLabel: 'SMALL HUMAN?',
+      addPlusOne: '+ ADD PLUS ONE',
+      headingLevels: 'PICK YOUR<br />LEVELS',
+      levelWedding: '<span class="kicker">THE WEDDING</span><span class="title2">MADRID</span><span class="caption">19 SEPT 2027</span>',
+      levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">SYDNEY</span><span class="caption">23 DEC 2027</span>',
+      levelBoth: '<span class="kicker">BOTH!</span><span class="title2">LEGEND MODE</span><span class="caption">TWO CONTINENTS</span>',
+      dietaryHeading: 'ANY SPECIAL DIETARY REQUIREMENTS?',
+      dietaryCaption: 'ALLERGIES, VEGAN, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.',
+      dietaryPlaceholder: 'TYPE HERE_',
+      sendLabel: 'SEND ▸',
+      sendingLabel: 'SENDING…',
+      sendHintDefault: 'ENTER AT LEAST ONE NAME TO CONTINUE',
+      sendHintError: 'SOMETHING WENT WRONG — CHECK YOUR CONNECTION AND TRY AGAIN.',
+      successOk: 'RSVP RECEIVED — SEE YOU THERE.',
+      successNotConfigured: "This form isn't wired up to send yet — tell Joe.",
+    },
+    es: {
+      title: 'RSVP — Pilar y Joe',
+      exit: '&lsaquo; SALIR',
+      topbarTitle: 'NIVEL 0 &middot; RSVP',
+      creditsLabel: 'CRÉDITOS {n}',
+      headingWho: '&iquest;QUIEN<br />VIENE?',
+      lead: 'UNA FILA POR HUMANO. MARCA LA CASILLA SI ES PEQUE&Ntilde;O.',
+      playerOneLabel: 'JUGADOR 1',
+      plusOneLabel: 'ACOMPAÑANTE {n}',
+      removeLabel: '− QUITAR',
+      namePlaceholder: 'TU NOMBRE',
+      childLabel: '¿HUMANO PEQUEÑO?',
+      addPlusOne: '+ A&Ntilde;ADIR ACOMPA&Ntilde;ANTE',
+      headingLevels: 'ELIGE TU<br />NIVEL',
+      levelWedding: '<span class="kicker">LA BODA</span><span class="title2">MADRID</span><span class="caption">19 SEP 2027</span>',
+      levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">S&Iacute;DNEY</span><span class="caption">23 DIC 2027</span>',
+      levelBoth: '<span class="kicker">&iexcl;AMBOS!</span><span class="title2">MODO LEYENDA</span><span class="caption">DOS CONTINENTES</span>',
+      dietaryHeading: '&#191;ALG&Uacute;N REQUISITO DIET&Eacute;TICO ESPECIAL?',
+      dietaryCaption: 'ALERGIAS, VEGANO, &laquo;NUNCA CILANTRO&raquo;. S&Eacute; SINCERO.',
+      dietaryPlaceholder: 'ESCRIBE AQUÍ_',
+      sendLabel: 'ENVIAR ▸',
+      sendingLabel: 'ENVIANDO…',
+      sendHintDefault: 'INTRODUCE AL MENOS UN NOMBRE PARA CONTINUAR',
+      sendHintError: 'ALGO FALLÓ — REVISA TU CONEXIÓN E INTÉNTALO DE NUEVO.',
+      successOk: 'RSVP RECIBIDO — ¡NOS VEMOS ALLÍ!',
+      successNotConfigured: 'Este formulario aún no está conectado — avísale a Joe.',
+    },
+  };
+
+  let currentLang = 'en';
+  let sending = false;
+  let hintState = 'default'; // 'default' | 'error'
+  let successState = 'ok'; // 'ok' | 'notConfigured'
+
+  function t(key) {
+    return (STRINGS[currentLang] && STRINGS[currentLang][key]) ?? STRINGS.en[key] ?? key;
+  }
+
+  function format(str, n) {
+    return str.replace('{n}', n);
+  }
+
   const state = {
     players: [{ name: '', child: false }],
     level: null,
   };
+
+  // data-level stays "wedding"/"afterparty"/"both" (drives the CSS selected-
+  // state colors and card identity) — this just maps to the friendlier value
+  // that actually gets saved to the RSVP spreadsheet/email.
+  const LEVEL_SAVE_VALUES = { wedding: 'madrid', afterparty: 'sydney', both: 'legend' };
 
   const playersEl = document.getElementById('players');
   const addBtn = document.getElementById('add-plus-one');
@@ -367,14 +493,14 @@
 
       const label = document.createElement('span');
       label.className = 'player-label';
-      label.textContent = i === 0 ? 'PLAYER 1' : `PLUS ONE ${i}`;
+      label.textContent = i === 0 ? t('playerOneLabel') : format(t('plusOneLabel'), i);
       header.appendChild(label);
 
       if (i > 0) {
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'remove-player';
-        remove.textContent = '− REMOVE';
+        remove.textContent = t('removeLabel');
         remove.addEventListener('click', () => {
           state.players.splice(i, 1);
           renderPlayers();
@@ -388,7 +514,7 @@
       const input = document.createElement('input');
       input.type = 'text';
       input.className = 'name-input';
-      input.placeholder = 'YOUR NAME';
+      input.placeholder = t('namePlaceholder');
       input.value = player.name;
       input.addEventListener('input', () => {
         player.name = input.value;
@@ -403,7 +529,7 @@
       checkbox.checked = player.child;
       checkbox.addEventListener('change', () => { player.child = checkbox.checked; });
       checkRow.appendChild(checkbox);
-      checkRow.appendChild(document.createTextNode('SMALL HUMAN?'));
+      checkRow.appendChild(document.createTextNode(t('childLabel')));
       box.appendChild(checkRow);
 
       playersEl.appendChild(box);
@@ -424,13 +550,45 @@
   });
 
   function updateCredits() {
-    creditsEl.textContent = 'CREDITS ' + String(state.players.length).padStart(2, '0');
+    creditsEl.textContent = format(t('creditsLabel'), String(state.players.length).padStart(2, '0'));
   }
 
   function updateSendState() {
     const hasName = state.players.some((p) => p.name.trim().length > 0);
     sendBtn.disabled = !hasName;
     hintEl.style.visibility = hasName ? 'hidden' : 'visible';
+  }
+
+  function applyLanguage(lang) {
+    currentLang = STRINGS[lang] ? lang : 'en';
+    const dict = STRINGS[currentLang];
+
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.dataset.i18n;
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+      const key = el.dataset.i18nPlaceholder;
+      if (dict[key] !== undefined) el.placeholder = dict[key];
+    });
+    document.title = dict.title.replace(/&amp;/g, '&');
+    document.documentElement.lang = currentLang;
+    document.querySelectorAll('.lang-toggle button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.lang === currentLang);
+    });
+
+    renderPlayers();
+    updateCredits();
+    updateSendState();
+    if (!sending) sendBtn.textContent = t('sendLabel');
+    hintEl.textContent = t(hintState === 'error' ? 'sendHintError' : 'sendHintDefault');
+    successEl.querySelector('p').textContent = t(successState === 'notConfigured' ? 'successNotConfigured' : 'successOk');
+
+    try {
+      localStorage.setItem(LANG_KEY, currentLang);
+    } catch (e) {
+      // localStorage unavailable (private mode etc.) — language just won't persist
+    }
   }
 
   sendBtn.addEventListener('click', async () => {
@@ -441,19 +599,21 @@
 
     const payload = {
       guests,
-      levels: state.level || 'not specified',
+      levels: LEVEL_SAVE_VALUES[state.level] || 'not specified',
       dietary: dietaryEl.value.trim(),
     };
 
+    sending = true;
     sendBtn.disabled = true;
-    sendBtn.textContent = 'SENDING…';
+    sendBtn.textContent = t('sendingLabel');
     hintEl.style.visibility = 'hidden';
 
     if (!RSVP_ENDPOINT) {
       console.warn('RSVP_ENDPOINT is not configured yet — see rsvp/google-apps-script.gs for setup.');
+      successState = 'notConfigured';
+      successEl.querySelector('p').textContent = t('successNotConfigured');
       formEl.hidden = true;
       successEl.hidden = false;
-      successEl.querySelector('p').textContent = "This form isn't wired up to send yet — tell Joe.";
       return;
     }
 
@@ -463,19 +623,32 @@
         mode: 'no-cors',
         body: JSON.stringify(payload),
       });
+      successState = 'ok';
+      successEl.querySelector('p').textContent = t('successOk');
       formEl.hidden = true;
       successEl.hidden = false;
     } catch (err) {
+      sending = false;
       sendBtn.disabled = false;
-      sendBtn.textContent = 'SEND ▶';
-      hintEl.textContent = 'SOMETHING WENT WRONG — CHECK YOUR CONNECTION AND TRY AGAIN.';
+      sendBtn.textContent = t('sendLabel');
+      hintState = 'error';
+      hintEl.textContent = t('sendHintError');
       hintEl.style.visibility = 'visible';
     }
   });
 
-  renderPlayers();
-  updateCredits();
-  updateSendState();
+  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
+  });
+
+  let storedLang = 'en';
+  try {
+    const v = localStorage.getItem(LANG_KEY);
+    if (v === 'en' || v === 'es') storedLang = v;
+  } catch (e) {
+    // ignore
+  }
+  applyLanguage(storedLang);
 </script>
 
 </body>

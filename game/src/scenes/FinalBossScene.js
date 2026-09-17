@@ -11,6 +11,7 @@ import { MeterBar } from '../ui/MeterBar.js';
 import { BossIntroFlow } from '../ui/BossIntroFlow.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { sfx } from '../config/sfx.js';
@@ -22,6 +23,7 @@ import {
   FINAL_BOSS_WRONG_ANSWER,
   FINAL_BOSS_YES_TEXT,
 } from '../config/dialogue.js';
+import { t } from '../config/i18n.js';
 
 export class FinalBossScene extends Phaser.Scene {
   constructor() {
@@ -39,7 +41,7 @@ export class FinalBossScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 18, 11, 46);
 
     const title = this.add
-      .text(this.centerX, 40, 'THE PROPOSAL', {
+      .text(this.centerX, 40, t('theProposalTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '18px',
         color: CSS_COLORS.gold,
@@ -58,8 +60,8 @@ export class FinalBossScene extends Phaser.Scene {
     this.meterBar = null;
     this.questionGroup = [];
 
-    const introLines = this.char === 'joe' ? FINAL_BOSS_INTRO_JOE : FINAL_BOSS_INTRO_PILI;
-    this.flow.showIntro(introLines, 'READY!');
+    const introLines = this.char === 'joe' ? FINAL_BOSS_INTRO_JOE() : FINAL_BOSS_INTRO_PILI();
+    this.flow.showIntro(introLines, t('readyLabel'));
 
     this.actions = new InputActions();
     this.actions.on('mash', () => this.handleMash());
@@ -71,10 +73,11 @@ export class FinalBossScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-Y', () => this.actions.confirmYes());
     this.input.keyboard.on('keydown-N', () => this.actions.confirmNo());
 
-    touchControls.bind(this.actions, { actionLabel: 'READY!' });
+    touchControls.bind(this.actions, { actionLabel: t('readyLabel') });
     this.events.once('shutdown', () => touchControls.unbind());
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 
   handleMash() {
@@ -86,9 +89,9 @@ export class FinalBossScene extends Phaser.Scene {
         x: this.centerX,
         y: this.centerY + 60,
         width: 260,
-        label: 'KNEEL',
+        label: t('kneelLabel'),
       });
-      touchControls.bind(this.actions, { actionLabel: FINAL_BOSS_PROPOSE_LABEL });
+      touchControls.bind(this.actions, { actionLabel: FINAL_BOSS_PROPOSE_LABEL() });
       return;
     }
     if (this.state !== 'kneel' || this.meter.complete) return;
@@ -118,7 +121,7 @@ export class FinalBossScene extends Phaser.Scene {
   _renderQuestion() {
     this._clearQuestion();
     const q = this.add
-      .text(this.centerX, this.centerY + 30, FINAL_BOSS_QUESTION, {
+      .text(this.centerX, this.centerY + 30, FINAL_BOSS_QUESTION(), {
         fontFamily: FONTS.heading,
         fontSize: '18px',
         color: CSS_COLORS.offWhite,
@@ -127,10 +130,10 @@ export class FinalBossScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    const yesBtn = this._makeChoiceButton(this.centerX - 90, this.centerY + 120, 'YES', COLORS.gold, () =>
+    const yesBtn = this._makeChoiceButton(this.centerX - 90, this.centerY + 120, t('yesChoice'), COLORS.gold, () =>
       this.actions.confirmYes(),
     );
-    const noBtn = this._makeChoiceButton(this.centerX + 90, this.centerY + 120, 'NO', COLORS.red, () =>
+    const noBtn = this._makeChoiceButton(this.centerX + 90, this.centerY + 120, t('noChoice'), COLORS.red, () =>
       this.actions.confirmNo(),
     );
     this.questionGroup = [q, yesBtn.bg, yesBtn.text, noBtn.bg, noBtn.text];
@@ -157,7 +160,7 @@ export class FinalBossScene extends Phaser.Scene {
     sfx.wrongAnswer();
     this._clearQuestion();
     this.cameras.main.shake(250, 0.01);
-    const error = this.flow.showBigMessage(FINAL_BOSS_WRONG_ANSWER, { color: CSS_COLORS.red, fontSize: '16px' });
+    const error = this.flow.showBigMessage(FINAL_BOSS_WRONG_ANSWER(), { color: CSS_COLORS.red, fontSize: '16px' });
     this.time.delayedCall(700, () => {
       this.flow.clearBigMessage();
       this._renderQuestion();
@@ -172,7 +175,7 @@ export class FinalBossScene extends Phaser.Scene {
     sfx.fanfare();
 
     this.tweens.add({ targets: this.proposalArt, alpha: 0, duration: 300 });
-    this.flow.showBigMessage(FINAL_BOSS_YES_TEXT, { color: CSS_COLORS.gold, fontSize: '24px' });
+    this.flow.showBigMessage(FINAL_BOSS_YES_TEXT(), { color: CSS_COLORS.gold, fontSize: '24px' });
     this._spawnConfetti();
 
     const wedding = this.add.image(this.centerX, this.centerY, 'pose-wedding').setAlpha(0).setScale(0.3);

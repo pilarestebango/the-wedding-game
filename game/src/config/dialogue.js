@@ -1,33 +1,23 @@
-// DRAFT joke/intro copy for the First Date and House-buying boss scenes.
-// GAME_SPEC.md §8 flagged this text as unwritten ("who's writing these?").
-// This is placeholder copy the user asked me to draft — please read and
-// rewrite freely before treating the game as finished; nothing here is final.
+// Boss intro/label copy, sourced from the EN/ES dictionary in i18n.js so it
+// switches with the shared language toggle. Kept as this thin function layer
+// (same exported names as before, now callable) so scene files barely change.
+import { t } from './i18n.js';
 
-export const FIRST_DATE_INTRO = [
-  'Pilar and Joe are sitting at a bar.',
-  "It's going... surprisingly well?",
-  'Time to seal the deal.',
-];
+export const FIRST_DATE_INTRO = () => t('firstDateIntro').split('\n');
+export const FIRST_DATE_DRINK_LABEL = () => t('firstDateDrinkLabel');
+export const FIRST_DATE_TALK_LABEL = () => t('firstDateTalkLabel');
+export const FIRST_DATE_WIN_TEXT = () => t('firstDateWinText');
 
-export const FIRST_DATE_DRINK_LABEL = 'DRINK!';
-export const FIRST_DATE_TALK_LABEL = 'TALK!';
-export const FIRST_DATE_WIN_TEXT = "Congratulations — they're in love!";
-
-export const HOUSE_BOSS_INTRO = [
-  'A car. A tent. A plane. An island. A camper van.',
-  'Turns out none of those count as "a fixed address."',
-  'Time to become responsible adults. Briefly.',
-];
-
-export const HOUSE_BOSS_PAY_LABEL = 'PAY!';
-export const HOUSE_BOSS_WIN_TEXT = 'SOLD! Welcome home.';
+export const HOUSE_BOSS_INTRO = () => t('houseBossIntro').split('\n');
+export const HOUSE_BOSS_PAY_LABEL = () => t('houseBossPayLabel');
+export const HOUSE_BOSS_WIN_TEXT = () => t('houseBossWinText');
 
 // Text shown depends on which Level 3 branch the player just came from, which
 // is determined by the starting character (see CharacterBranch.js): choosing
 // Pili plays "The Wait", choosing Joe plays "Getting the Ring".
-export const FINAL_BOSS_INTRO_PILI = ['Pilar waited. And waited.', 'Worth it.'];
-export const FINAL_BOSS_INTRO_JOE = ['Joe got the ring.', "He's not stalling anymore."];
-export const FINAL_BOSS_PROPOSE_LABEL = 'PROPOSE!';
-export const FINAL_BOSS_QUESTION = 'WILL YOU MARRY ME?';
-export const FINAL_BOSS_WRONG_ANSWER = 'ERROR: TRY AGAIN';
-export const FINAL_BOSS_YES_TEXT = 'YES!!!';
+export const FINAL_BOSS_INTRO_PILI = () => t('finalBossIntroPili').split('\n');
+export const FINAL_BOSS_INTRO_JOE = () => t('finalBossIntroJoe').split('\n');
+export const FINAL_BOSS_PROPOSE_LABEL = () => t('finalBossProposeLabel');
+export const FINAL_BOSS_QUESTION = () => t('finalBossQuestion');
+export const FINAL_BOSS_WRONG_ANSWER = () => t('finalBossWrongAnswer');
+export const FINAL_BOSS_YES_TEXT = () => t('finalBossYesText');

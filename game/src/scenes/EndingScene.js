@@ -5,8 +5,10 @@ import { COLORS, CSS_COLORS, FONTS, TITLE_SHADOW } from '../config/palette.js';
 import { RSVP_URL } from '../config/tuning.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
+import { t } from '../config/i18n.js';
 
 export class EndingScene extends Phaser.Scene {
   constructor() {
@@ -20,7 +22,7 @@ export class EndingScene extends Phaser.Scene {
     touchControls.unbind();
 
     const title = this.add
-      .text(centerX, 60, "YOU'RE INVITED", {
+      .text(centerX, 60, t('youreInvited'), {
         fontFamily: FONTS.heading,
         fontSize: '28px',
         color: CSS_COLORS.gold,
@@ -34,7 +36,7 @@ export class EndingScene extends Phaser.Scene {
     img.setScale(Math.min(1, maxHeight / img.height));
 
     this.add
-      .text(centerX, height - 150, 'PILAR & JOE ARE GETTING MARRIED', {
+      .text(centerX, height - 150, t('gettingMarried'), {
         fontFamily: FONTS.body,
         fontSize: '13px',
         color: CSS_COLORS.offWhite,
@@ -48,7 +50,7 @@ export class EndingScene extends Phaser.Scene {
         .setStrokeStyle(4, COLORS.cyan)
         .setInteractive({ useHandCursor: true });
       this.add
-        .text(centerX, height - 100, 'RSVP NOW', {
+        .text(centerX, height - 100, t('rsvpNow'), {
           fontFamily: FONTS.heading,
           fontSize: '12px',
           color: CSS_COLORS.cyan,
@@ -57,7 +59,7 @@ export class EndingScene extends Phaser.Scene {
       btn.on('pointerdown', () => window.open(RSVP_URL, '_blank', 'noopener'));
     } else {
       this.add
-        .text(centerX, height - 100, 'RSVP details coming soon', {
+        .text(centerX, height - 100, t('rsvpComingSoon'), {
           fontFamily: FONTS.body,
           fontSize: '12px',
           color: CSS_COLORS.mutedPurple,
@@ -66,7 +68,7 @@ export class EndingScene extends Phaser.Scene {
     }
 
     const replay = this.add
-      .text(centerX, height - 40, '[ PLAY AGAIN ]', {
+      .text(centerX, height - 40, t('playAgain'), {
         fontFamily: FONTS.heading,
         fontSize: '11px',
         color: CSS_COLORS.gold,
@@ -76,5 +78,6 @@ export class EndingScene extends Phaser.Scene {
     replay.on('pointerdown', () => fadeToScene(this, 'CharacterSelect', {}));
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 }

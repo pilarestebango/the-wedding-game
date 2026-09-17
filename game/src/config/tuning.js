@@ -46,6 +46,5 @@ export const FRAME_ANIM = {
   boringFrameDurationMs: 900, // slow alternation between her two "just waiting" poses
 };
 
-// Real RSVP URL intentionally left unset — standalone build for now (see plan).
-// Set this to the couple's real RSVP page URL to enable the ending deep link.
-export const RSVP_URL = null;
+// The RSVP page now lives at the site root, one level up from game/index.html.
+export const RSVP_URL = '../rsvp/';

@@ -12,11 +12,13 @@ import { PiggyBank } from '../ui/PiggyBank.js';
 import { BossIntroFlow } from '../ui/BossIntroFlow.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { sfx } from '../config/sfx.js';
 import { HOUSE_BOSS_INTRO, HOUSE_BOSS_PAY_LABEL, HOUSE_BOSS_WIN_TEXT } from '../config/dialogue.js';
 import { resolveLevel3Scene } from '../logic/CharacterBranch.js';
+import { t } from '../config/i18n.js';
 
 const HOUSE_MAX_HEIGHT = 210;
 
@@ -36,7 +38,7 @@ export class Level2BossScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 18, 11, 46);
 
     const title = this.add
-      .text(this.centerX, 40, 'BUYING THE HOUSE', {
+      .text(this.centerX, 40, t('houseBossTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '16px',
         color: CSS_COLORS.gold,
@@ -54,16 +56,17 @@ export class Level2BossScene extends Phaser.Scene {
     this.pig = null;
     this.coinLabel = null;
 
-    this.flow.showIntro(HOUSE_BOSS_INTRO, 'READY!');
+    this.flow.showIntro(HOUSE_BOSS_INTRO(), t('readyLabel'));
 
     this.actions = new InputActions();
     this.actions.on('mash', () => this.handleMash());
     this.input.keyboard.on('keydown-SPACE', () => this.actions.mash());
 
-    touchControls.bind(this.actions, { actionLabel: 'READY!' });
+    touchControls.bind(this.actions, { actionLabel: t('readyLabel') });
     this.events.once('shutdown', () => touchControls.unbind());
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 
   // Shared builder for the peel-on stickers slapped onto the house frame —
@@ -89,7 +92,7 @@ export class Level2BossScene extends Phaser.Scene {
     this.forSaleSticker = this._makeSticker({
       x,
       y,
-      text: 'FOR SALE',
+      text: t('forSaleLabel'),
       width: 92,
       height: 30,
       angle: -9,
@@ -109,13 +112,13 @@ export class Level2BossScene extends Phaser.Scene {
       this.meter = new MashMeter({ target: MASH.payTarget });
       this.pig = new PiggyBank(this, { x: this.centerX, y: this.centerY + 110 });
       this.coinLabel = this.add
-        .text(this.centerX, this.centerY + 175, `COINS: 0 / ${MASH.payTarget}`, {
+        .text(this.centerX, this.centerY + 175, t('coinsLabel', { count: 0, target: MASH.payTarget }), {
           fontFamily: FONTS.body,
           fontSize: '12px',
           color: CSS_COLORS.mutedPurple,
         })
         .setOrigin(0.5);
-      touchControls.bind(this.actions, { actionLabel: HOUSE_BOSS_PAY_LABEL });
+      touchControls.bind(this.actions, { actionLabel: HOUSE_BOSS_PAY_LABEL() });
       return;
     }
     if (this.state !== 'pay' || this.meter.complete) return;
@@ -124,7 +127,7 @@ export class Level2BossScene extends Phaser.Scene {
     sfx.coinClink();
     this.pig.dropCoin();
     this.pig.setPercent(this.meter.percent);
-    this.coinLabel.setText(`COINS: ${this.meter.presses} / ${this.meter.target}`);
+    this.coinLabel.setText(t('coinsLabel', { count: this.meter.presses, target: this.meter.target }));
 
     if (this.meter.complete) {
       sfx.cashRegister();
@@ -151,7 +154,7 @@ export class Level2BossScene extends Phaser.Scene {
         ease: 'Quad.Out',
       });
     }
-    this.flow.showBigMessage(HOUSE_BOSS_WIN_TEXT, { fontSize: '16px' });
+    this.flow.showBigMessage(HOUSE_BOSS_WIN_TEXT(), { fontSize: '16px' });
     if (this.forSaleSticker) this.forSaleSticker.board.setStrokeStyle(3, COLORS.gold);
     this._stampSold();
 
@@ -174,7 +177,7 @@ export class Level2BossScene extends Phaser.Scene {
     const sticker = this._makeSticker({
       x,
       y,
-      text: 'SOLD!',
+      text: t('soldLabel'),
       width: 172,
       height: 54,
       angle: 8,

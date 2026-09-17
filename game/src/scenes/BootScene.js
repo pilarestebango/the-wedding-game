@@ -6,6 +6,7 @@ import { ILLUSTRATIONS, SPRITES } from '../config/assetManifest.js';
 import { keyForSlug } from '../config/sceneRegistry.js';
 import { gameState } from '../state/gameState.js';
 import { CSS_COLORS, FONTS } from '../config/palette.js';
+import { t } from '../config/i18n.js';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -17,13 +18,13 @@ export class BootScene extends Phaser.Scene {
     SPRITES.forEach(({ key, path }) => this.load.image(key, path));
 
     const label = this.add
-      .text(this.scale.width / 2, this.scale.height / 2, 'LOADING...', {
+      .text(this.scale.width / 2, this.scale.height / 2, t('loading', { pct: 0 }), {
         fontFamily: FONTS.heading,
         fontSize: '16px',
         color: CSS_COLORS.offWhite,
       })
       .setOrigin(0.5);
-    this.load.on('progress', (v) => label.setText(`LOADING... ${Math.round(v * 100)}%`));
+    this.load.on('progress', (v) => label.setText(t('loading', { pct: Math.round(v * 100) })));
   }
 
   create() {

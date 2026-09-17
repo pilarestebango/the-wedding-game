@@ -13,6 +13,7 @@ import { FinalBossScene } from './scenes/FinalBossScene.js';
 import { EndingScene } from './scenes/EndingScene.js';
 import { COLORS } from './config/palette.js';
 import { LEVEL1 } from './config/tuning.js';
+import { onLangChange } from './config/i18n.js';
 
 // The game fills whatever box #game-root ends up with — a phone in portrait,
 // a phone in landscape, or a desktop window — rather than a fixed 960x540
@@ -106,6 +107,11 @@ function watchOrientation(game) {
 function boot() {
   const game = new Phaser.Game(config);
   watchOrientation(game);
+  // Every scene reads its copy from t() (config/i18n.js) fresh in create(),
+  // so flipping the language just needs the same "restart the active
+  // scene(s)" trick used above for orientation changes — no per-scene
+  // text-update wiring required.
+  onLangChange(() => restartActiveScenes(game));
 }
 
 const fontsReady = Promise.all([

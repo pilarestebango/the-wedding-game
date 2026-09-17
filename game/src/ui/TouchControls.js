@@ -13,6 +13,7 @@
 // requiring a rotate to landscape.
 
 import { CSS_COLORS, FONTS } from '../config/palette.js';
+import { t } from '../config/i18n.js';
 
 const STYLE_ID = 'touch-controls-style';
 
@@ -111,10 +112,10 @@ export class TouchControls {
     leftGroup.className = 'tc-group';
     leftGroup.appendChild(this.dpadRight);
 
-    this.jumpBtn = this._makeButton('JUMP', 'tc-btn tc-jump');
-    this.actionBtn = this._makeButton('GO!', 'tc-btn tc-action');
-    this.yesBtn = this._makeButton('YES', 'tc-btn tc-yes');
-    this.noBtn = this._makeButton('NO', 'tc-btn tc-no');
+    this.jumpBtn = this._makeButton(t('jumpLabel'), 'tc-btn tc-jump');
+    this.actionBtn = this._makeButton(t('goLabel'), 'tc-btn tc-action');
+    this.yesBtn = this._makeButton(t('yesChoice'), 'tc-btn tc-yes');
+    this.noBtn = this._makeButton(t('noChoice'), 'tc-btn tc-no');
     const rightGroup = document.createElement('div');
     rightGroup.className = 'tc-group tc-group-right';
     rightGroup.appendChild(this.jumpBtn);
@@ -166,7 +167,19 @@ export class TouchControls {
     });
   }
 
+  // JUMP/YES/NO never get a per-scene label (unlike the action button, which
+  // scenes always pass their own translated actionLabel for) — refreshed
+  // here so a language change (which restarts the scene, which re-binds)
+  // updates them too, without this DOM singleton needing its own
+  // onLangChange subscription.
+  refreshStaticLabels() {
+    this.jumpBtn.textContent = t('jumpLabel');
+    this.yesBtn.textContent = t('yesChoice');
+    this.noBtn.textContent = t('noChoice');
+  }
+
   bind(actions, { showDpad = false, showJump = false, actionLabel = null, showYesNo = false } = {}) {
+    this.refreshStaticLabels();
     this.currentActions = actions;
     this.dpadRight.parentElement.classList.toggle('tc-hidden', !showDpad);
     this.jumpBtn.classList.toggle('tc-hidden', !showJump);

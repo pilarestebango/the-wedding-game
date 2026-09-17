@@ -63,24 +63,14 @@
   .topbar .dates { color: var(--gold); }
 
   @media (max-width: 720px) {
-    .topbar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-areas: "p1 p2" "dates dates";
-      row-gap: 8px;
-      column-gap: 12px;
-    }
-    .topbar .p1 { grid-area: p1; text-align: left; }
-    .topbar .p2 { grid-area: p2; text-align: right; }
-    .topbar .dates {
-      grid-area: dates;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 2px;
-    }
-    .topbar .dates .sep { display: none; }
+    .topbar { justify-content: center; }
+    /* 1UP/2UP labels give way to the wedding/after-party dates, the more
+       useful thing to lead with on a phone. */
+    .topbar .p1,
+    .topbar .p2 { display: none; }
+    /* Full-width + centered so it still reads centered if it wraps to two
+       lines on a narrow phone. */
+    .topbar .dates { width: 100%; text-align: center; }
   }
 
   .hero-row {
@@ -110,12 +100,8 @@
   .sprite--pilar { order: 3; }
 
   @media (max-width: 720px) {
-    .sprite { width: 46%; height: 30vh; flex: 0 0 46%; }
+    .sprite { width: 46%; height: 30vh; flex: 0 0 46%; transform: translateY(-14px); }
     .sprite--pilar { order: 2; }
-    /* Anchor each sprite toward the shared middle edge instead of centering
-       it in its own wide box, so the two characters sit close together. */
-    .sprite--joe img { left: auto; right: 6px; transform: none; }
-    .sprite--pilar img { left: 6px; transform: none; }
   }
 
   .sprite img {
@@ -135,6 +121,16 @@
   .sprite:hover img.wedding,
   .sprite:active img.wedding {
     opacity: 1;
+  }
+
+  /* Anchor each sprite toward the shared middle edge (and slightly past it,
+     to overlap) instead of centering it in its own half-width box, so the
+     two characters sit close together on a narrow phone. Placed after the
+     base ".sprite img" rule above so it actually wins — same specificity,
+     later in source. */
+  @media (max-width: 720px) {
+    .sprite--joe img { left: auto; right: -10px; transform: none; }
+    .sprite--pilar img { left: -10px; transform: none; }
   }
 
   .title-block {
@@ -162,6 +158,14 @@
     color: var(--cyan);
     margin-top: min(26px, 3vh);
     line-height: 2;
+    text-decoration: none;
+    display: inline-block;
+    transition: color 120ms steps(2);
+  }
+
+  a.subtitle:hover,
+  a.subtitle:active {
+    color: var(--gold);
   }
 
   .rsvp-prompt {
@@ -211,6 +215,12 @@
     letter-spacing: 0.05em;
   }
 
+  @media (max-width: 720px) {
+    /* Hover doesn't exist on touch devices — the outfit swap on tap/hold
+       still works, but the hint text about hovering doesn't apply. */
+    .hover-hint { display: none; }
+  }
+
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -218,6 +228,7 @@
   }
 
   .card {
+    display: block;
     border: 3px solid var(--cyan);
     padding: 16px 14px;
     font-size: 9px;
@@ -230,12 +241,20 @@
 
   .card--wedding { border-color: var(--gold); color: var(--gold); }
   .card--afterparty { border-color: var(--red); color: var(--red); }
-  .card--logistics { border-color: var(--muted); color: var(--muted); }
+
+  .card--rsvp {
+    transition: border-color 120ms steps(2), color 120ms steps(2);
+  }
+  .card--rsvp:hover,
+  .card--rsvp:active {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
 
   .card--game {
     display: block;
-    border-color: var(--cyan);
-    color: var(--cyan);
+    border-color: var(--muted);
+    color: var(--muted);
     transition: border-color 120ms steps(2), color 120ms steps(2);
   }
 
@@ -273,8 +292,8 @@
 
     <div class="title-block">
       <h1>PILAR<br />VS<br />JOE</h1>
-      <div class="subtitle">FINAL BOSS:<br />THE SEATING PLAN</div>
-      <div class="rsvp-prompt">&#9656; PRESS RSVP TO CONTINUE</div>
+      <a class="subtitle" href="game/" data-i18n="subtitle">FINAL BOSS:<br />PLAY THE GAME</a>
+      <div class="rsvp-prompt" data-i18n="rsvpPrompt">&#9656; PRESS RSVP TO CONTINUE</div>
       <div class="lang-toggle">
         <button type="button" class="active" data-lang="en">ENGLISH<span class="underline"></span></button>
         <span style="padding-bottom:6px;">&middot;</span>
@@ -288,26 +307,75 @@
     </div>
   </div>
 
-  <div class="hover-hint">HOVER A PLAYER TO CHANGE OUTFIT</div>
+  <div class="hover-hint" data-i18n="hoverHint">HOVER A PLAYER TO CHANGE OUTFIT</div>
 
   <div class="cards">
-    <div class="card">LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 09&middot;19&middot;27</span></div>
-    <div class="card card--wedding">LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">09&middot;19&middot;27 &middot; MADRID</span></div>
-    <div class="card card--afterparty">LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;12&middot;27 &middot; SYDNEY</span></div>
-    <div class="card card--logistics">BONUS<br /><span class="title">LOGISTICS</span><br /><span class="caption">ALL YOU NEED TO KNOW</span></div>
-    <a class="card card--game" href="game/">ARCADE<br /><span class="title">PLAY THE GAME</span><br /><span class="caption">TAP TO START</span></a>
+    <a class="card card--rsvp" href="rsvp/" data-i18n="cardRsvp">LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 09&middot;19&middot;27</span></a>
+    <div class="card card--wedding" data-i18n="cardWedding">LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">09&middot;19&middot;27 &middot; MADRID</span></div>
+    <div class="card card--afterparty" data-i18n="cardAfterparty">LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;12&middot;27 &middot; SYDNEY</span></div>
+    <a class="card card--game" href="game/" data-i18n="cardGame">ARCADE<br /><span class="title">PLAY THE GAME</span><br /><span class="caption">TAP TO START</span></a>
   </div>
 
 </div>
 
 <script>
-  // Language toggle currently only swaps the active-state underline, matching
-  // the original design handoff — no copy is localized yet.
-  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.lang-toggle button').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
+  // EN/ES copy for the hero. Shared with the game (game/src/config/i18n.js)
+  // via the same localStorage key — localStorage is scoped per-origin, not
+  // per-path, so a choice made here carries over into /game/ automatically.
+  const LANG_KEY = 'wedding-lang';
+
+  const STRINGS = {
+    en: {
+      title: 'Pilar &amp; Joe — Wedding',
+      subtitle: 'FINAL BOSS:<br />PLAY THE GAME',
+      rsvpPrompt: '&#9656; PRESS RSVP TO CONTINUE',
+      hoverHint: 'HOVER A PLAYER TO CHANGE OUTFIT',
+      cardRsvp: 'LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 09&middot;19&middot;27</span>',
+      cardWedding: 'LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">09&middot;19&middot;27 &middot; MADRID</span>',
+      cardAfterparty: 'LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;12&middot;27 &middot; SYDNEY</span>',
+      cardGame: 'ARCADE<br /><span class="title">PLAY THE GAME</span><br /><span class="caption">TAP TO START</span>',
+    },
+    es: {
+      title: 'Pilar y Joe — Boda',
+      subtitle: 'JEFE FINAL:<br />DALE AL PLAY',
+      rsvpPrompt: '&#9656; PULSA RSVP PARA CONTINUAR',
+      hoverHint: 'PASA EL RAT&Oacute;N: &iexcl;CAMBIO DE LOOK!',
+      cardRsvp: 'NIVEL 0<br /><span class="title">&iexcl;CONFIRMA QUE VIENES!</span><br /><span class="caption">ANTES DEL 09&middot;19&middot;27</span>',
+      cardWedding: 'NIVEL 1<br /><span class="title">LA BODA</span><br /><span class="caption">09&middot;19&middot;27 &middot; MADRID</span>',
+      cardAfterparty: 'NIVEL 2<br /><span class="title">LA AFTER PARTY</span><br /><span class="caption">23&middot;12&middot;27 &middot; S&Iacute;DNEY</span>',
+      cardGame: 'ARCADE<br /><span class="title">JUEGA YA</span><br /><span class="caption">TOCA PARA EMPEZAR</span>',
+    },
+  };
+
+  function applyLanguage(lang) {
+    const dict = STRINGS[lang] ?? STRINGS.en;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.dataset.i18n;
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
     });
+    document.title = dict.title.replace(/&amp;/g, '&');
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-toggle button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    try {
+      localStorage.setItem(LANG_KEY, lang);
+    } catch (e) {
+      // localStorage unavailable (private mode etc.) — language just won't persist
+    }
+  }
+
+  let storedLang = 'en';
+  try {
+    const v = localStorage.getItem(LANG_KEY);
+    if (v === 'en' || v === 'es') storedLang = v;
+  } catch (e) {
+    // ignore
+  }
+  applyLanguage(storedLang);
+
+  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
   });
 </script>
 

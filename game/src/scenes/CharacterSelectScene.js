@@ -1,8 +1,10 @@
 import { CSS_COLORS, FONTS, TITLE_SHADOW } from '../config/palette.js';
 import { gameState } from '../state/gameState.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
+import { t } from '../config/i18n.js';
 
 export class CharacterSelectScene extends Phaser.Scene {
   constructor() {
@@ -19,7 +21,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     touchControls.unbind(); // this screen has no gameplay actions to bind
 
     const title = this.add
-      .text(width / 2, 90, 'PILAR VS JOE', {
+      .text(width / 2, 90, t('charSelectTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '36px',
         color: CSS_COLORS.gold,
@@ -33,13 +35,22 @@ export class CharacterSelectScene extends Phaser.Scene {
     if (title.width > titleMaxWidth) title.setScale(titleMaxWidth / title.width);
 
     const subtitle = this.add
-      .text(width / 2, 140, 'CHOOSE YOUR PLAYER', {
+      .text(width / 2, 140, t('charSelectSubtitle'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
         color: CSS_COLORS.cyan,
       })
       .setOrigin(0.5);
     if (subtitle.width > titleMaxWidth) subtitle.setScale(titleMaxWidth / subtitle.width);
+
+    this.tweens.add({
+      targets: subtitle,
+      alpha: 0,
+      duration: 600,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Step',
+    });
 
     // Portrait/narrow phones still put the pair side by side rather than
     // stacked, centered vertically in the space between the subtitle and
@@ -74,7 +85,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     }
 
     this.add
-      .text(width / 2, height - 40, 'Tap a character to begin', {
+      .text(width / 2, height - 40, t('charSelectHint'), {
         fontFamily: FONTS.body,
         fontSize: '12px',
         color: CSS_COLORS.mutedPurple,
@@ -82,6 +93,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 
   _addPortrait(textureKey, char, x, y, { maxHeight, maxWidth, flip = false, scale } = {}) {

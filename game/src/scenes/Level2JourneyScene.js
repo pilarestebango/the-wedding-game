@@ -14,9 +14,11 @@ import { headKeyFor } from '../config/characterSprites.js';
 import { MeterBar } from '../ui/MeterBar.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { sfx } from '../config/sfx.js';
+import { t } from '../config/i18n.js';
 
 const BG_STAGE_NAME = {
   car: 'road-scene',
@@ -72,7 +74,7 @@ export class Level2JourneyScene extends Phaser.Scene {
     this.stageComplete = false;
 
     this.titleText = this.add
-      .text(this.centerX, 40, 'LEVEL 2 — THE JOURNEY', {
+      .text(this.centerX, 40, t('level2Title'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
         color: CSS_COLORS.gold,
@@ -112,6 +114,7 @@ export class Level2JourneyScene extends Phaser.Scene {
     this.events.once('shutdown', () => touchControls.unbind());
 
     addMuteToggle(this);
+    addLangToggle(this);
 
     this.enterStage(JOURNEY_STAGES[stageIndexById(this.startStageId)]);
   }
@@ -153,7 +156,7 @@ export class Level2JourneyScene extends Phaser.Scene {
       return;
     }
 
-    this.stageLabel.setText(stage.label);
+    this.stageLabel.setText(t(stage.labelKey));
     this.bg.setTexture(bgKey(this, BG_STAGE_NAME[stage.id] ?? 'sky'));
 
     this.propImage = this.add.image(this.centerX, this.centerY, propKey(stage.id)).setScale(4);
@@ -169,15 +172,15 @@ export class Level2JourneyScene extends Phaser.Scene {
 
     if (stage.type === 'advance') {
       this.advanceTrack = new AdvanceTrack({ distance: ADVANCE.distance, speedPerMs: ADVANCE.speedPerMs });
-      this.progressBar = new MeterBar(this, { x: this.centerX, y: this.centerY + 140, width: 260, label: 'PROGRESS' });
-      this.hintText.setText('HOLD RIGHT / D-PAD TO DRIVE');
+      this.progressBar = new MeterBar(this, { x: this.centerX, y: this.centerY + 140, width: 260, label: t('meterProgressLabel') });
+      this.hintText.setText(t('hintDrive'));
       touchControls.bind(this.actions, { showDpad: true });
     } else if (stage.type === 'meter') {
       const target = stage.id === 'tent' ? MASH.tentTarget : MASH.islandTarget;
       this.meter = new MashMeter({ target });
-      this.progressBar = new MeterBar(this, { x: this.centerX, y: this.centerY + 140, width: 260, label: 'PROGRESS' });
-      this.hintText.setText('MASH SPACE / GO! TO CONTINUE');
-      touchControls.bind(this.actions, { actionLabel: 'GO!' });
+      this.progressBar = new MeterBar(this, { x: this.centerX, y: this.centerY + 140, width: 260, label: t('meterProgressLabel') });
+      this.hintText.setText(t('hintMash'));
+      touchControls.bind(this.actions, { actionLabel: t('goLabel') });
     }
   }
 

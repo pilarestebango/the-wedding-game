@@ -10,6 +10,7 @@ import { MeterBar } from '../ui/MeterBar.js';
 import { BossIntroFlow } from '../ui/BossIntroFlow.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { sfx } from '../config/sfx.js';
@@ -20,6 +21,7 @@ import {
   FIRST_DATE_WIN_TEXT,
 } from '../config/dialogue.js';
 import { beerFrameForPercent } from '../config/props.js';
+import { t } from '../config/i18n.js';
 
 export class Level1BossScene extends Phaser.Scene {
   constructor() {
@@ -37,7 +39,7 @@ export class Level1BossScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 18, 11, 46);
 
     const title = this.add
-      .text(this.centerX, 40, 'THE FIRST DATE', {
+      .text(this.centerX, 40, t('firstDateTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '16px',
         color: CSS_COLORS.gold,
@@ -61,16 +63,17 @@ export class Level1BossScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(10);
 
-    this.flow.showIntro(FIRST_DATE_INTRO, 'READY!');
+    this.flow.showIntro(FIRST_DATE_INTRO(), t('readyLabel'));
 
     this.actions = new InputActions();
     this.actions.on('mash', () => this.handleMash());
     this.input.keyboard.on('keydown-SPACE', () => this.actions.mash());
 
-    touchControls.bind(this.actions, { actionLabel: 'READY!' });
+    touchControls.bind(this.actions, { actionLabel: t('readyLabel') });
     this.events.once('shutdown', () => touchControls.unbind());
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 
   handleMash() {
@@ -101,26 +104,26 @@ export class Level1BossScene extends Phaser.Scene {
 
   startPhase(phase) {
     this.state = phase;
-    this.loopLabel.setText(`LOOP ${this.loopSeq.loopNumber} / ${BOSS_LOOPS.firstDateLoops}`);
+    this.loopLabel.setText(t('loopLabel', { n: this.loopSeq.loopNumber, total: BOSS_LOOPS.firstDateLoops }));
     this._clearPhaseVisuals();
 
     if (phase === 'drink') {
       this.meter = new MashMeter({ target: MASH.drinkTarget });
       this._createBeerVisual();
-      this.meterBar = new MeterBar(this, { x: this.centerX, y: this.centerY + 95, width: 220, label: 'DRINK' });
-      touchControls.bind(this.actions, { actionLabel: FIRST_DATE_DRINK_LABEL });
+      this.meterBar = new MeterBar(this, { x: this.centerX, y: this.centerY + 95, width: 220, label: t('meterDrinkLabel') });
+      touchControls.bind(this.actions, { actionLabel: FIRST_DATE_DRINK_LABEL() });
     } else {
       this.meter = new MashMeter({ target: MASH.talkTarget });
       this.bubble = this.add.image(this.centerX, this.centerY - 20, 'prop-speech-bubble').setScale(0.3);
       this.add
-        .text(this.centerX, this.centerY + 60, 'TALK', {
+        .text(this.centerX, this.centerY + 60, t('talkLabel'), {
           fontFamily: FONTS.heading,
           fontSize: '12px',
           color: CSS_COLORS.cyan,
         })
         .setOrigin(0.5)
         .setName('talkLabel');
-      touchControls.bind(this.actions, { actionLabel: FIRST_DATE_TALK_LABEL });
+      touchControls.bind(this.actions, { actionLabel: FIRST_DATE_TALK_LABEL() });
     }
   }
 
@@ -177,7 +180,7 @@ export class Level1BossScene extends Phaser.Scene {
     });
     sfx.heart();
 
-    this.flow.showBigMessage(FIRST_DATE_WIN_TEXT, { fontSize: '16px' });
+    this.flow.showBigMessage(FIRST_DATE_WIN_TEXT(), { fontSize: '16px' });
 
     this.time.delayedCall(1800, () => {
       fadeToScene(this, 'Level2Journey', { char: this.char });

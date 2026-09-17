@@ -13,9 +13,11 @@ import { textureKeyFor as propKey } from '../config/props.js';
 import { textureKeyFor as charKey, runFrameKeys } from '../config/characterSprites.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { sfx } from '../config/sfx.js';
+import { t } from '../config/i18n.js';
 
 export class Level1DatingRaceScene extends Phaser.Scene {
   constructor() {
@@ -102,7 +104,7 @@ export class Level1DatingRaceScene extends Phaser.Scene {
     this.events.once('shutdown', () => touchControls.unbind());
 
     const levelTitle = this.add
-      .text(width / 2, 30, `LEVEL 1 — SINGLE LIFE`, {
+      .text(width / 2, 30, t('level1Title'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
         color: CSS_COLORS.gold,
@@ -112,6 +114,7 @@ export class Level1DatingRaceScene extends Phaser.Scene {
     fitTopTitle(this, levelTitle);
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 
   tryJump() {

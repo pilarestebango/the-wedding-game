@@ -16,9 +16,11 @@ import { InputActions } from '../logic/InputActions.js';
 import { MeterBar } from '../ui/MeterBar.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { sfx } from '../config/sfx.js';
+import { t } from '../config/i18n.js';
 
 export class Level3WaitScene extends Phaser.Scene {
   constructor() {
@@ -35,7 +37,7 @@ export class Level3WaitScene extends Phaser.Scene {
     this.cameras.main.fadeIn(300, 18, 11, 46);
 
     const title = this.add
-      .text(centerX, 40, 'THE WAIT', {
+      .text(centerX, 40, t('theWaitTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '18px',
         color: CSS_COLORS.gold,
@@ -76,7 +78,7 @@ export class Level3WaitScene extends Phaser.Scene {
       .setScale(this.baseScale);
 
     this.hintText = this.add
-      .text(centerX, 0, "You don't have to do anything except wait\n(tap SPACE or the arrows to make her strike a new dance pose!)", {
+      .text(centerX, 0, t('waitHint'), {
         fontFamily: FONTS.body,
         fontSize: '13px',
         color: CSS_COLORS.offWhite,
@@ -93,7 +95,7 @@ export class Level3WaitScene extends Phaser.Scene {
     ['SPACE', 'LEFT', 'RIGHT', 'UP', 'DOWN'].forEach((key) => {
       this.input.keyboard.on(`keydown-${key}`, () => this.actions.mash());
     });
-    touchControls.bind(this.actions, { actionLabel: 'DANCE!' });
+    touchControls.bind(this.actions, { actionLabel: t('danceLabel') });
     this.events.once('shutdown', () => touchControls.unbind());
 
     this.countdownText = this.add
@@ -112,6 +114,7 @@ export class Level3WaitScene extends Phaser.Scene {
     this.events.once('shutdown', () => this.scale.off('resize', this._layoutBottomStack, this));
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 
   // Stacks the hint text / countdown / progress bar upward from a fixed

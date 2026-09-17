@@ -1,9 +1,10 @@
 // Persistent mute/unmute toggle, added to every scene's corner (GAME_SPEC.md §7).
 import { gameState } from '../state/gameState.js';
 import { CSS_COLORS, FONTS } from '../config/palette.js';
+import { t } from '../config/i18n.js';
 
 export function addMuteToggle(scene) {
-  const label = () => (gameState.muted ? 'SFX OFF' : 'SFX ON');
+  const label = () => (gameState.muted ? t('sfxOff') : t('sfxOn'));
   const text = scene.add
     .text(scene.scale.width - 16, 16, label(), {
       fontFamily: FONTS.heading,

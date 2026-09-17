@@ -15,9 +15,11 @@ import { textureKeyFor as propKey } from '../config/props.js';
 import { textureKeyFor as charKey, runFrameKeys } from '../config/characterSprites.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
+import { addLangToggle } from '../ui/langToggle.js';
 import { fitTopTitle } from '../ui/fitTopTitle.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { sfx } from '../config/sfx.js';
+import { t } from '../config/i18n.js';
 
 export class Level3RingsScene extends Phaser.Scene {
   constructor() {
@@ -94,7 +96,7 @@ export class Level3RingsScene extends Phaser.Scene {
     this.events.once('shutdown', () => touchControls.unbind());
 
     const levelTitle = this.add
-      .text(width / 2, 30, 'LEVEL 3 — GETTING THE RING', {
+      .text(width / 2, 30, t('level3RingsTitle'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
         color: CSS_COLORS.gold,
@@ -104,7 +106,7 @@ export class Level3RingsScene extends Phaser.Scene {
     fitTopTitle(this, levelTitle);
 
     this.ringCountText = this.add
-      .text(width / 2, 54, `RING: 0 / ${RINGS.count}`, {
+      .text(width / 2, 54, t('ringLabel', { count: 0, total: RINGS.count }), {
         fontFamily: FONTS.body,
         fontSize: '20px',
         fontStyle: 'bold',
@@ -114,6 +116,7 @@ export class Level3RingsScene extends Phaser.Scene {
       .setScrollFactor(0);
 
     addMuteToggle(this);
+    addLangToggle(this);
   }
 
   tryJump() {
@@ -127,7 +130,7 @@ export class Level3RingsScene extends Phaser.Scene {
     ringSprite.ringData.collected = true;
     ringSprite.destroy();
     this.collectedCount += 1;
-    this.ringCountText.setText(`RING: ${this.collectedCount} / ${RINGS.count}`);
+    this.ringCountText.setText(t('ringLabel', { count: this.collectedCount, total: RINGS.count }));
     sfx.ringCollect();
   }
 

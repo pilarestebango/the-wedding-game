@@ -4,51 +4,31 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-**PILAR vs JOE** — a 2D side-scrolling arcade game (retro pixel-art style)
-telling the couple's story across three levels, ending in a proposal. Built
-as a companion to Pilar & Joe's wedding website.
+This repo holds two related, independently-browsable static sites for Pilar
+& Joe's wedding, deployed together as one GitHub Pages site:
 
-Full design spec, level-by-level mechanics, scene flow, and open questions
-live in **`GAME_SPEC.md`** at the repo root — read it before making any
-gameplay, scene, or asset decision. This file only covers engineering
-conventions; it doesn't duplicate the design content.
+- **`/` (this level)** — the wedding website: a retro-arcade-styled landing
+  page (RSVP / Wedding / After Party / Logistics, plus a link into the game)
+  matching the visual identity of the couple's Claude Design handoff.
+- **`/game/`** — **PILAR vs JOE**, a 2D side-scrolling arcade game telling
+  the couple's story across three levels, ending in a proposal. It has its
+  own **`game/CLAUDE.md`** and **`game/GAME_SPEC.md`** — read those before
+  touching anything under `game/`; this file doesn't duplicate them.
 
 ## Tech stack
 
-- **Engine:** Phaser 3, loaded via CDN `<script>` tag in `index.html` (no
-  bundler, no build step).
-- **Language:** vanilla JavaScript (ES6+ modules). No TypeScript, no
-  framework, unless a future decision changes this.
-- **No backend.** Static site only — everything runs client-side.
-- **Local dev:** VS Code "Live Server" extension, or `npx serve .` from the
-  repo root. Do not introduce webpack/vite/etc. unless asked — the whole
-  point of this stack is zero build step.
-
-## Project structure
-
-```
-game/
-├── CLAUDE.md              # this file
-├── GAME_SPEC.md           # full design spec — source of truth for mechanics
-├── index.html
-├── src/
-│   ├── main.js            # Phaser config + scene list
-│   ├── scenes/            # one file per Phaser scene, named to match GAME_SPEC §5/§6
-│   ├── ui/
-│   │   └── TouchControls.js
-│   └── config/
-│       └── palette.js     # color/font tokens — see below, never hardcode hex elsewhere
-└── assets/
-    ├── sprites/
-    ├── backgrounds/
-    └── audio/
-```
+- Vanilla HTML/CSS/JS (ES6+), no framework, no bundler — same zero-build
+  philosophy as the game (see `game/CLAUDE.md`).
+- No backend. Static site only.
+- Local dev: VS Code "Live Server" extension, or `npx serve .` from the repo
+  root — this serves both `/` and `/game/` together.
 
 ## Visual style — do not deviate without asking
 
-Pulled from the couple's existing wedding site (`Arcade Wedding.dc.html`).
-These live as constants in `src/config/palette.js`; import them, don't
-retype hex values in scene code.
+Shared across the site and the game. The game keeps these as JS constants in
+`game/src/config/palette.js`; the site currently inlines them as CSS custom
+properties in `index.html` (no JS module of its own yet) — keep both in sync
+if either changes.
 
 | Token | Value |
 |---|---|
@@ -58,60 +38,57 @@ retype hex values in scene code.
 | Red | `#E5341F` |
 | Muted purple | `#7a6fb0` |
 | Off-white | `#F2F2F2` |
-| Heading font | `Press Start 2P` |
-| Body font | `JetBrains Mono` |
+| Heading font | `Press Start 2P` (Google Font) |
+| Body font | `JetBrains Mono` (Google Font) |
+| Title style | 6px/6px hard drop-shadow, no blur |
 
+All pixel art must render with `image-rendering: pixelated` — never let the
+browser smooth/anti-alias it.
 
-All sprites/tiles must render with `pixelArt: true` in the Phaser config (or
-`image-rendering: pixelated` for any raw DOM/CSS elements) — never let the
-browser smooth/anti-alias the art.
+## Project structure
 
-## Input handling
+```
+index.html              # wedding site landing page
+assets/site/             # site-only images (joe.png, pili.png, +wedding variants)
+game/                     # the game — see game/CLAUDE.md and game/GAME_SPEC.md
+reference/                # design source material, not shipped:
+  website/                #   Claude Design handoff for the landing page
+    Arcade Wedding.dc.html #   (canvas export — reference only, see below)
+    support.js
+    uploads/
+```
 
-Every gameplay action (move, jump, mash/action, yes/no) must go through a
-single shared input-handling function per action — **never** branch game
-logic on "was this a keypress or a touch event." Keyboard and the on-screen
-touch controls (`src/ui/TouchControls.js`) both call the same functions.
-Touch controls are shown only on touch-capable/narrow viewports and hidden
-on desktop — see GAME_SPEC §3 for the exact rules and button labels.
+## Design source of truth
 
-## Testing / debug conventions
+`reference/website/Arcade Wedding.dc.html` is the Claude Design canvas
+handoff for the landing page hero — it was implemented directly into
+`index.html` as plain HTML/CSS/JS. The `.dc.html`/`support.js` files are a
+design-tool artifact (needs `window.React`/`ReactDOM` to run) and are never
+shipped or linked from the real site; they're kept only as the design
+reference. If the couple sends an updated `.dc.html` export, re-implement
+the diff into `index.html` by hand rather than embedding the runtime.
 
-- Support a `?scene=<name>&char=<pili|joe>` URL query param that boots
-  directly into any scene (see `GAME_SPEC.md` §2 and §9). Keep this working
-  at all times — it's the main way to test a level without replaying the
-  whole game, and it should be added in the very first milestone, not
-  bolted on later.
-- New scenes should be playable/testable in isolation via that query param
-  before being wired into the full flow.
-- No test framework is set up yet. If pure logic (meter math, obstacle
-  sequences, branching) grows complex enough to warrant it, Vitest is the
-  suggested choice — ask before adding new dependencies.
--  make sure you build in unit testing
+Real event details pulled from that handoff (confirm before changing):
+- **Wedding:** Madrid, 2027-09-19
+- **After Party:** Sydney, 2027-12-23
 
-## Assets
+The site is being built **iteratively, section by section** — the current
+`index.html` only implements the hero. Don't invent additional sections
+(RSVP form, logistics content, registry, etc.) ahead of a design handoff for
+them; ask or wait for the next `.dc.html` drop.
 
-- Placeholder art (colored boxes/shapes) is fine and expected in early
-  milestones — see the milestone table in `GAME_SPEC.md` §9. Don't block
-  gameplay-logic work on final art being ready.
-- **Asset review gate:** any new pixel-art batch (obstacles, backgrounds,
-  character sprites) gets generated and shown for approval *before* being
-  wired into scene code — don't silently swap placeholders for "final" art
-  without flagging it.
-- Reuse existing illustrations in `../images/` (`caracters/pili.png`,
-  `caracters/joe.png`, wedding/dancing/proposal poses) for menus and
-  cutscenes rather than regenerating them — see `GAME_SPEC.md` §1 for the
-  full inventory and what each is meant for.
-- Use this as reference for illustration style for elements pixelated ppixel-elements.jpeg
+## Linking the two
 
-## Open questions
+- **Site → game:** the "ARCADE / PLAY THE GAME" card in `index.html`'s hero
+  grid, links to `game/` (relative — works under any GitHub Pages path).
+- **Game → site:** `game/src/config/tuning.js` → `RSVP_URL`. Currently
+  `null` (shows "RSVP details coming soon" on the game's ending screen).
+  Once the site has a real RSVP destination, set it there — the game's
+  EndingScene picks it up automatically, no scene code changes needed.
 
-`GAME_SPEC.md` §8 lists unresolved design questions (fail states, exact
-mash/timer numbers, dialogue copy, music licensing, whether the ending
-deep-links to the real RSVP page). Check that list before assuming an
-answer on any of those specific points.
+## Hosting
 
-## Current status
-
-Design spec complete (`GAME_SPEC.md` v0.1). No code written yet — next step
-is milestone M0 (project scaffold) per the build plan in §9.
+Single GitHub repo, single GitHub Pages deploy (serve from the `main`
+branch root). Root path → wedding site, `/game/` → the game. `.nojekyll` at
+the repo root disables Jekyll processing since this is plain static output,
+not a Jekyll site.

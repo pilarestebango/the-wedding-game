@@ -1,0 +1,13 @@
+{
+  "name": "pilar-vs-joe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PILAR vs JOE — wedding arcade game (Phaser 3, no build step). This package.json exists only to run the Vitest unit test suite for src/logic — the game itself ships as static files with Phaser loaded via CDN.",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.4"
+  }
+}

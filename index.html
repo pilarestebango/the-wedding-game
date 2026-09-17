@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>PILAR vs JOE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #120B2E;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  /* The game plays natively in portrait or landscape — no rotation needed.
+     #app stacks the Phaser canvas above the touch-control bar (when shown)
+     so controls get their own reserved strip instead of floating on top of
+     gameplay. 100dvh (where supported) keeps this accurate as mobile browser
+     chrome shows/hides. */
+  #app {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+  }
+  #game-root {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="game-root"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.70.0/phaser.min.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

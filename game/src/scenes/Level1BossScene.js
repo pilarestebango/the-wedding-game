@@ -58,7 +58,7 @@ export class Level1BossScene extends Phaser.Scene {
       .text(this.centerX, this.centerY + 135, '', {
         fontFamily: FONTS.body,
         fontSize: '12px',
-        color: CSS_COLORS.mutedPurple,
+        color: CSS_COLORS.offWhite,
       })
       .setOrigin(0.5)
       .setDepth(10);

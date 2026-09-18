@@ -115,7 +115,7 @@ export class Level2BossScene extends Phaser.Scene {
         .text(this.centerX, this.centerY + 175, t('coinsLabel', { count: 0, target: MASH.payTarget }), {
           fontFamily: FONTS.body,
           fontSize: '12px',
-          color: CSS_COLORS.mutedPurple,
+          color: CSS_COLORS.offWhite,
         })
         .setOrigin(0.5);
       touchControls.bind(this.actions, { actionLabel: HOUSE_BOSS_PAY_LABEL() });

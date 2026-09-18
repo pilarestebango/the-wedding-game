@@ -52,7 +52,6 @@ export class FinalBossScene extends Phaser.Scene {
     this.proposalArt = this.add.image(this.centerX, this.centerY - 105, 'pose-proposal');
     const maxArtHeight = this.scale.height * 0.34;
     this.proposalArt.setScale(Math.min(1, maxArtHeight / this.proposalArt.height));
-    this.proposalArt.setDepth(10);
 
     this.flow = new BossIntroFlow(this, { centerX: this.centerX, centerY: this.centerY + 60 });
     this.state = 'intro';

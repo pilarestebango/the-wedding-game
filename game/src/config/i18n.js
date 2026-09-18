@@ -9,7 +9,7 @@ const STRINGS = {
   en: {
     charSelectTitle: 'PILAR VS JOE',
     charSelectSubtitle: 'CHOOSE YOUR PLAYER',
-    charSelectHint: 'Tap a character to begin',
+    charSelectHint: 'TAP A CHARACTER TO BEGIN',
     loading: 'LOADING... {pct}%',
 
     level1Title: 'LEVEL 1 — SINGLE LIFE',
@@ -76,7 +76,7 @@ const STRINGS = {
   es: {
     charSelectTitle: 'PILAR VS JOE',
     charSelectSubtitle: 'ELIGE A TU JUGADOR',
-    charSelectHint: 'Toca a un personaje para empezar',
+    charSelectHint: 'TOCA A UN PERSONAJE PARA EMPEZAR',
     loading: 'CARGANDO... {pct}%',
 
     level1Title: 'NIVEL 1 — SOLTERÍA',

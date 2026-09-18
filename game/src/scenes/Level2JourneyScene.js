@@ -94,7 +94,7 @@ export class Level2JourneyScene extends Phaser.Scene {
       .text(this.centerX, height - 60, '', {
         fontFamily: FONTS.body,
         fontSize: '12px',
-        color: CSS_COLORS.mutedPurple,
+        color: CSS_COLORS.offWhite,
       })
       .setOrigin(0.5);
 

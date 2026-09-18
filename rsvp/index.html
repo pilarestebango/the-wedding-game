@@ -38,6 +38,13 @@
     font-size: 12px;
     letter-spacing: 0.05em;
     padding-bottom: 32px;
+    gap: 12px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
   .topbar .exit { color: var(--off-white); text-decoration: none; }
@@ -47,36 +54,27 @@
   .lang-toggle {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 9px;
-    color: var(--muted);
-    margin-bottom: 28px;
+    gap: 5px;
+    font-size: 11px;
   }
 
   .lang-toggle button {
     background: none;
     border: none;
     color: var(--muted);
-    font-family: 'Press Start 2P', monospace;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
     font-size: inherit;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
     padding: 0;
   }
 
-  .lang-toggle .underline {
-    width: 22px;
-    height: 2px;
-    background: transparent;
-  }
+  .lang-toggle button:hover { color: var(--gold); }
+  .lang-toggle button.active { color: var(--muted); opacity: 1; }
+  .lang-toggle button:not(.active) { opacity: 0.5; }
 
-  .lang-toggle button.active .underline {
-    background: var(--muted);
-  }
+  .lang-toggle .sep { color: var(--muted); opacity: 0.5; }
 
   h1.heading {
     font-family: 'Press Start 2P', monospace;
@@ -324,15 +322,16 @@
 <div class="page">
 
   <div class="topbar">
-    <a class="exit" href="../" data-i18n="exit">&lsaquo; EXIT</a>
+    <div class="topbar-left">
+      <a class="exit" href="../" data-i18n="exit">&lsaquo; EXIT</a>
+      <div class="lang-toggle">
+        <button type="button" class="active" data-lang="en">EN</button>
+        <span class="sep">/</span>
+        <button type="button" data-lang="es">ES</button>
+      </div>
+    </div>
     <span data-i18n="topbarTitle">LVL 0 &middot; RSVP</span>
     <span class="credits" id="credits">CREDITS 01</span>
-  </div>
-
-  <div class="lang-toggle">
-    <button type="button" class="active" data-lang="en">ENGLISH<span class="underline"></span></button>
-    <span style="padding-bottom:6px;">&middot;</span>
-    <button type="button" data-lang="es">ESPA&Ntilde;OL<span class="underline"></span></button>
   </div>
 
   <form id="rsvp-form">

@@ -62,7 +62,7 @@ export class EndingScene extends Phaser.Scene {
         .text(centerX, height - 100, t('rsvpComingSoon'), {
           fontFamily: FONTS.body,
           fontSize: '12px',
-          color: CSS_COLORS.mutedPurple,
+          color: CSS_COLORS.offWhite,
         })
         .setOrigin(0.5);
     }

@@ -128,14 +128,18 @@
     opacity: 1;
   }
 
-  /* Anchor each sprite toward the shared middle edge (and slightly past it,
-     to overlap) instead of centering it in its own half-width box, so the
-     two characters sit close together on a narrow phone. Placed after the
-     base ".sprite img" rule above so it actually wins — same specificity,
+  /* Shift each sprite's centerline toward the other character (and
+     slightly past it, to overlap) instead of centering it in its own
+     half-width box, so the two characters sit close together on a narrow
+     phone. Keeps the base rule's translateX(-50%) centering (only "left"
+     is overridden) so the wedding-outfit image — a different width than
+     the casual one, especially Pilar's dress — stays centered on the same
+     point instead of jumping when it swaps in. Placed after the base
+     ".sprite img" rule above so it actually wins — same specificity,
      later in source. */
   @media (max-width: 720px) {
-    .sprite--joe img { left: auto; right: -10px; transform: none; }
-    .sprite--pilar img { left: -10px; transform: none; }
+    .sprite--joe img { left: calc(50% + 10px); }
+    .sprite--pilar img { left: calc(50% - 10px); }
   }
 
   .title-block {
@@ -164,7 +168,7 @@
     margin-top: min(26px, 3vh);
     line-height: 2;
     text-decoration: none;
-    display: inline-block;
+    display: block;
     transition: color 120ms steps(2);
   }
 
@@ -179,7 +183,7 @@
     animation: blink 1.1s step-end infinite;
     color: inherit;
     text-decoration: none;
-    display: inline-block;
+    display: block;
     transition: color 120ms steps(2);
   }
 

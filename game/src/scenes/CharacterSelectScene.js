@@ -38,7 +38,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       .text(width / 2, 140, t('charSelectSubtitle'), {
         fontFamily: FONTS.heading,
         fontSize: '14px',
-        color: CSS_COLORS.cyan,
+        color: CSS_COLORS.mutedPurple,
       })
       .setOrigin(0.5);
     if (subtitle.width > titleMaxWidth) subtitle.setScale(titleMaxWidth / subtitle.width);
@@ -77,10 +77,10 @@ export class CharacterSelectScene extends Phaser.Scene {
         imgMaxWidth / piliSize.width,
         imgMaxWidth / joeSize.width
       );
-      this._addPortrait('pili-portrait', 'pili', width * 0.26, centerY, { scale: sharedScale, flip: true });
+      this._addPortrait('pili-portrait', 'pili', width * 0.26, centerY, { scale: sharedScale, flip: false });
       this._addPortrait('joe-portrait', 'joe', width * 0.74, centerY, { scale: sharedScale, flip: true });
     } else {
-      this._addPortrait('pili-portrait', 'pili', width * 0.3, height * 0.55, { maxHeight: height * 0.55, maxWidth: width * 0.42, flip: true });
+      this._addPortrait('pili-portrait', 'pili', width * 0.3, height * 0.55, { maxHeight: height * 0.55, maxWidth: width * 0.42, flip: false });
       this._addPortrait('joe-portrait', 'joe', width * 0.7, height * 0.55, { maxHeight: height * 0.55, maxWidth: width * 0.42, flip: true });
     }
 
@@ -100,7 +100,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     const img = this.add.image(x, y, textureKey).setInteractive({ useHandCursor: true });
     scale = scale ?? Math.min(1, maxHeight / img.height, maxWidth / img.width);
     img.setScale(scale);
-    img.setFlipX(flip); // both portraits' source art faces left by default, so flip both to face each other
+    img.setFlipX(flip); // both portraits' source art faces right by default; Joe (on the right) flips to face left, toward Pili
 
     const label = this.add
       .text(x, y + (img.height * scale) / 2 + 20, char.toUpperCase(), {

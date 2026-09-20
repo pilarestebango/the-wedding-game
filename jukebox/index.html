@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Jukebox — Pilar &amp; Joe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #120B2E;
+    --cyan: #00E5FF;
+    --gold: #FFD400;
+    --red: #E5341F;
+    --muted: #7a6fb0;
+    --off-white: #F2F2F2;
+    --border: rgba(122, 111, 176, 0.55);
+
+    /* Jukebox accents — these come from the jukebox design and are not in the
+       shared palette (see CLAUDE.md, "Jukebox accents"). Scoped to this page. */
+    --pink: #E96BC8;
+    --magenta: #EB5CD4; /* title bar, arch bulbs, equalizer — the hotter pink in the design */
+    --orchid: #D575E1;  /* right-hand pillar */
+    --sky: #5CC8F5;
+    --frame: #5B4FB3;   /* cabinet ring + row outlines */
+    --panel: #0B0621;   /* now-selecting panel, inputs */
+    --row: #251C5A;     /* list rows */
+    --lilac: #a79cd6;   /* secondary text on rows (same as the RSVP placeholder) */
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--off-white);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .page {
+    padding: 28px clamp(20px, 4vw, 64px) 80px;
+  }
+
+  /* ---- topbar: same structure as rsvp/index.html ---- */
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding-bottom: 32px;
+    gap: 12px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* Each piece stays on one line; on a very narrow phone the whole bar may wrap instead. */
+  .topbar { flex-wrap: wrap; }
+  .topbar > *,
+  .topbar .exit,
+  .lang-toggle { white-space: nowrap; }
+
+  @media (max-width: 400px) {
+    .topbar { font-size: 10px; gap: 8px; letter-spacing: 0.03em; }
+    .topbar-left { gap: 10px; }
+    .lang-toggle { font-size: 10px; }
+  }
+
+  .topbar .exit { color: var(--off-white); text-decoration: none; }
+  .topbar .exit:hover { color: var(--gold); }
+  .topbar .credits { color: var(--gold); font-weight: bold; }
+
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .lang-toggle button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+    font-size: inherit;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .lang-toggle button:hover { color: var(--gold); }
+  .lang-toggle button.active { color: var(--muted); opacity: 1; }
+  .lang-toggle button:not(.active) { opacity: 0.5; }
+
+  .lang-toggle .sep { color: var(--muted); opacity: 0.5; }
+
+  /* ---- cabinet ---- */
+
+  /* ~30% of the screen on a laptop, never narrower than 360px, full-width on a phone.
+     Only the cabinet is narrow — the topbar above stays full-width like RSVP. */
+  .cabinet {
+    --arch: 58px;    /* the arch's height; the ring below covers its last --ring px */
+    --ring: 7px;     /* purple ring round the frame */
+    --pillar: 20px;
+    --gap: 4px;      /* clear space between a pillar and the ring */
+    --pad: calc(var(--pillar) + var(--gap) + var(--ring));
+    position: relative;
+    width: min(100%, clamp(360px, 30vw, 560px));
+    margin: 0 auto;
+    padding: 0 var(--pad);
+  }
+
+  @media (max-width: 900px) {
+    .cabinet { width: min(100%, 480px); }
+  }
+
+  @media (max-width: 480px) {
+    .cabinet { --arch: 48px; --ring: 5px; --pillar: 14px; --gap: 3px; width: 100%; }
+  }
+
+  .pillar {
+    position: absolute;
+    top: calc(var(--arch) - var(--ring) + 6px);
+    bottom: 6px;
+    width: var(--pillar);
+    background: var(--fill);
+    border: 3px solid var(--edge);
+    border-radius: 10px;
+    box-shadow: 0 0 14px var(--glow);
+  }
+  .pillar--l { left: 0;  --fill: var(--sky);    --edge: #1F5FA6; --glow: rgba(92, 200, 245, 0.55); }
+  .pillar--r { right: 0; --fill: var(--orchid); --edge: #7B3B9E; --glow: rgba(213, 117, 225, 0.5); }
+
+  /* Everything inside sizes its text off the cabinet's own width (cqw), so the
+     jukebox scales as one object instead of reflowing. */
+  .cab {
+    container-type: inline-size;
+    font-family: 'Press Start 2P', monospace;
+  }
+
+  /* Full frame width; the frame's ring is drawn over its last few pixels. */
+  .arch {
+    height: var(--arch);
+    background: #2A1F62;
+    border: 4px solid var(--gold);
+    border-bottom: none;
+    border-radius: 52px 52px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+
+  .arch i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--sky);
+    animation: bulb 1.4s steps(1) infinite;
+    animation-delay: calc(var(--i) * 0.28s);
+  }
+  .arch i:nth-child(n+4) { background: var(--magenta); }
+
+  @keyframes bulb {
+    0%, 100% { opacity: 1; }
+    45% { opacity: 0.25; }
+  }
+
+  .frame {
+    border: 4px solid var(--gold);
+    background: var(--bg);
+    box-shadow: 0 0 0 var(--ring) var(--frame);
+    margin-top: 0;
+  }
+
+  h1.title-bar {
+    margin: 0;
+    padding: clamp(10px, 2.6cqw, 14px) 8px;
+    background: var(--magenta);
+    color: var(--bg);
+    text-align: center;
+    font-weight: normal;
+    font-size: clamp(14px, 4.15cqw, 22px);
+    line-height: 1.3;
+    text-shadow: 2px 2px 0 var(--gold);
+    border-bottom: 4px solid var(--gold);
+  }
+
+  /* ---- now selecting ---- */
+
+  .now {
+    padding: 18px clamp(12px, 4cqw, 20px);
+    background: var(--panel);
+    border-bottom: 4px solid var(--gold);
+  }
+
+  .now-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 2.6cqw, 14px);
+  }
+
+  .vinyl {
+    flex: none;
+    width: clamp(58px, 20cqw, 104px);
+    aspect-ratio: 1;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .vinyl:disabled { cursor: default; }
+  /* A smooth record, not pixel art — deliberately not pixelated. */
+  .vinyl canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .now.is-playing .vinyl canvas { animation: spin 2.4s linear infinite; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .now-text { min-width: 0; flex: 1; }
+
+  .now-label {
+    color: var(--cyan);
+    font-size: clamp(8px, 1.6cqw, 9px);
+    line-height: 1.5;
+  }
+
+  .now-title {
+    margin: 9px 0 0;
+    color: var(--off-white);
+    font-size: clamp(9px, 2.2cqw, 12px);
+    line-height: 1.5;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .now-note {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: clamp(8px, 1.6cqw, 9px);
+    line-height: 1.5;
+  }
+
+  .eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 24px;
+    margin-top: 14px;
+  }
+  .eq i {
+    width: 6px;
+    height: var(--h);
+    background: var(--gold);
+  }
+  .eq i:nth-child(3n+2) { background: var(--magenta); }
+  .eq i:nth-child(3n+3) { background: var(--sky); }
+  .eq i:nth-child(1) { --h: 100%; }
+  .eq i:nth-child(2) { --h: 40%; }
+  .eq i:nth-child(3) { --h: 20%; }
+  .eq i:nth-child(4) { --h: 100%; }
+  .eq i:nth-child(5) { --h: 72%; }
+  .eq i:nth-child(6) { --h: 100%; }
+
+  .now.is-playing .eq i { animation: bounce 0.9s steps(1) infinite; }
+  .now.is-playing .eq i:nth-child(2) { animation-duration: 0.7s; animation-delay: -0.2s; }
+  .now.is-playing .eq i:nth-child(3) { animation-duration: 1.1s; animation-delay: -0.5s; }
+  .now.is-playing .eq i:nth-child(4) { animation-duration: 0.8s; animation-delay: -0.1s; }
+  .now.is-playing .eq i:nth-child(5) { animation-duration: 1s; animation-delay: -0.6s; }
+  .now.is-playing .eq i:nth-child(6) { animation-duration: 0.6s; animation-delay: -0.3s; }
+
+  @keyframes bounce {
+    0%   { height: 30%; }
+    20%  { height: 100%; }
+    40%  { height: 55%; }
+    60%  { height: 85%; }
+    80%  { height: 40%; }
+  }
+
+  /* ---- body ---- */
+
+  .body {
+    padding: clamp(14px, 4.4cqw, 22px) clamp(12px, 4cqw, 20px) clamp(14px, 4cqw, 20px);
+  }
+
+  .lead {
+    margin: 0 0 16px;
+    font-size: clamp(8px, 1.8cqw, 10px);
+    line-height: 2.25;
+    color: var(--off-white);
+    text-transform: uppercase;
+  }
+
+  .search { margin: 0; }
+
+  .search input,
+  .send input {
+    display: block;
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    background: var(--panel);
+    border: 3px solid var(--frame);
+    border-radius: 0;
+    color: var(--off-white);
+    caret-color: var(--cyan);
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(9px, 2.5cqw, 12px);
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    outline: none;
+  }
+  .search input:focus,
+  .send input:focus { border-color: var(--cyan); }
+  .search input::placeholder,
+  .send input::placeholder { color: var(--lilac); opacity: 0.8; text-overflow: ellipsis; }
+
+  /* Tiny cabinets (small phones): Press Start 2P's native 8px grid, so the search
+     placeholder isn't clipped. The threshold was picked by measuring the placeholder
+     at every common viewport width, in both languages. */
+  @container (max-width: 299px) {
+    .search input,
+    .send input { font-size: 8px; padding: 0 9px; }
+  }
+
+  /* ---- send: appears under the preview once a song is picked ---- */
+
+  .send {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 3px solid var(--frame);
+  }
+  .send label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--cyan);
+    font-size: clamp(8px, 2cqw, 11px);
+    line-height: 1.6;
+  }
+
+  .send-btn {
+    display: block;
+    width: 100%;
+    height: clamp(52px, 15cqw, 66px);
+    margin-top: 12px;
+    padding: 0 10px;
+    background: var(--cyan);
+    color: var(--bg);
+    border: none;
+    border-radius: 0;
+    box-shadow: 4px 4px 0 var(--pink);
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(11px, 3.4cqw, 16px);
+    cursor: pointer;
+    /* Cyan <-> gold, once a second: hard step, like the site's other blinks. */
+    animation: flash 1s step-end infinite;
+  }
+  .send-btn:focus-visible { outline: 3px solid var(--off-white); outline-offset: 3px; }
+  .send-btn:disabled {
+    animation: none;
+    background: rgba(122, 111, 176, 0.35);
+    color: rgba(242, 242, 242, 0.5);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  @keyframes flash {
+    0%, 49% { background: var(--cyan); }
+    50%, 100% { background: var(--gold); }
+  }
+
+  .results {
+    margin-top: 12px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .result {
+    display: flex;
+    width: 100%;
+    padding: 0;
+    text-align: left;
+    background: var(--panel);
+    border: 3px solid var(--frame);
+    border-radius: 0;
+    color: var(--off-white);
+    font-family: 'Press Start 2P', monospace;
+    cursor: pointer;
+    transition: border-color 120ms steps(2);
+  }
+  .result:hover,
+  .result:focus-visible,
+  .result.selected { border-color: var(--cyan); outline: none; }
+
+  .result .mark {
+    flex: none;
+    width: clamp(28px, 8cqw, 40px);
+    display: grid;
+    place-items: center;
+    background: var(--pink);
+    color: var(--bg);
+    font-size: clamp(9px, 2.4cqw, 12px);
+  }
+  .result.typed .mark { background: var(--gold); }
+  .result.selected .mark { background: var(--cyan); }
+
+  .result .txt {
+    min-width: 0;
+    padding: 9px 10px;
+    font-size: clamp(9px, 2.2cqw, 11px);
+    line-height: 1.6;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+  .result .txt small {
+    display: block;
+    margin-top: 3px;
+    color: var(--lilac);
+    font-size: clamp(8px, 1.9cqw, 10px);
+  }
+
+  .msg {
+    margin: 0;
+    padding: 6px 2px;
+    color: var(--muted);
+    font-size: clamp(8px, 2cqw, 10px);
+    line-height: 1.8;
+    text-transform: uppercase;
+  }
+  .msg.blink { animation: blink 1.1s step-end infinite; }
+  .msg button {
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--cyan);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  .status {
+    margin: 10px 0 0;
+    font-size: clamp(8px, 2cqw, 10px);
+    line-height: 1.8;
+    text-transform: uppercase;
+  }
+  .status:empty { display: none; }
+  .status.ok { color: var(--cyan); }
+  .status.warn { color: var(--gold); }
+  .status.err { color: var(--red); }
+
+  .rule {
+    border: none;
+    height: 3px;
+    margin: 16px 0 18px;
+    background: var(--frame);
+  }
+
+  h2.list-heading {
+    margin: 0 0 14px;
+    color: var(--gold);
+    font-size: clamp(9px, 2.8cqw, 13px);
+    font-weight: normal;
+    line-height: 1.5;
+  }
+
+  .list-hint {
+    margin: -6px 0 14px;
+    color: var(--muted);
+    font-size: clamp(8px, 1.9cqw, 10px);
+    line-height: 1.8;
+    text-transform: uppercase;
+  }
+
+  .tracks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .track {
+    display: flex;
+    align-items: stretch;
+    background: var(--row);
+    border: 3px solid var(--frame);
+  }
+
+  /* The number + title area is one big tap target that plays the row's preview. */
+  .track .play {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .track .play:focus-visible { outline: 3px solid var(--off-white); outline-offset: -3px; }
+  .track .t,
+  .track .by { display: block; }
+  .track.playing { border-color: var(--cyan); }
+  .track.playing .num { background: var(--cyan); }
+  @media (hover: hover) { .track:hover { border-color: var(--cyan); } }
+
+  .track .num {
+    flex: none;
+    min-width: clamp(28px, 8cqw, 40px);
+    padding: 0 4px;
+    display: grid;
+    place-items: center;
+    background: var(--gold);
+    color: var(--bg);
+    font-size: clamp(9px, 2.4cqw, 12px);
+  }
+
+  .track .info {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 10px;
+  }
+
+  .track .t {
+    font-size: clamp(9px, 2.4cqw, 12px);
+    line-height: 1.6;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .track .by {
+    margin-top: 5px;
+    color: var(--lilac);
+    font-size: clamp(8px, 1.9cqw, 10px);
+    line-height: 1.5;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .track .x {
+    flex: none;
+    min-width: 32px;
+    padding: 0 8px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: none;
+    color: var(--off-white);
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(10px, 2.6cqw, 13px);
+    cursor: pointer;
+  }
+  .track .x:hover { color: var(--gold); }
+  /* First tap arms the ×: gold block, dark text (no red anywhere on the list). Stays
+     after .x:hover so the text doesn't turn gold-on-gold. */
+  .track .x.armed {
+    background: var(--gold);
+    color: var(--bg);
+    font-size: clamp(8px, 1.8cqw, 10px);
+  }
+
+  .pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 3.4cqw, 18px);
+    margin-top: 16px;
+    font-size: clamp(8px, 2cqw, 10px);
+  }
+  .pager button {
+    padding: 4px;
+    background: none;
+    border: none;
+    color: var(--gold);
+    font: inherit;
+    cursor: pointer;
+  }
+  .pager button:disabled { color: #4a3f8a; cursor: default; }
+  .pager .page-no { color: var(--off-white); }
+
+  .confetti {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Reduced motion: the vinyl stays still, the bulbs stay lit, the equalizer keeps its
+     resting frame. */
+  @media (prefers-reduced-motion: reduce) {
+    .arch i,
+    .now.is-playing .vinyl canvas,
+    .now.is-playing .eq i,
+    .send-btn,
+    .msg.blink { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="exit" href="../" data-i18n="exit">&lsaquo; EXIT</a>
+      <div class="lang-toggle">
+        <button type="button" class="active" data-lang="en">EN</button>
+        <span class="sep">/</span>
+        <button type="button" data-lang="es">ES</button>
+      </div>
+    </div>
+    <span data-i18n="topbarTitle">BONUS &middot; JUKEBOX</span>
+    <span class="credits" id="credits">CREDITS --</span>
+  </div>
+
+  <main class="cabinet">
+    <span class="pillar pillar--l" aria-hidden="true"></span>
+    <span class="pillar pillar--r" aria-hidden="true"></span>
+
+    <div class="cab">
+      <div class="arch" aria-hidden="true">
+        <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i>
+      </div>
+
+      <div class="frame">
+        <h1 class="title-bar" data-i18n="heading">THE JUKE-BOX</h1>
+
+        <div class="now" id="now">
+          <div class="now-row">
+            <button type="button" class="vinyl" id="vinyl" disabled data-i18n-label="vinylLabel" aria-label="Play or pause the preview">
+              <canvas id="vinyl-canvas" width="256" height="256"></canvas>
+            </button>
+            <div class="now-text">
+              <div class="now-label" id="now-label">NOW SELECTING</div>
+              <p class="now-title" id="now-title">&nbsp;</p>
+              <p class="now-note" id="now-note" hidden></p>
+              <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+
+          <div class="send" id="send" hidden>
+            <label for="name-input" data-i18n="namePrompt">WHO&rsquo;S SENDING THIS?</label>
+            <input type="text" id="name-input" maxlength="24" autocomplete="off" autocapitalize="words" placeholder="YOUR NAME" data-i18n-placeholder="namePlaceholder" />
+            <button type="button" class="send-btn" id="send-btn">SEND SONG &#9656;</button>
+            <p class="status" id="send-status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="body">
+          <p class="lead" data-i18n="lead">PICK THE TRACKS THAT GET YOU OFF YOUR SEAT TO BUILD THE WEDDING DANCING SET</p>
+
+          <form class="search" id="search-form" autocomplete="off">
+            <input type="text" id="q" maxlength="80" enterkeyhint="search" autocapitalize="off" autocorrect="off" spellcheck="false"
+                   placeholder="SEARCH A SONG OR ARTIST_" data-i18n-placeholder="searchPlaceholder" data-i18n-label="searchLabel" aria-label="Search a song or artist" />
+          </form>
+
+          <div class="results" id="results" hidden></div>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+
+          <hr class="rule" />
+
+          <h2 class="list-heading" data-i18n="listHeading">THE EPIC WEDDING SOUNDTRACK</h2>
+          <p class="list-hint" id="list-hint" data-i18n="listHint" hidden>TAP A TRACK TO HEAR IT.</p>
+          <div id="list-msg"></div>
+          <ol class="tracks" id="tracks"></ol>
+
+          <nav class="pager" id="pager" hidden>
+            <button type="button" id="prev" data-i18n="prev">&#9666; PREV</button>
+            <span class="page-no" id="page-no"></span>
+            <button type="button" id="next" data-i18n="next">NEXT &#9656;</button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<canvas class="confetti" id="confetti" hidden aria-hidden="true"></canvas>
+
+<script>
+  // Google Apps Script Web App deployment (see jukebox/google-apps-script.gs).
+  // Leave empty until the script is deployed — the page then shows a
+  // "not wired up yet" note instead of the list (search + previews still work).
+  const JUKEBOX_ENDPOINT = '';
+
+  // Apple's iTunes Search API: free, no key, CORS-open, and it returns the
+  // 30-second previews that Spotify no longer hands out to new apps.
+  const ITUNES_SEARCH = 'https://itunes.apple.com/search';
+  const ITUNES_LOOKUP = 'https://itunes.apple.com/lookup';
+  const PAGE_SIZE = 10;
+  const MAX_TYPED = 80;
+  const MAX_NAME = 24;
+  const DEFAULT_MAX_SONGS = 10; // real value comes back from the script with every list
+
+  // EN/ES copy. Shared LANG_KEY with the main site (/index.html), the RSVP page
+  // and the game — localStorage is scoped per-origin, not per-path, so a
+  // language choice made anywhere carries over automatically.
+  const LANG_KEY = 'wedding-lang';
+  const ID_KEY = 'jukebox-guest-id';
+  const NAME_KEY = 'jukebox-guest-name';
+
+  const STRINGS = {
+    en: {
+      title: 'Jukebox — Pilar & Joe',
+      exit: '‹ EXIT',
+      topbarTitle: 'BONUS · JUKEBOX',
+      creditsLabel: 'CREDITS {n}',
+      heading: 'THE JUKE-BOX',
+      nowLabel: 'NOW SELECTING',
+      nowLabelPlaying: 'NOW PLAYING',
+      nowIdle: 'SEARCH BELOW_',
+      nowNoPreview: 'NO PREVIEW FOR THIS ONE',
+      vinylLabel: 'Play or pause the preview',
+      lead: 'PICK THE TRACKS THAT GET YOU OFF YOUR SEAT TO BUILD THE WEDDING DANCING SET',
+      searchPlaceholder: 'SEARCH A SONG OR ARTIST_',
+      searchLabel: 'Search a song or artist',
+      sendLabel: 'SEND SONG ▸',
+      sendingLabel: 'SENDING…',
+      sendNoCredits: 'NO CREDITS LEFT',
+      searching: 'SEARCHING_',
+      noResults: 'NOTHING FOUND — TRY ANOTHER SPELLING, OR ADD IT AS TYPED.',
+      searchError: 'SEARCH IS DOWN — YOU CAN STILL ADD IT AS TYPED.',
+      typedRow: 'ADD “{q}” AS TYPED',
+      typedSmall: 'NO PREVIEW',
+      namePrompt: 'WHO’S SENDING THIS?',
+      namePlaceholder: 'YOUR NAME',
+      listHeading: 'THE EPIC WEDDING SOUNDTRACK',
+      listHint: 'TAP A TRACK TO HEAR IT.',
+      loading: 'LOADING TRACKS_',
+      empty: 'NO TRACKS YET — BE THE FIRST_',
+      loadError: 'COULDN’T LOAD THE LIST. ',
+      retry: 'TRY AGAIN',
+      notConfigured: 'THE JUKEBOX ISN’T WIRED UP YET — TELL JOE.',
+      addedBy: 'ADDED BY YOU',
+      sentBy: 'SENT BY {name}',
+      removeLabel: 'Remove this track',
+      removeSure: 'SURE?',
+      prev: '◂ PREV',
+      next: 'NEXT ▸',
+      pageOf: 'PAGE {n}/{m}',
+      statusAdded: 'ADDED TO THE LIST — NICE PICK.',
+      statusDuplicate: 'ALREADY IN THE LIST — SOMEONE HAD THE SAME IDEA.',
+      statusLimit: 'NO CREDITS LEFT — REMOVE ONE OF YOURS TO ADD MORE.',
+      statusRemoved: 'REMOVED FROM THE LIST.',
+      statusError: 'SOMETHING WENT WRONG — CHECK YOUR CONNECTION AND TRY AGAIN.',
+      statusName: 'ADD YOUR NAME FIRST.',
+    },
+    es: {
+      title: 'Jukebox — Pilar y Joe',
+      exit: '‹ SALIR',
+      topbarTitle: 'BONUS · JUKEBOX',
+      creditsLabel: 'CRÉDITOS {n}',
+      heading: 'THE JUKE-BOX',
+      nowLabel: 'SELECCIONANDO',
+      nowLabelPlaying: 'SONANDO AHORA',
+      nowIdle: 'BUSCA ABAJO_',
+      nowNoPreview: 'ESTA NO TIENE AVANCE',
+      vinylLabel: 'Reproducir o pausar el avance',
+      lead: 'ELIGE LOS TEMAS QUE TE LEVANTAN DE LA SILLA PARA MONTAR LA SESIÓN DE BAILE DE LA BODA',
+      searchPlaceholder: 'BUSCA TEMA O ARTISTA_',
+      searchLabel: 'Busca una canción o artista',
+      sendLabel: 'ENVIAR CANCIÓN ▸',
+      sendingLabel: 'ENVIANDO…',
+      sendNoCredits: 'SIN CRÉDITOS',
+      searching: 'BUSCANDO_',
+      noResults: 'NO HAY NADA — PRUEBA OTRA ESCRITURA, O AÑÁDELA TAL CUAL.',
+      searchError: 'LA BÚSQUEDA FALLA — AÚN PUEDES AÑADIRLA TAL CUAL.',
+      typedRow: 'AÑADIR “{q}” TAL CUAL',
+      typedSmall: 'SIN AVANCE',
+      namePrompt: '¿QUIÉN LA ENVÍA?',
+      namePlaceholder: 'TU NOMBRE',
+      listHeading: 'LA ÉPICA BANDA SONORA DE LA BODA',
+      listHint: 'TOCA UN TEMA PARA ESCUCHARLO.',
+      loading: 'CARGANDO TEMAS_',
+      empty: 'AÚN NO HAY TEMAS — SÉ EL PRIMERO_',
+      loadError: 'NO SE PUDO CARGAR LA LISTA. ',
+      retry: 'REINTENTAR',
+      notConfigured: 'LA JUKEBOX AÚN NO ESTÁ CONECTADA — AVÍSALE A JOE.',
+      addedBy: 'AÑADIDA POR TI',
+      sentBy: 'ENVIADA POR {name}',
+      removeLabel: 'Quitar este tema',
+      removeSure: '¿SEGURO?',
+      prev: '◂ ANT.',
+      next: 'SIG. ▸',
+      pageOf: 'PÁG. {n}/{m}',
+      statusAdded: 'AÑADIDA A LA LISTA — BUENA ELECCIÓN.',
+      statusDuplicate: 'YA ESTÁ EN LA LISTA — A ALGUIEN SE LE OCURRIÓ LO MISMO.',
+      statusLimit: 'NO TE QUEDAN CRÉDITOS — QUITA UNA TUYA PARA AÑADIR MÁS.',
+      statusRemoved: 'QUITADA DE LA LISTA.',
+      statusError: 'ALGO FALLÓ — REVISA TU CONEXIÓN E INTÉNTALO DE NUEVO.',
+      statusName: 'PON TU NOMBRE PRIMERO.',
+    },
+  };
+
+  let currentLang = 'en';
+
+  function t(key) {
+    return (STRINGS[currentLang] && STRINGS[currentLang][key]) ?? STRINGS.en[key] ?? key;
+  }
+
+  function format(str, vars) {
+    return str.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
+  }
+
+  // ---- identity (localStorage, always wrapped: private mode etc. can throw) ----
+
+  function storeGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function storeSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) { /* just won't persist */ }
+  }
+
+  function makeGuestId() {
+    const bytes = new Uint8Array(18);
+    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+    else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    return Array.from(bytes, (b) => (b % 36).toString(36)).join('');
+  }
+
+  // The guest id is the only thing tying a browser to the songs it added (it's
+  // what lets "ADDED BY YOU" rows be removed). Not real auth — fine for a wedding list.
+  let guestId = storeGet(ID_KEY);
+  if (!guestId || !/^[A-Za-z0-9_-]{16,64}$/.test(guestId)) {
+    guestId = makeGuestId();
+    storeSet(ID_KEY, guestId);
+  }
+  let guestName = (storeGet(NAME_KEY) || '').slice(0, MAX_NAME);
+
+  // ---- state ----
+
+  const state = {
+    listState: JUKEBOX_ENDPOINT ? 'loading' : 'off', // 'loading' | 'ready' | 'error' | 'off'
+    songs: [],
+    used: 0,
+    max: DEFAULT_MAX_SONGS,
+    page: 1,
+    query: '',
+    searchState: 'idle', // 'idle' | 'searching' | 'done' | 'error'
+    results: [],
+    selected: null,      // the pick waiting to be sent: { source:'itunes', trackId, title, artist, previewUrl } | { source:'typed', title }
+    now: null,           // what's loaded in the player / shown in the panel — outlives `selected` once a song is sent
+    status: null,        // { key, kind }
+    armedId: null,
+    busy: false,
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    credits: $('credits'), now: $('now'), vinyl: $('vinyl'), vinylCanvas: $('vinyl-canvas'),
+    nowLabel: $('now-label'), nowTitle: $('now-title'), nowNote: $('now-note'), confetti: $('confetti'), listHint: $('list-hint'),
+    form: $('search-form'), q: $('q'),
+    send: $('send'), nameInput: $('name-input'), sendBtn: $('send-btn'), sendStatus: $('send-status'),
+    results: $('results'), status: $('status'),
+    listMsg: $('list-msg'), tracks: $('tracks'), pager: $('pager'), pageNo: $('page-no'),
+    prev: $('prev'), next: $('next'),
+  };
+
+  // ---- vinyl (smooth black record; drawn once at 256px, scaled down by CSS) ----
+
+  function drawVinyl() {
+    const cv = els.vinylCanvas;
+    const ctx = cv.getContext('2d');
+    const c = cv.width / 2;
+    const R = c - 2;
+    const disc = (r, fill) => { ctx.beginPath(); ctx.arc(c, c, r, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill(); };
+
+    const magenta = getComputedStyle(document.documentElement).getPropertyValue('--magenta').trim() || '#EB5CD4';
+
+    disc(R, '#050505');                                   // record
+
+    ctx.lineWidth = R * 0.03;                             // grooves: nine bands
+    ctx.strokeStyle = '#1E1E1E';
+    for (let k = 0; k < 9; k++) {
+      ctx.beginPath(); ctx.arc(c, c, R * (0.42 + k * 0.058), 0, Math.PI * 2); ctx.stroke();
+    }
+
+    ctx.lineWidth = R * 0.035;                            // outer rim
+    ctx.strokeStyle = '#3A3A3A';
+    ctx.beginPath(); ctx.arc(c, c, R - ctx.lineWidth / 2, 0, Math.PI * 2); ctx.stroke();
+
+    // Two very faint opposite sheen wedges so the spin is actually visible.
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.045)';
+    [[-2.5, -2.1], [0.64, 1.04]].forEach(([a0, a1]) => {
+      ctx.beginPath(); ctx.moveTo(c, c); ctx.arc(c, c, R * 0.95, a0, a1); ctx.closePath(); ctx.fill();
+    });
+
+    disc(R * 0.33, magenta);                              // label
+    disc(R * 0.075, '#0B0621');                           // spindle hole
+  }
+
+  // ---- preview audio (one shared player, so only one preview at a time) ----
+
+  const audio = new Audio();
+  audio.preload = 'none';
+  audio.addEventListener('play', renderNow);
+  audio.addEventListener('pause', renderNow);
+  audio.addEventListener('ended', onPreviewDone);
+  audio.addEventListener('error', onPreviewError);
+  window.addEventListener('pagehide', () => audio.pause());
+
+  function stopAudio() {
+    audio.pause();
+    audio.removeAttribute('src');
+    audio.load();
+  }
+
+  function audioPlaying() {
+    return !audio.paused && !audio.ended && !!audio.src;
+  }
+
+  // A preview that ends (or fails) leaves the panel alone while a pick is still waiting
+  // to be sent; once the song has been sent, the panel goes back to idle.
+  function onPreviewDone() {
+    if (!state.selected) state.now = null;
+    renderNow();
+  }
+
+  function playPreview(url) {
+    if (!url) { stopAudio(); return; }
+    audio.src = url;
+    const p = audio.play();
+    if (p && p.catch) p.catch(() => renderNow()); // autoplay blocked etc. — vinyl just stays idle
+  }
+
+  function togglePreview() {
+    const now = state.now;
+    if (!now || !now.previewUrl) return;
+    if (audioPlaying()) { audio.pause(); return; }
+    if (!audio.src) audio.src = now.previewUrl;
+    else if (audio.ended) audio.currentTime = 0;
+    const p = audio.play();
+    if (p && p.catch) p.catch(() => renderNow());
+  }
+
+  els.vinyl.addEventListener('click', togglePreview);
+
+  // Apple's preview addresses are stable but not promised to be: if one fails to play, ask
+  // iTunes for the current address, once, and try again before giving up.
+  const previewCache = new Map();
+
+  async function lookupPreview(trackId) {
+    if (previewCache.has(trackId)) return previewCache.get(trackId);
+    let url = '';
+    try {
+      const res = await fetch(ITUNES_LOOKUP + '?id=' + encodeURIComponent(trackId));
+      const hit = ((await res.json()).results || [])[0];
+      if (hit && hit.kind === 'song') url = hit.previewUrl || '';
+    } catch (err) { /* offline etc. — just no preview */ }
+    if (url) previewCache.set(trackId, url);
+    return url;
+  }
+
+  async function onPreviewError() {
+    const item = state.now;
+    if (item && item.trackId && !item.retried && audio.src) {
+      item.retried = true;
+      const failed = item.previewUrl;
+      const url = await lookupPreview(item.trackId);
+      if (state.now === item && url && url !== failed) {
+        item.previewUrl = url;
+        playPreview(url);
+        renderNow();
+        return;
+      }
+    }
+    onPreviewDone();
+  }
+
+  // ---- Apps Script API ----
+
+  async function apiList() {
+    const res = await fetch(JUKEBOX_ENDPOINT + '?guestId=' + encodeURIComponent(guestId));
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  // text/plain keeps this a CORS "simple request" (no preflight — Apps Script can't
+  // answer one) while still letting us read the JSON reply, unlike RSVP's no-cors POST.
+  async function apiPost(body) {
+    const res = await fetch(JUKEBOX_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ guestId }, body)),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  function applyList(data) {
+    if (!data || !Array.isArray(data.songs)) return;
+    state.songs = data.songs;
+    state.used = Number.isFinite(data.used) ? data.used : state.songs.filter((s) => s.mine).length;
+    state.max = Number.isFinite(data.max) ? data.max : DEFAULT_MAX_SONGS;
+    state.listState = 'ready';
+    const pages = Math.max(1, Math.ceil(state.songs.length / PAGE_SIZE));
+    if (state.page > pages) state.page = pages;
+  }
+
+  async function loadList() {
+    if (!JUKEBOX_ENDPOINT) { state.listState = 'off'; renderAll(); return; }
+    state.listState = 'loading';
+    renderList();
+    try {
+      const data = await apiList();
+      if (!data || !data.ok) throw new Error('bad reply');
+      applyList(data);
+    } catch (err) {
+      state.listState = 'error';
+    }
+    renderAll();
+  }
+
+  // ---- iTunes search ----
+
+  let searchTimer = null;
+  let searchAbort = null;
+  const searchCache = new Map();
+
+  function trackKey(r) { return (r.title + '|' + r.artist).toLowerCase(); }
+
+  async function runSearch(term) {
+    if (searchAbort) searchAbort.abort();
+    if (term.length < 2) {
+      state.searchState = 'idle';
+      state.results = [];
+      renderResults();
+      return;
+    }
+    const cacheKey = term.toLowerCase();
+    if (searchCache.has(cacheKey)) {
+      state.results = searchCache.get(cacheKey);
+      state.searchState = 'done';
+      renderResults();
+      return;
+    }
+    state.searchState = 'searching';
+    renderResults();
+    searchAbort = new AbortController();
+    try {
+      const url = ITUNES_SEARCH + '?media=music&entity=song&limit=14&term=' + encodeURIComponent(term);
+      const res = await fetch(url, { signal: searchAbort.signal });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const seen = new Set();
+      const results = [];
+      for (const r of data.results || []) {
+        if (r.kind !== 'song' || !r.trackName) continue;
+        const item = {
+          source: 'itunes',
+          trackId: String(r.trackId),
+          title: r.trackName,
+          artist: r.artistName || '',
+          previewUrl: r.previewUrl || '',
+        };
+        // The same song shows up once per album/single — keep the first.
+        if (seen.has(trackKey(item))) continue;
+        seen.add(trackKey(item));
+        results.push(item);
+        if (results.length === 8) break;
+      }
+      searchCache.set(cacheKey, results);
+      state.results = results;
+      state.searchState = 'done';
+    } catch (err) {
+      if (err.name === 'AbortError') return; // a newer search took over
+      state.results = [];
+      state.searchState = 'error';
+    }
+    renderResults();
+  }
+
+  els.q.addEventListener('input', () => {
+    state.query = els.q.value.trim();
+    // Typing again means the earlier pick no longer matches what's on screen.
+    if (state.selected) { state.selected = null; state.now = null; stopAudio(); renderNow(); renderSend(); }
+    state.status = null;
+    renderStatus();
+    clearTimeout(searchTimer);
+    if (state.query.length < 2) { runSearch(state.query); return; }
+    state.searchState = 'searching';
+    renderResults();
+    searchTimer = setTimeout(() => runSearch(state.query), 350);
+  });
+
+  els.form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearTimeout(searchTimer);
+    state.query = els.q.value.trim();
+    runSearch(state.query);
+  });
+
+  // ---- selecting + sending ----
+
+  function noCredits() {
+    return state.listState === 'ready' && state.used >= state.max;
+  }
+
+  // The preview panel sits above the search results, so on a phone the tap that picks a
+  // song would otherwise leave the player (and the send button) off-screen.
+  function revealPanel() {
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    els.now.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  }
+
+  function selectItem(item) {
+    state.selected = item;
+    state.now = item;
+    state.status = null;
+    renderResults();
+    renderNow();
+    renderSend();
+    renderStatus();
+    playPreview(item.previewUrl); // from the tap, so mobile autoplay rules are satisfied
+    revealPanel();
+  }
+
+  function setStatus(key, kind) {
+    state.status = { key, kind };
+    renderStatus();
+  }
+
+  function resetSearch() {
+    els.q.value = '';
+    state.query = '';
+    state.results = [];
+    state.searchState = 'idle';
+    state.selected = null;
+    renderResults();
+    renderNow();
+    renderSend();
+  }
+
+  async function sendSelected() {
+    if (state.busy || !state.selected) return;
+    if (!JUKEBOX_ENDPOINT) { setStatus('notConfigured', 'err'); return; }
+
+    const name = els.nameInput.value.trim().slice(0, MAX_NAME);
+    if (!name) {
+      setStatus('statusName', 'warn');
+      els.nameInput.focus();
+      return;
+    }
+    if (name !== guestName) { guestName = name; storeSet(NAME_KEY, guestName); }
+
+    if (noCredits()) { setStatus('statusLimit', 'warn'); return; }
+
+    const sel = state.selected;
+    const body = { action: 'add', guest: guestName };
+    if (sel.source === 'itunes') body.trackId = sel.trackId;
+    else body.typedText = sel.title;
+
+    state.busy = true;
+    renderSend();
+    try {
+      const r = await apiPost(body);
+      if (r && Array.isArray(r.songs)) applyList(r);
+      if (r && r.status === 'added') {
+        state.page = 1;
+        state.selected = null;
+        // Keep the preview playing: it's the soundtrack for the confetti. If nothing is
+        // playing (a typed song, or a paused preview), just clear the panel.
+        if (!audioPlaying()) { stopAudio(); state.now = null; }
+        resetSearch();
+        setStatus('statusAdded', 'ok');
+        confetti();
+      } else if (r && r.status === 'duplicate') {
+        setStatus('statusDuplicate', 'warn');
+      } else if (r && r.status === 'limit') {
+        setStatus('statusLimit', 'warn');
+      } else {
+        setStatus('statusError', 'err');
+      }
+    } catch (err) {
+      setStatus('statusError', 'err');
+    }
+    state.busy = false;
+    renderAll();
+  }
+
+  els.sendBtn.addEventListener('click', sendSelected);
+  els.nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); sendSelected(); }
+  });
+
+  // ---- confetti (pixel squares, drawn on a full-page canvas; skipped for reduced motion) ----
+
+  let confettiRaf = 0;
+
+  function confetti() {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const canvas = els.confetti;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = window.innerWidth, H = window.innerHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.hidden = false;
+    const ctx = canvas.getContext('2d');
+    const root = getComputedStyle(document.documentElement);
+    const colors = ['--gold', '--cyan', '--pink', '--sky', '--off-white'].map((n) => root.getPropertyValue(n).trim());
+
+    // A fan of confetti from the preview panel, plus a short rain from the top of the page.
+    const r = els.now.getBoundingClientRect();
+    const ox = r.left + r.width / 2;
+    const oy = Math.min(Math.max(r.top + r.height / 2, 80), H * 0.6);
+    const parts = [];
+    for (let i = 0; i < 110; i++) {
+      const a = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.15;
+      const v = 280 + Math.random() * 460;
+      parts.push({ x: ox, y: oy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, delay: 0 });
+    }
+    for (let i = 0; i < 70; i++) {
+      parts.push({ x: Math.random() * W, y: -12, vx: (Math.random() - 0.5) * 80, vy: 60 + Math.random() * 120, delay: Math.random() * 1.2 });
+    }
+    parts.forEach((p, i) => {
+      p.size = 6 + 2 * Math.floor(Math.random() * 3);
+      p.color = colors[i % colors.length];
+      p.life = 1.8 + Math.random() * 1.2;
+      p.age = -p.delay;
+    });
+
+    const grid = 2 * dpr; // snap to a 2px grid so the squares stay crisp
+    cancelAnimationFrame(confettiRaf);
+    let last = performance.now();
+    function frame(now) {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      for (const p of parts) {
+        p.age += dt;
+        if (p.age >= p.life) continue;
+        alive = true;
+        if (p.age < 0) continue;
+        p.vy += 1000 * dt;
+        p.vx *= 1 - 1.4 * dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        if (p.age > p.life - 0.4 && Math.floor(p.age * 20) % 2) continue; // hard flicker out, no fade
+        ctx.fillStyle = p.color;
+        ctx.fillRect(Math.round(p.x * dpr / grid) * grid, Math.round(p.y * dpr / grid) * grid, p.size * dpr, p.size * dpr);
+      }
+      if (alive) {
+        confettiRaf = requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.hidden = true;
+      }
+    }
+    confettiRaf = requestAnimationFrame(frame);
+  }
+
+  // ---- removing (first tap arms the ×, second tap confirms) ----
+
+  let armTimer = null;
+
+  els.tracks.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button.x[data-id]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (state.armedId !== id) {
+      state.armedId = id;
+      clearTimeout(armTimer);
+      armTimer = setTimeout(() => { state.armedId = null; renderList(); }, 3000);
+      renderList();
+      return;
+    }
+    clearTimeout(armTimer);
+    state.armedId = null;
+    try {
+      const r = await apiPost({ action: 'remove', id });
+      if (r && Array.isArray(r.songs)) applyList(r);
+      setStatus(r && r.status === 'removed' ? 'statusRemoved' : 'statusError', r && r.status === 'removed' ? 'ok' : 'err');
+    } catch (err) {
+      setStatus('statusError', 'err');
+    }
+    renderAll();
+  });
+
+  // Tapping a row plays its preview (tap the playing row again to pause / resume it).
+  els.tracks.addEventListener('click', (e) => {
+    const play = e.target.closest('button.play');
+    if (play) playFromList(play.dataset.id);
+  });
+
+  function playFromList(id) {
+    const song = state.songs.find((s) => s.id === id);
+    if (!song) return;
+    if (state.now && state.now.songId === id && state.now.previewUrl) { togglePreview(); return; }
+
+    // A pick that was waiting to be sent gives way to the row that was tapped.
+    state.selected = null;
+    state.status = null;
+    const item = {
+      source: song.trackId ? 'itunes' : 'typed', trackId: song.trackId || '', songId: id,
+      title: song.title, artist: song.artist, previewUrl: song.previewUrl || '', loading: false,
+    };
+    state.now = item;
+    if (item.previewUrl) playPreview(item.previewUrl); // straight from the tap, so phones allow it
+    else stopAudio();
+    if (!item.previewUrl && item.trackId) loadPreviewFor(item); // a row saved without one
+    renderResults();
+    renderNow();
+    renderSend();
+    renderStatus();
+  }
+
+  async function loadPreviewFor(item) {
+    item.loading = true;
+    renderNow();
+    const url = await lookupPreview(item.trackId);
+    item.loading = false;
+    if (state.now === item && url) { item.previewUrl = url; playPreview(url); }
+    if (state.now === item) renderNow();
+  }
+
+  els.prev.addEventListener('click', () => { state.page = Math.max(1, state.page - 1); renderList(); });
+  els.next.addEventListener('click', () => { state.page += 1; renderList(); });
+
+  // ---- rendering (DOM built with textContent — song titles are never parsed as HTML) ----
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function pad2(n) { return String(n).padStart(2, '0'); }
+
+  function renderCredits() {
+    const left = state.listState === 'ready' ? pad2(Math.max(0, state.max - state.used)) : '--';
+    els.credits.textContent = format(t('creditsLabel'), { n: left });
+  }
+
+  // The list row whose preview is playing right now (if any).
+  function playingSongId() {
+    return audioPlaying() && state.now && state.now.songId ? state.now.songId : null;
+  }
+
+  function renderNow() {
+    const now = state.now;
+    // "Selecting" is only true while a pick is waiting to be sent; otherwise it's just playing.
+    els.nowLabel.textContent = t(state.selected || !now ? 'nowLabel' : 'nowLabelPlaying');
+    els.nowTitle.textContent = now ? (now.artist ? now.title + ' — ' + now.artist : now.title) : t('nowIdle');
+    const noPreview = !!now && !now.previewUrl && !now.loading;
+    els.nowNote.hidden = !noPreview;
+    els.nowNote.textContent = noPreview ? t('nowNoPreview') : '';
+    els.vinyl.disabled = !(now && now.previewUrl);
+    els.now.classList.toggle('is-playing', audioPlaying());
+    const pid = playingSongId();
+    els.tracks.querySelectorAll('.track').forEach((li) => li.classList.toggle('playing', li.dataset.id === pid));
+  }
+
+  // The name field + big SEND button live in the preview panel, and only show once a
+  // song is picked.
+  function renderSend() {
+    els.send.hidden = !state.selected;
+    els.sendBtn.disabled = state.busy || noCredits();
+    els.sendBtn.textContent = state.busy ? t('sendingLabel') : noCredits() ? t('sendNoCredits') : t('sendLabel');
+  }
+
+  // Feedback shows where the guest is looking: in the panel while a song is picked,
+  // under the search box otherwise.
+  function renderStatus() {
+    const inPanel = !!state.selected;
+    let status = state.status;
+    if (!status && inPanel && noCredits()) status = { key: 'statusLimit', kind: 'warn' };
+    const here = inPanel ? els.sendStatus : els.status;
+    const there = inPanel ? els.status : els.sendStatus;
+    there.textContent = '';
+    there.className = 'status';
+    here.textContent = status ? t(status.key) : '';
+    here.className = 'status' + (status ? ' ' + status.kind : '');
+  }
+
+  function resultRow(item, extraClass, mark, title, small) {
+    const btn = el('button', 'result' + (extraClass ? ' ' + extraClass : ''));
+    btn.type = 'button';
+    if (state.selected && state.selected.source === item.source && state.selected.title === item.title
+        && state.selected.artist === item.artist) btn.classList.add('selected');
+    btn.appendChild(el('span', 'mark', mark));
+    const txt = el('span', 'txt', title);
+    if (small) txt.appendChild(el('small', null, small));
+    btn.appendChild(txt);
+    btn.addEventListener('click', () => selectItem(item));
+    return btn;
+  }
+
+  function renderResults() {
+    const box = els.results;
+    box.textContent = '';
+    if (state.query.length < 2) { box.hidden = true; return; }
+    box.hidden = false;
+
+    if (state.searchState === 'searching') box.appendChild(el('p', 'msg blink', t('searching')));
+    if (state.searchState === 'error') box.appendChild(el('p', 'msg', t('searchError')));
+    if (state.searchState === 'done' && state.results.length === 0) box.appendChild(el('p', 'msg', t('noResults')));
+
+    for (const item of state.results) {
+      box.appendChild(resultRow(item, '', '▸', item.artist ? item.title + ' — ' + item.artist : item.title,
+        item.previewUrl ? '' : t('nowNoPreview')));
+    }
+
+    // Songs iTunes doesn't know (a cousin's band, a niche remix…) can still go on the list.
+    const typedText = state.query.slice(0, MAX_TYPED);
+    const typed = { source: 'typed', trackId: '', title: typedText, artist: '', previewUrl: '' };
+    box.appendChild(resultRow(typed, 'typed', '+', format(t('typedRow'), { q: typedText }), t('typedSmall')));
+  }
+
+  function renderList() {
+    const msg = els.listMsg;
+    msg.textContent = '';
+    els.tracks.textContent = '';
+    els.pager.hidden = true;
+    els.listHint.hidden = true;
+
+    if (state.listState === 'off') { msg.appendChild(el('p', 'msg', t('notConfigured'))); return; }
+    if (state.listState === 'loading') { msg.appendChild(el('p', 'msg blink', t('loading'))); return; }
+    if (state.listState === 'error') {
+      const p = el('p', 'msg', t('loadError'));
+      const retry = el('button', null, t('retry'));
+      retry.type = 'button';
+      retry.addEventListener('click', loadList);
+      p.appendChild(retry);
+      msg.appendChild(p);
+      return;
+    }
+    if (state.songs.length === 0) { msg.appendChild(el('p', 'msg blink', t('empty'))); return; }
+
+    const pages = Math.max(1, Math.ceil(state.songs.length / PAGE_SIZE));
+    state.page = Math.min(Math.max(1, state.page), pages);
+    const slice = state.songs.slice((state.page - 1) * PAGE_SIZE, state.page * PAGE_SIZE);
+
+    els.listHint.hidden = false;
+    const playing = playingSongId();
+    for (const s of slice) {
+      const li = el('li', 'track' + (s.id === playing ? ' playing' : ''));
+      li.dataset.id = s.id;
+      const play = el('button', 'play');
+      play.type = 'button';
+      play.dataset.id = s.id;
+      play.appendChild(el('span', 'num', pad2(s.n)));
+      const info = el('span', 'info');
+      info.appendChild(el('span', 't', s.artist ? s.title + ' — ' + s.artist : s.title));
+      info.appendChild(el('span', 'by', s.mine ? t('addedBy') : format(t('sentBy'), { name: s.guest })));
+      play.appendChild(info);
+      li.appendChild(play);
+      if (s.mine) {
+        const armed = state.armedId === s.id;
+        const x = el('button', 'x' + (armed ? ' armed' : ''), armed ? t('removeSure') : '×');
+        x.type = 'button';
+        x.dataset.id = s.id;
+        x.setAttribute('aria-label', t('removeLabel'));
+        li.appendChild(x);
+      }
+      els.tracks.appendChild(li);
+    }
+
+    if (pages > 1) {
+      els.pager.hidden = false;
+      els.pageNo.textContent = format(t('pageOf'), { n: state.page, m: pages });
+      els.prev.disabled = state.page <= 1;
+      els.next.disabled = state.page >= pages;
+    }
+  }
+
+  function renderAll() {
+    renderCredits();
+    renderNow();
+    renderSend();
+    renderStatus();
+    renderResults();
+    renderList();
+  }
+
+  // ---- language ----
+
+  function applyLanguage(lang) {
+    currentLang = STRINGS[lang] ? lang : 'en';
+    const dict = STRINGS[currentLang];
+
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.dataset.i18n;
+      if (dict[key] !== undefined) node.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+      const key = node.dataset.i18nPlaceholder;
+      if (dict[key] !== undefined) node.placeholder = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-label]').forEach((node) => {
+      const key = node.dataset.i18nLabel;
+      if (dict[key] !== undefined) node.setAttribute('aria-label', dict[key]);
+    });
+    document.title = dict.title;
+    document.documentElement.lang = currentLang;
+    document.querySelectorAll('.lang-toggle button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.lang === currentLang);
+    });
+
+    renderAll();
+    storeSet(LANG_KEY, currentLang);
+  }
+
+  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
+  });
+
+  // ---- boot ----
+
+  drawVinyl();
+  els.nameInput.value = guestName; // remembered from last time, still editable
+  const storedLang = storeGet(LANG_KEY);
+  applyLanguage(storedLang === 'en' || storedLang === 'es' ? storedLang : 'en');
+  loadList();
+</script>
+
+</body>
+</html>

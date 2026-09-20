@@ -48,3 +48,6 @@ export const FRAME_ANIM = {
 
 // The RSVP page now lives at the site root, one level up from game/index.html.
 export const RSVP_URL = '../rsvp/';
+
+// The wedding site's landing page, where the character-select EXIT link goes.
+export const SITE_URL = '../';

@@ -2,6 +2,7 @@ import { CSS_COLORS, FONTS, TITLE_SHADOW } from '../config/palette.js';
 import { gameState } from '../state/gameState.js';
 import { addMuteToggle } from '../ui/muteToggle.js';
 import { addLangToggle } from '../ui/langToggle.js';
+import { addExitLink } from '../ui/exitLink.js';
 import { fadeToScene } from '../ui/transitions.js';
 import { touchControls } from '../ui/touchControlsInstance.js';
 import { t } from '../config/i18n.js';
@@ -77,10 +78,10 @@ export class CharacterSelectScene extends Phaser.Scene {
         imgMaxWidth / piliSize.width,
         imgMaxWidth / joeSize.width
       );
-      this._addPortrait('pili-portrait', 'pili', width * 0.26, centerY, { scale: sharedScale, flip: false });
+      this._addPortrait('pili-portrait', 'pili', width * 0.26, centerY, { scale: sharedScale, flip: true });
       this._addPortrait('joe-portrait', 'joe', width * 0.74, centerY, { scale: sharedScale, flip: true });
     } else {
-      this._addPortrait('pili-portrait', 'pili', width * 0.3, height * 0.55, { maxHeight: height * 0.55, maxWidth: width * 0.42, flip: false });
+      this._addPortrait('pili-portrait', 'pili', width * 0.3, height * 0.55, { maxHeight: height * 0.55, maxWidth: width * 0.42, flip: true });
       this._addPortrait('joe-portrait', 'joe', width * 0.7, height * 0.55, { maxHeight: height * 0.55, maxWidth: width * 0.42, flip: true });
     }
 
@@ -93,14 +94,17 @@ export class CharacterSelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     addMuteToggle(this);
-    addLangToggle(this);
+    // EXIT takes the top-left corner (as on the site's other pages), with the
+    // EN/ES toggle right beside it like the RSVP topbar.
+    const exitLink = addExitLink(this);
+    addLangToggle(this, { x: exitLink.x + exitLink.width + 24 });
   }
 
   _addPortrait(textureKey, char, x, y, { maxHeight, maxWidth, flip = false, scale } = {}) {
     const img = this.add.image(x, y, textureKey).setInteractive({ useHandCursor: true });
     scale = scale ?? Math.min(1, maxHeight / img.height, maxWidth / img.width);
     img.setScale(scale);
-    img.setFlipX(flip); // both portraits' source art faces right by default; Joe (on the right) flips to face left, toward Pili
+    img.setFlipX(flip); // Pili's source art faces left and Joe's faces right, so both flip to look at each other
 
     const label = this.add
       .text(x, y + (img.height * scale) / 2 + 20, char.toUpperCase(), {

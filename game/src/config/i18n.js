@@ -69,6 +69,7 @@ const STRINGS = {
     rsvpComingSoon: 'RSVP details coming soon',
     playAgain: '[ PLAY AGAIN ]',
 
+    exit: '‹ EXIT',
     sfxOn: 'SFX ON',
     sfxOff: 'SFX OFF',
     jumpLabel: 'JUMP',
@@ -136,6 +137,7 @@ const STRINGS = {
     rsvpComingSoon: 'Los detalles para confirmar, muy pronto',
     playAgain: '[ JUGAR DE NUEVO ]',
 
+    exit: '‹ SALIR',
     sfxOn: 'SFX SÍ',
     sfxOff: 'SFX NO',
     jumpLabel: 'SALTAR',

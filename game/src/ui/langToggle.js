@@ -8,11 +8,13 @@
 import { getLang, toggleLang } from '../config/i18n.js';
 import { CSS_COLORS, FONTS } from '../config/palette.js';
 
-export function addLangToggle(scene) {
+// `x` lets a scene that also shows the EXIT link (exitLink.js) slide this over
+// to sit beside it instead of underneath it.
+export function addLangToggle(scene, { x = 16 } = {}) {
   // Shows the language you'd SWITCH TO, matching the site's toggle convention.
   const label = () => (getLang() === 'en' ? 'ES' : 'EN');
   const text = scene.add
-    .text(16, 16, label(), {
+    .text(x, 16, label(), {
       fontFamily: FONTS.heading,
       fontSize: '11px',
       color: CSS_COLORS.mutedPurple,

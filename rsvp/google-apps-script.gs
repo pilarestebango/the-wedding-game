@@ -18,14 +18,16 @@
 //      doesn't update a live deployment.
 
 const NOTIFY_EMAIL = 'pilar.esteban@gmail.com';
+const HEADERS = ['Timestamp', 'Guests', 'Small humans', 'Levels', 'Special requirements', 'Message'];
 
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['Timestamp', 'Guests', 'Small humans', 'Levels', 'Dietary']);
-  }
+  // Row 1 is always the header. Rewriting it every time also brings a sheet
+  // created by an older version of this script (a "Dietary" column, no
+  // "Message") up to date the first time a new RSVP comes in.
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
 
   const guests = data.guests || [];
   const guestNames = guests.map((g) => g.name).join(', ');
@@ -36,7 +38,8 @@ function doPost(e) {
     guestNames,
     childNames || '—',
     data.levels || '—',
-    data.dietary || '—',
+    data.requirements || '—',
+    data.message || '—',
   ]);
 
   MailApp.sendEmail({
@@ -46,7 +49,8 @@ function doPost(e) {
       'Guests: ' + guestNames,
       'Small humans: ' + (childNames || 'none'),
       'Levels: ' + (data.levels || 'not specified'),
-      'Dietary: ' + (data.dietary || 'none given'),
+      'Special requirements: ' + (data.requirements || 'none given'),
+      'Message: ' + (data.message || 'none given'),
     ].join('\n'),
   });
 

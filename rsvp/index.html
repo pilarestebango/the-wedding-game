@@ -250,7 +250,7 @@
     margin: 0 0 16px;
   }
 
-  textarea.dietary {
+  textarea.note-field {
     width: 100%;
     min-height: 120px;
     padding: 16px;
@@ -262,8 +262,30 @@
     resize: vertical;
     outline: none;
   }
-  textarea.dietary:focus { border-color: var(--cyan); }
-  textarea.dietary::placeholder { color: #a79cd6; }
+  textarea.note-field:focus { border-color: var(--cyan); }
+  textarea.note-field::placeholder { color: #a79cd6; }
+  textarea.note-field.small { min-height: 84px; }
+
+  /* Deliberately quiet: a plain white text link under the message box, not
+     a button-looking control. Taps open the special-requirements field. */
+  .requirements-link {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--off-white);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+  .requirements-link:hover { color: var(--gold); }
+  .requirements-link:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+
+  .requirements-panel { margin-top: 16px; }
+  .requirements-panel .field-caption { margin-bottom: 12px; }
 
   .send-btn {
     display: block;
@@ -366,9 +388,15 @@
 
     <hr class="divider" />
 
-    <h2 class="field-heading" data-i18n="dietaryHeading">ANY SPECIAL DIETARY REQUIREMENTS?</h2>
-    <p class="field-caption" data-i18n="dietaryCaption">ALLERGIES, VEGAN, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.</p>
-    <textarea class="dietary" id="dietary" placeholder="TYPE HERE_" data-i18n-placeholder="dietaryPlaceholder"></textarea>
+    <h2 class="field-heading" data-i18n="messageHeading">SEND US A MESSAGE</h2>
+    <p class="field-caption" data-i18n="messageCaption">WE REALLY WILL BE VERY HAPPY IF YOU DO. A JOKE, A MEMORY, A WISH &mdash; BONUS POINTS FOR PUNS.</p>
+    <textarea class="note-field" id="message" placeholder="WRITE US SOMETHING NICE_" data-i18n-placeholder="messagePlaceholder"></textarea>
+
+    <button type="button" class="requirements-link" id="requirements-toggle" aria-expanded="false" aria-controls="requirements-panel" data-i18n="requirementsLink">ANY SPECIAL REQUIREMENTS?</button>
+    <div class="requirements-panel" id="requirements-panel" hidden>
+      <p class="field-caption" data-i18n="requirementsCaption">ALLERGIES, VEGAN, ACCESS NEEDS, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.</p>
+      <textarea class="note-field small" id="requirements" placeholder="TYPE HERE_" data-i18n-placeholder="requirementsPlaceholder"></textarea>
+    </div>
 
     <button type="button" class="send-btn" id="send-btn" disabled>SEND &#9656;</button>
     <p class="send-hint" id="send-hint">ENTER AT LEAST ONE NAME TO CONTINUE</p>
@@ -409,9 +437,12 @@
       levelWedding: '<span class="kicker">THE WEDDING</span><span class="title2">MADRID</span><span class="caption">19.09.27</span>',
       levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">SYDNEY</span><span class="caption">23.10.27</span>',
       levelBoth: '<span class="kicker">BOTH!</span><span class="title2">LEGEND MODE</span><span class="caption">TWO CONTINENTS</span>',
-      dietaryHeading: 'ANY SPECIAL DIETARY REQUIREMENTS?',
-      dietaryCaption: 'ALLERGIES, VEGAN, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.',
-      dietaryPlaceholder: 'TYPE HERE_',
+      messageHeading: 'SEND US A MESSAGE',
+      messageCaption: 'WE REALLY WILL BE VERY HAPPY IF YOU DO. A JOKE, A MEMORY, A WISH &mdash; BONUS POINTS FOR PUNS.',
+      messagePlaceholder: 'WRITE US SOMETHING NICE_',
+      requirementsLink: 'ANY SPECIAL REQUIREMENTS?',
+      requirementsCaption: 'ALLERGIES, VEGAN, ACCESS NEEDS, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.',
+      requirementsPlaceholder: 'TYPE HERE_',
       sendLabel: 'SEND ▸',
       sendingLabel: 'SENDING…',
       sendHintDefault: 'ENTER AT LEAST ONE NAME TO CONTINUE',
@@ -436,9 +467,12 @@
       levelWedding: '<span class="kicker">LA BODA</span><span class="title2">MADRID</span><span class="caption">19.09.27</span>',
       levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">S&Iacute;DNEY</span><span class="caption">23.10.27</span>',
       levelBoth: '<span class="kicker">&iexcl;AMBOS!</span><span class="title2">MODO LEYENDA</span><span class="caption">DOS CONTINENTES</span>',
-      dietaryHeading: '&#191;ALG&Uacute;N REQUISITO DIET&Eacute;TICO ESPECIAL?',
-      dietaryCaption: 'ALERGIAS, VEGANO, &laquo;NUNCA ESPECIALITO&raquo;. S&Eacute; SINCERO.',
-      dietaryPlaceholder: 'ESCRIBE AQUÍ_',
+      messageHeading: 'M&Aacute;NDANOS UN MENSAJE',
+      messageCaption: 'DE VERDAD NOS HAR&Aacute;S MUY FELICES. UN CHISTE, UN RECUERDO, UN DESEO &mdash; PUNTOS EXTRA POR LOS JUEGOS DE PALABRAS.',
+      messagePlaceholder: 'ESCRÍBENOS ALGO BONITO_',
+      requirementsLink: '&iquest;ALG&Uacute;N REQUISITO ESPECIAL?',
+      requirementsCaption: 'ALERGIAS, VEGANO, ACCESIBILIDAD, &laquo;NUNCA ESPECIALITO&raquo;. S&Eacute; SINCERO.',
+      requirementsPlaceholder: 'ESCRIBE AQUÍ_',
       sendLabel: 'ENVIAR ▸',
       sendingLabel: 'ENVIANDO…',
       sendHintDefault: 'INTRODUCE AL MENOS UN NOMBRE PARA CONTINUAR',
@@ -474,7 +508,10 @@
   const playersEl = document.getElementById('players');
   const addBtn = document.getElementById('add-plus-one');
   const levelCards = document.querySelectorAll('.level-card');
-  const dietaryEl = document.getElementById('dietary');
+  const messageEl = document.getElementById('message');
+  const requirementsEl = document.getElementById('requirements');
+  const requirementsToggle = document.getElementById('requirements-toggle');
+  const requirementsPanel = document.getElementById('requirements-panel');
   const sendBtn = document.getElementById('send-btn');
   const hintEl = document.getElementById('send-hint');
   const creditsEl = document.getElementById('credits');
@@ -550,6 +587,19 @@
     });
   });
 
+  requirementsToggle.addEventListener('click', () => {
+    const open = requirementsPanel.hidden;
+    requirementsPanel.hidden = !open;
+    requirementsToggle.setAttribute('aria-expanded', String(open));
+    if (open) requirementsEl.focus();
+  });
+
+  // The wedding / after-party pages link here as rsvp/?level=wedding|afterparty
+  // ("RSVP FOR THIS LEVEL"), so that level arrives already picked.
+  const presetLevel = new URLSearchParams(location.search).get('level');
+  const presetCard = [...levelCards].find((c) => c.dataset.level === presetLevel);
+  if (presetCard) presetCard.click();
+
   function updateCredits() {
     creditsEl.textContent = format(t('creditsLabel'), String(state.players.length).padStart(2, '0'));
   }
@@ -601,7 +651,8 @@
     const payload = {
       guests,
       levels: LEVEL_SAVE_VALUES[state.level] || 'not specified',
-      dietary: dietaryEl.value.trim(),
+      message: messageEl.value.trim(),
+      requirements: requirementsEl.value.trim(),
     };
 
     sending = true;

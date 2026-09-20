@@ -1,12 +1,17 @@
 # Pilar & Joe — Wedding
 
-Two static sites in one repo, deployed together via GitHub Pages:
+Static sites in one repo, deployed together via GitHub Pages:
 
 - **`/`** — the wedding website (RSVP, wedding day, after party, logistics).
 - **`/game/`** — [PILAR vs JOE](game/GAME_SPEC.md), a retro pixel-art arcade
   game telling the couple's story, ending in a proposal.
+- **`/rsvp/`** — the RSVP form.
+- **`/jukebox/`** — the Juke-Box: guests search songs, hear a preview and add
+  them to the wedding soundtrack. Setup notes are in
+  [jukebox/google-apps-script.gs](jukebox/google-apps-script.gs).
 
-No backend, no build step, plain HTML/CSS/JS throughout. See
+No backend of our own (RSVP and the jukebox use Google Apps Script + Sheets),
+no build step, plain HTML/CSS/JS throughout. See
 [CLAUDE.md](CLAUDE.md) for conventions, and [game/CLAUDE.md](game/CLAUDE.md)
 + [game/GAME_SPEC.md](game/GAME_SPEC.md) for everything game-specific.
 
@@ -18,5 +23,7 @@ Open `index.html` with VS Code's "Live Server" extension, or:
 npx serve .
 ```
 
-Both `/` and `/game/` are served from the same root — no separate setup
-needed for the game.
+`/`, `/game/`, `/rsvp/` and `/jukebox/` are all served from the same root — no
+separate setup needed. The jukebox page shows a "not wired up yet" note until
+`JUKEBOX_ENDPOINT` is set (see the setup steps at the top of
+`jukebox/google-apps-script.gs`).

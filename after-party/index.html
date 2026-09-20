@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The After Party — Pilar &amp; Joe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #120B2E;
+    --cyan: #00E5FF;
+    --gold: #FFD400;
+    --red: #E5341F;
+    --muted: #7a6fb0;
+    --off-white: #F2F2F2;
+    --pink: #E96BC8;
+    --border: rgba(122, 111, 176, 0.55);
+    --gutter: clamp(20px, 4vw, 64px);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--off-white);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { color: var(--gold); }
+  a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+  img { image-rendering: pixelated; }
+
+  .page {
+    padding: 28px var(--gutter) 40px;
+  }
+
+  /* ---- topbar: same structure as rsvp/index.html ---- */
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding-bottom: 32px;
+    gap: 12px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .topbar .exit { color: var(--off-white); text-decoration: none; }
+  .topbar .exit:hover { color: var(--gold); }
+  .topbar .date { color: var(--gold); font-weight: bold; }
+
+  @media (max-width: 520px) {
+    /* No room for a third item next to the level title on a phone — the date
+       is right there in the heading anyway. */
+    .topbar .date { display: none; }
+  }
+
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .lang-toggle button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+    font-size: inherit;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .lang-toggle button:hover { color: var(--gold); }
+  .lang-toggle button.active { color: var(--muted); opacity: 1; }
+  .lang-toggle button:not(.active) { opacity: 0.5; }
+
+  .lang-toggle .sep { color: var(--muted); opacity: 0.5; }
+
+  /* ---- layout ----
+     Desktop: info column on the left, art on the right.
+     Phone: the info column dissolves (display: contents) so its blocks can be
+     interleaved with the art — heading, art, details, sticky RSVP bar. */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(32px, 5vw, 96px);
+  }
+
+  .info {
+    flex: 1 1 0;
+    min-width: 0;
+    font-family: 'Press Start 2P', monospace;
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(30px, 4.1vw, 72px);
+    line-height: 1.35;
+    color: var(--gold);
+    text-shadow: 6px 6px 0 var(--red);
+    font-weight: normal;
+  }
+
+  .when,
+  .where {
+    margin: 0;
+    font-size: clamp(11px, 1.14vw, 20px);
+    line-height: 2.2;
+    text-wrap: balance;
+  }
+
+  .when { margin-top: clamp(24px, 1.9vw, 34px); }
+
+  .details {
+    margin-top: clamp(28px, 3.5vw, 60px);
+    font-size: 9px;
+  }
+
+  .address {
+    font-style: normal;
+    line-height: 2.2;
+  }
+
+  /* No timeline for the after party — just the vibe. */
+
+  .copy { margin-top: 24px; }
+
+  .copy-lead {
+    margin: 0;
+    max-width: 46ch;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .expect-label {
+    margin: 26px 0 0;
+    color: var(--muted);
+    line-height: 2;
+  }
+
+  .expect {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .e {
+    --c: var(--cyan);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    line-height: 2;
+  }
+
+  /* Pixel-square bullet, colored like the wedding page's timeline times. */
+  .e::before {
+    content: '';
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
+    background: var(--c);
+  }
+
+  .e--pink { --c: var(--pink); }
+  .e--gold { --c: var(--gold); }
+  .e--red { --c: var(--red); }
+
+  .maps {
+    display: inline-block;
+    margin-top: 28px;
+  }
+
+  .cta-bar { margin-top: 30px; }
+
+  .cta {
+    display: inline-block;
+    padding: 20px 24px;
+    background: var(--pink);
+    color: var(--bg);
+    font-size: 10px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    transition: background 120ms steps(2);
+  }
+
+  .cta:hover,
+  .cta:active {
+    background: var(--gold);
+    color: var(--bg);
+  }
+
+  .note {
+    margin: 30px 0 0;
+    font-size: 9px;
+    line-height: 2;
+    color: var(--muted);
+  }
+
+  /* ---- photos: two stacked prints, the second tilted over the first ---- */
+
+  .pics {
+    flex: 1.1 1 0;
+    min-width: 0;
+    max-width: 720px;
+    position: relative;
+    /* Slightly taller than the wedding page's 1.18: the tilted front print
+       would otherwise cover the TEMPE HOTEL sign on the back print. */
+    aspect-ratio: 1.08 / 1;
+    margin-top: clamp(0px, 6.3vw, 108px);
+  }
+
+  /* Unlike the Casa de Burgos prints (frame baked into the PNG), the pub art
+     is unframed, so the white border is drawn here. The padding is a % of
+     .pics' width: 2.2% of it is ~2.9% of a print, the baked-in frame's ratio. */
+  .pic {
+    position: absolute;
+    display: block;
+    width: 75%;
+    height: auto;
+    padding: 2.2%;
+    background: #fff;
+  }
+
+  .pic--a { top: 0; left: 0; }
+  .pic--b { right: 4%; bottom: 6.5%; transform: rotate(-8deg); }
+
+  @media (max-width: 860px) {
+    .layout { flex-direction: column; align-items: stretch; gap: 0; }
+    .info { display: contents; }
+
+    .head { order: 1; }
+    .pics { order: 2; flex: none; width: 100%; max-width: none; margin-top: 40px; }
+    .details { order: 3; margin-top: 32px; font-size: 10px; }
+    .cta-bar { order: 4; }
+    .note { order: 5; }
+
+    .title { font-size: clamp(28px, 9vw, 44px); }
+    .when,
+    .where { font-size: 13px; }
+    .when { margin-top: 28px; }
+
+    /* Full-bleed bar pinned to the bottom of the screen. It's a direct flex
+       child of .layout (which spans the whole page), so it stays visible from
+       the first paint and settles into its natural spot at the end. */
+    .cta-bar {
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
+      margin: 36px calc(-1 * var(--gutter)) 0;
+      padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom, 0px));
+      background: var(--bg);
+      border-top: 2px solid var(--border);
+    }
+
+    .cta { display: block; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="exit" href="../" data-i18n="exit">&lsaquo; EXIT</a>
+      <div class="lang-toggle">
+        <button type="button" class="active" data-lang="en">EN</button>
+        <span class="sep">/</span>
+        <button type="button" data-lang="es">ES</button>
+      </div>
+    </div>
+    <span data-i18n="topbarTitle">LVL 2 &middot; AFTER PARTY</span>
+    <span class="date">23.10.27</span>
+  </div>
+
+  <main class="layout">
+
+    <div class="info">
+      <header class="head">
+        <h1 class="title" data-i18n="heading">THE<br />AFTER<br />PARTY</h1>
+        <p class="when" data-i18n="when">SATURDAY 23 OCTOBER 2027</p>
+        <p class="where" data-i18n="where">TEMPE HOTEL, SYDNEY</p>
+      </header>
+
+      <div class="details">
+        <address class="address" data-i18n="address">735 PRINCES HWY<br />TEMPE NSW 2044</address>
+
+        <div class="copy">
+          <p class="copy-lead" data-i18n="copy">AFTER ALL THE STRUCTURE OF THE SPANISH WEDDING, THIS ONE IS SIMPLE: NO TIMELINE. WE JUST WANT TO GET OUR FAVOURITE PEOPLE TOGETHER AND CELEBRATE THAT WE TIED THE KNOT, THIS TIME NOT IN SPAIN.</p>
+          <p class="expect-label" data-i18n="expectLabel">EXPECT:</p>
+          <ul class="expect">
+            <li class="e" data-i18n="e1">SOME SPEECHES</li>
+            <li class="e e--pink" data-i18n="e2">LOTS OF DANCING</li>
+            <li class="e e--gold" data-i18n="e3">DELICIOUS FOOD</li>
+            <li class="e e--red" data-i18n="e4">LITRES AND LITRES OF BEER</li>
+          </ul>
+        </div>
+
+        <a class="maps" href="https://www.google.com/maps/search/?api=1&amp;query=Tempe+Hotel%2C+735+Princes+Hwy%2C+Tempe+NSW+2044" target="_blank" rel="noopener" data-i18n="maps">&#9656; OPEN IN MAPS</a>
+      </div>
+
+      <div class="cta-bar">
+        <a class="cta" href="../rsvp/?level=afterparty" data-i18n="cta">RSVP FOR THIS LEVEL &#9656;</a>
+      </div>
+
+      <p class="note" data-i18n="note">MORE DETAILS COMING EVENTUALLY&hellip;</p>
+    </div>
+
+    <!-- Same two-print composition as the wedding page: the hotel front
+         behind (pic--a), the beer garden tilted on top (pic--b). -->
+    <div class="pics">
+      <img class="pic pic--a" src="../game/assets/illustrations/locations/pub%2001.png" alt="Pixel-art illustration of the front of the Tempe Hotel, a two-storey brick pub with a green roof" decoding="async" />
+      <img class="pic pic--b" src="../game/assets/illustrations/locations/pub%2002.png" alt="Pixel-art illustration of the Tempe Hotel beer garden, with picnic tables and green umbrellas under large trees" decoding="async" />
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  // EN/ES copy. Shared LANG_KEY with the main site (/index.html), the RSVP
+  // page and the game — localStorage is scoped per-origin, not per-path, so a
+  // language choice made anywhere carries over automatically.
+  const LANG_KEY = 'wedding-lang';
+
+  const STRINGS = {
+    en: {
+      title: 'The After Party — Pilar &amp; Joe',
+      exit: '&lsaquo; EXIT',
+      topbarTitle: 'LVL 2 &middot; AFTER PARTY',
+      heading: 'THE<br />AFTER<br />PARTY',
+      when: 'SATURDAY 23 OCTOBER 2027',
+      where: 'TEMPE HOTEL, SYDNEY',
+      address: '735 PRINCES HWY<br />TEMPE NSW 2044',
+      copy: 'AFTER ALL THE STRUCTURE OF THE SPANISH WEDDING, THIS ONE IS SIMPLE: NO TIMELINE. WE JUST WANT TO GET OUR FAVOURITE PEOPLE TOGETHER AND CELEBRATE THAT WE TIED THE KNOT, THIS TIME NOT IN SPAIN.',
+      expectLabel: 'EXPECT:',
+      e1: 'SOME SPEECHES',
+      e2: 'LOTS OF DANCING',
+      e3: 'DELICIOUS FOOD',
+      e4: 'LITRES AND LITRES OF BEER',
+      maps: '&#9656; OPEN IN MAPS',
+      cta: 'RSVP FOR THIS LEVEL &#9656;',
+      note: 'MORE DETAILS COMING EVENTUALLY&hellip;',
+    },
+    es: {
+      title: 'La After Party — Pilar y Joe',
+      exit: '&lsaquo; SALIR',
+      topbarTitle: 'NIVEL 2 &middot; AFTER PARTY',
+      heading: 'LA<br />AFTER<br />PARTY',
+      when: 'SÁBADO 23 DE OCTUBRE DE 2027',
+      where: 'TEMPE HOTEL, SÍDNEY',
+      address: '735 PRINCES HWY<br />TEMPE NSW 2044',
+      copy: 'DESPUÉS DE TODA LA ESTRUCTURA DE LA BODA ESPAÑOLA, ESTA ES MÁS SENCILLA: SIN PROGRAMA. SOLO QUEREMOS JUNTAR A NUESTRA GENTE FAVORITA Y CELEBRAR QUE NOS HEMOS CASADO, ESTA VEZ FUERA DE ESPAÑA.',
+      expectLabel: 'PREPÁRATE PARA:',
+      e1: 'ALGÚN QUE OTRO DISCURSO',
+      e2: 'MUCHO BAILE',
+      e3: 'COMIDA DELICIOSA',
+      e4: 'LITROS Y LITROS DE CERVEZA',
+      maps: '&#9656; ABRIR EN MAPS',
+      cta: 'CONFIRMA PARA ESTE NIVEL &#9656;',
+      note: 'MÁS DETALLES LLEGARÁN ALGÚN DÍA&hellip;',
+    },
+  };
+
+  function applyLanguage(lang) {
+    const dict = STRINGS[lang] ?? STRINGS.en;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.dataset.i18n;
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+    document.title = dict.title.replace(/&amp;/g, '&');
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-toggle button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    try {
+      localStorage.setItem(LANG_KEY, lang);
+    } catch (e) {
+      // localStorage unavailable (private mode etc.) — language just won't persist
+    }
+  }
+
+  let storedLang = 'en';
+  try {
+    const v = localStorage.getItem(LANG_KEY);
+    if (v === 'en' || v === 'es') storedLang = v;
+  } catch (e) {
+    // ignore
+  }
+  applyLanguage(storedLang);
+
+  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
+  });
+</script>
+
+</body>
+</html>

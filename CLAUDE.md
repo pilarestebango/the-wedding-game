@@ -4,7 +4,7 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-This repo holds two related, independently-browsable static sites for Pilar
+This repo holds related, independently-browsable static sites for Pilar
 & Joe's wedding, deployed together as one GitHub Pages site:
 
 - **`/` (this level)** — the wedding website: a retro-arcade-styled landing
@@ -14,12 +14,21 @@ This repo holds two related, independently-browsable static sites for Pilar
   the couple's story across three levels, ending in a proposal. It has its
   own **`game/CLAUDE.md`** and **`game/GAME_SPEC.md`** — read those before
   touching anything under `game/`; this file doesn't duplicate them.
+- **`/rsvp/`** — the RSVP form (posts to a Google Apps Script → Google Sheet,
+  see `rsvp/google-apps-script.gs`).
+- **`/wedding/`** and **`/after-party/`** — the two level pages (LVL 1 Madrid,
+  LVL 2 Sydney). See "The level pages" below.
+- **`/jukebox/`** — **the Juke-Box**, where guests search songs, hear a
+  preview and add them to the wedding-soundtrack list. See "The jukebox"
+  below.
 
 ## Tech stack
 
 - Vanilla HTML/CSS/JS (ES6+), no framework, no bundler — same zero-build
   philosophy as the game (see `game/CLAUDE.md`).
-- No backend. Static site only.
+- No backend of our own. RSVP and the jukebox talk to Google Apps Script web
+  apps (each bound to its own Google Sheet) that run on Google's
+  infrastructure, so the site itself stays static.
 - Local dev: VS Code "Live Server" extension, or `npx serve .` from the repo
   root — this serves both `/` and `/game/` together.
 
@@ -45,10 +54,36 @@ if either changes.
 All pixel art must render with `image-rendering: pixelated` — never let the
 browser smooth/anti-alias it.
 
+### Jukebox accents
+
+The jukebox design adds colors that aren't in the shared palette above. They
+are scoped to `jukebox/index.html` (plus `--pink`, which the landing page's
+jukebox card also uses); the game's `palette.js` doesn't have them.
+
+| Token | Value | Used for |
+|---|---|---|
+| `--pink` | `#E96BC8` | landing-page card, level-page RSVP button + timeline, jukebox result marks + send-button shadow |
+| `--magenta` | `#EB5CD4` | jukebox title bar, vinyl label, arch bulbs, equalizer (the hotter pink in the design) |
+| `--orchid` | `#D575E1` | jukebox right-hand pillar (+ glow) |
+| `--sky` | `#5CC8F5` | left-hand pillar (+ soft glow), cyan arch bulbs |
+| `--frame` | `#5B4FB3` | cabinet ring, row and input outlines |
+| `--panel` | `#0B0621` | "now selecting" panel, inputs |
+| `--row` | `#251C5A` | list rows |
+
+Values were sampled by eye from the design screenshot, so adjust them if
+the couple's Claude Design export says otherwise. The jukebox title's
+shadow is a 2px **gold** one (not the 6px red), because it sits on pink.
+The jukebox's vinyl is a smooth black record drawn on a 256px canvas — the one
+deliberate exception to the "pixelated" rule above, per the design.
+
 ## Project structure
 
 ```
 index.html              # wedding site landing page
+rsvp/                    # RSVP form + its Apps Script (google-apps-script.gs)
+wedding/                 # LVL 1 — the wedding (Madrid): index.html
+after-party/             # LVL 2 — the after party (Sydney): index.html
+jukebox/                 # the Juke-Box: index.html + google-apps-script.gs
 assets/site/             # site-only images (joe.png, pili.png, +wedding variants)
 game/                     # the game — see game/CLAUDE.md and game/GAME_SPEC.md
 reference/                # design source material, not shipped:
@@ -73,15 +108,104 @@ Real event details pulled from that handoff (confirm before changing):
 - **After Party:** Sydney, 2027-10-23
 - **RSVP deadline:** 2027-01-07
 
-The site is being built **iteratively, section by section** — the current
-`index.html` only implements the hero. Don't invent additional sections
-(RSVP form, logistics content, registry, etc.) ahead of a design handoff for
-them; ask or wait for the next `.dc.html` drop.
+The site is being built **iteratively, section by section** — the landing
+page, RSVP, jukebox and the two level pages exist so far. Don't invent
+additional sections (logistics content, registry, etc.) ahead of a design
+handoff for them; ask or wait for the next design drop.
+
+## The level pages
+
+`wedding/index.html` and `after-party/index.html` are self-contained sibling
+pages (inline CSS/JS, EN/ES via the shared `wedding-lang` key), so a layout
+fix usually has to be made in both. Their topbar mirrors `rsvp/index.html`
+(`‹ EXIT` + EN/ES · level title), with the date in the slot RSVP uses for
+credits (hidden on narrow phones).
+
+- **One DOM, two layouts.** Desktop is info column left, art right. On a phone
+  `.info` becomes `display: contents` so the blocks reorder: title/date/venue →
+  art → details → sticky RSVP bar. The bar is a `position: sticky` direct child
+  of `.layout` (which spans the page), not `fixed`, so it settles into place at
+  the end of the page instead of covering the footnote.
+- **Art:** both pages use the same two-print composition: the first image
+  behind, the second tilted on top. Images live in
+  `game/assets/illustrations/locations/`. The wedding page uses `casa de burgos
+  01.png` (behind) and `02.png` (on top); their white frames are baked into the
+  PNGs. The after party uses `pub 01.png` (Tempe Hotel front, behind) and `pub
+  02.png` (beer garden, on top), which are **unframed** — `after-party/index.html`
+  draws the same white border in CSS (`.pic` padding), so keep the two in step
+  if the frame proportion changes. Its `.pics` box is also a bit taller (1.08
+  vs the wedding page's 1.18) on purpose, so the tilted beer-garden print
+  doesn't cover the TEMPE HOTEL sign. (`Group 9.png` / `Group 10.png` in that
+  folder are unused duplicates of the Casa de Burgos art.)
+- **After party has no timeline** on purpose — it's copy plus an "expect" list.
+  It also shows no start time yet (none has been decided).
+- **RSVP deep link:** each page's button goes to `rsvp/?level=wedding` /
+  `rsvp/?level=afterparty`, and `rsvp/index.html` preselects that level card.
+
+## The jukebox
+
+`jukebox/index.html` is one self-contained page (inline CSS/JS, EN/ES via the
+shared `wedding-lang` key). Its topbar deliberately mirrors `rsvp/index.html`
+(`‹ EXIT` + EN/ES · title · `CREDITS`, where credits = songs the guest can
+still add). The cabinet is ~30% of the viewport on a laptop
+(`clamp(360px, 30vw, 560px)`) and full-width on a phone; its text sizes off
+the cabinet's own width (`cqw`), so it scales as one object.
+
+The flow is deliberately one-step-at-a-time (an earlier version with an `ADD`
+button next to the search box was confusing): the search row is just the input.
+Tapping a result plays its preview and reveals, **inside the preview panel**, a
+name field (remembered from last time) and a full-width `SEND SONG` button that
+flashes cyan/gold (static under `prefers-reduced-motion`). Feedback shows in the
+panel while a song is picked, under the search box otherwise. The panel sits
+*above* the results, so picking a result scrolls it into view — keep that on
+phones.
+
+After a successful send: the send block hides, the search clears, a pixel-confetti
+burst plays (`confetti()`, skipped for `prefers-reduced-motion`) and **the preview
+keeps playing** as its soundtrack. That's why there are two pieces of state:
+`state.selected` (the pick waiting to be sent — drives the send block) and
+`state.now` (what's loaded in the player / shown in the panel — outlives a send
+until the preview ends). Don't stop the audio or clear `now` on a successful send.
+
+Every row in the list is a button: tapping it plays that song's 30s preview (tap
+the playing row again to pause/resume). To make that instant — phones only allow
+audio that starts straight from a tap — the script saves each song's Apple
+`previewUrl` in the Sheet (column "Preview URL") and returns it, with `trackId`,
+in every list row. If a saved address ever stops working, `onPreviewError()` asks
+iTunes for the current one once and retries; rows saved without one are looked up
+on tap. Songs added "as typed" have no preview (the panel says so). Tapping a row
+while a pick is waiting to be sent drops that pick, so the send button can never
+send a different song than the one shown.
+
+How it works:
+- **Search + preview** go straight from the browser to Apple's **iTunes Search
+  API** (free, no key, CORS-open, 30 s `previewUrl`). Spotify was ruled out:
+  a dev app now needs a Premium owner, refresh tokens expire every 6 months,
+  and new apps get no `preview_url`.
+- **The list** lives in a Google Sheet behind `jukebox/google-apps-script.gs`
+  (`JUKEBOX_ENDPOINT` in the page — empty means "not wired up yet" and the
+  page says so). The script re-fetches the track from iTunes by id (client
+  strings are never trusted), dedupes, caps songs per guest
+  (`MAX_SONGS_PER_GUEST`), and soft-deletes removals (`Status = removed`).
+  Each row has an "Open in Spotify" link so the couple can move songs into a
+  playlist. Songs iTunes doesn't know can be added "as typed" (`Source = typed`).
+- A browser is identified only by a random `jukebox-guest-id` in localStorage —
+  that's what makes "ADDED BY YOU" rows removable. It's a casual guard, not auth.
+- The POST uses `Content-Type: text/plain` on purpose: it keeps the request a CORS
+  "simple request" (Apps Script can't answer a preflight) while the reply stays
+  readable. Don't switch it to `application/json`.
+- Text set from JS is always `textContent`, and the Sheet's text columns are
+  plain-text formatted before writing — don't loosen either (HTML / formula injection).
 
 ## Linking the two
 
 - **Site → game:** the "ARCADE / PLAY THE GAME" card in `index.html`'s hero
   grid, links to `game/` (relative — works under any GitHub Pages path).
+- **Site → level pages:** the "LVL 1 / THE WEDDING" and "LVL 2 / THE AFTER
+  PARTY" cards in the same grid link to `wedding/` and `after-party/`; each
+  page's `‹ EXIT` links back to `../`.
+- **Site → jukebox:** the "BONUS / THE JUKE-BOX" card in the same grid, links
+  to `jukebox/`. The jukebox's `‹ EXIT` links back to `../`.
 - **Game → site:** `game/src/config/tuning.js` → `RSVP_URL`. Currently
   `null` (shows "RSVP details coming soon" on the game's ending screen).
   Once the site has a real RSVP destination, set it there — the game's

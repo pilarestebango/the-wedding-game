@@ -15,6 +15,7 @@
     --red: #E5341F;
     --muted: #7a6fb0;
     --off-white: #F2F2F2;
+    --pink: #E96BC8; /* jukebox accent — see CLAUDE.md */
   }
 
   * { box-sizing: border-box; }
@@ -260,6 +261,28 @@
   .card--wedding { border-color: var(--gold); color: var(--gold); }
   .card--afterparty { border-color: var(--red); color: var(--red); }
 
+  /* Both link to their level page; on hover they fill with their own color,
+     like the selected level cards on the RSVP page. */
+  .card--wedding,
+  .card--afterparty {
+    transition: background 120ms steps(2), color 120ms steps(2);
+  }
+
+  .card--wedding:hover,
+  .card--wedding:active { background: var(--gold); }
+
+  .card--afterparty:hover,
+  .card--afterparty:active { background: var(--red); }
+
+  .card--wedding:hover,
+  .card--wedding:active,
+  .card--afterparty:hover,
+  .card--afterparty:active,
+  .card--wedding:hover .title,
+  .card--wedding:hover .caption,
+  .card--afterparty:hover .title,
+  .card--afterparty:hover .caption { color: var(--bg); }
+
   .card--rsvp {
     transition: border-color 120ms steps(2), color 120ms steps(2);
   }
@@ -284,6 +307,24 @@
 
   .card--game:hover .title,
   .card--game:active .title {
+    color: var(--gold);
+  }
+
+  .card--jukebox {
+    display: block;
+    border-color: var(--pink);
+    color: var(--pink);
+    transition: border-color 120ms steps(2), color 120ms steps(2);
+  }
+
+  .card--jukebox:hover,
+  .card--jukebox:active {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .card--jukebox:hover .title,
+  .card--jukebox:active .title {
     color: var(--gold);
   }
 </style>
@@ -313,7 +354,7 @@
 
     <div class="title-block">
       <h1>PILAR<br />VS<br />JOE</h1>
-      <a class="subtitle" href="game/" data-i18n="subtitle">FINAL BOSS:<br />PLAY THE GAME</a>
+      <a class="subtitle" href="game/" data-i18n="subtitle">PLAY THE GAME</a>
       <a class="rsvp-prompt" href="rsvp/" data-i18n="rsvpPrompt">&#9656; PRESS RSVP TO CONTINUE</a>
       <div class="lang-toggle">
         <button type="button" class="active" data-lang="en">ENGLISH<span class="underline"></span></button>
@@ -332,9 +373,10 @@
 
   <div class="cards">
     <a class="card card--rsvp" href="rsvp/" data-i18n="cardRsvp">LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 07&middot;01&middot;27</span></a>
-    <div class="card card--wedding" data-i18n="cardWedding">LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span></div>
-    <div class="card card--afterparty" data-i18n="cardAfterparty">LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; SYDNEY</span></div>
+    <a class="card card--wedding" href="wedding/" data-i18n="cardWedding">LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span></a>
+    <a class="card card--afterparty" href="after-party/" data-i18n="cardAfterparty">LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; SYDNEY</span></a>
     <a class="card card--game" href="game/" data-i18n="cardGame">ARCADE<br /><span class="title">PLAY THE GAME</span><br /><span class="caption">TAP TO START</span></a>
+    <a class="card card--jukebox" href="jukebox/" data-i18n="cardJukebox">BONUS<br /><span class="title">THE JUKE-BOX</span><br /><span class="caption">REQUEST A SONG</span></a>
   </div>
 
 </div>
@@ -348,23 +390,25 @@
   const STRINGS = {
     en: {
       title: 'Pilar &amp; Joe — Wedding',
-      subtitle: 'FINAL BOSS:<br />PLAY THE GAME',
+      subtitle: 'PLAY THE GAME',
       rsvpPrompt: '&#9656; PRESS RSVP TO CONTINUE',
       hoverHint: 'HOVER A PLAYER TO CHANGE OUTFIT',
       cardRsvp: 'LVL 0<br /><span class="title">RSVP CONFIRMATION</span><br /><span class="caption">BEFORE 07&middot;01&middot;27</span>',
       cardWedding: 'LVL 1<br /><span class="title">THE WEDDING</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span>',
       cardAfterparty: 'LVL 2<br /><span class="title">THE AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; SYDNEY</span>',
       cardGame: 'ARCADE<br /><span class="title">PLAY THE GAME</span><br /><span class="caption">TAP TO START</span>',
+      cardJukebox: 'BONUS<br /><span class="title">THE JUKE-BOX</span><br /><span class="caption">REQUEST A SONG</span>',
     },
     es: {
       title: 'Pilar y Joe — Boda',
-      subtitle: 'JEFE FINAL:<br />DALE AL PLAY',
+      subtitle: 'DALE AL PLAY',
       rsvpPrompt: '&#9656; CONFIRMA PARA CONTINUAR',
       hoverHint: 'PASA EL RAT&Oacute;N: &iexcl;CAMBIO DE LOOK!',
       cardRsvp: 'NIVEL 0<br /><span class="title">&iexcl;CONFIRMA QUE VIENES!</span><br /><span class="caption">ANTES DEL 07&middot;01&middot;27</span>',
       cardWedding: 'NIVEL 1<br /><span class="title">LA BODA</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span>',
       cardAfterparty: 'NIVEL 2<br /><span class="title">LA AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; S&Iacute;DNEY</span>',
       cardGame: 'ARCADE<br /><span class="title">EL JUEGO</span><br /><span class="caption">PULSA PARA EMPEZAR</span>',
+      cardJukebox: 'BONUS<br /><span class="title">LA JUKE-BOX</span><br /><span class="caption">PIDE UNA CANCI&Oacute;N</span>',
     },
   };
 

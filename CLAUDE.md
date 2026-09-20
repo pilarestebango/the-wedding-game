@@ -27,8 +27,9 @@ This repo holds related, independently-browsable static sites for Pilar
 - Vanilla HTML/CSS/JS (ES6+), no framework, no bundler — same zero-build
   philosophy as the game (see `game/CLAUDE.md`).
 - No backend of our own. RSVP and the jukebox talk to Google Apps Script web
-  apps (each bound to its own Google Sheet) that run on Google's
-  infrastructure, so the site itself stays static.
+  apps that run on Google's infrastructure, so the site itself stays static.
+  Both write to the same Google Sheet: RSVPs in its first tab, the jukebox's
+  songs in a "Songs" tab.
 - Local dev: VS Code "Live Server" extension, or `npx serve .` from the repo
   root — this serves both `/` and `/game/` together.
 
@@ -182,10 +183,17 @@ How it works:
   API** (free, no key, CORS-open, 30 s `previewUrl`). Spotify was ruled out:
   a dev app now needs a Premium owner, refresh tokens expire every 6 months,
   and new apps get no `preview_url`.
-- **The list** lives in a Google Sheet behind `jukebox/google-apps-script.gs`
-  (`JUKEBOX_ENDPOINT` in the page — empty means "not wired up yet" and the
-  page says so). The script re-fetches the track from iTunes by id (client
-  strings are never trusted), dedupes, caps songs per guest
+- **The list** lives in the **"Songs" tab of the RSVP spreadsheet** (the guest
+  list), behind `jukebox/google-apps-script.gs` (`JUKEBOX_ENDPOINT` in the page
+  — empty means "not wired up yet" and the page says so). It's a separate Apps
+  Script project from the RSVP one (a project can only have one `doPost`) that
+  opens the spreadsheet via `SPREADSHEET_ID`. That ID is deliberately left
+  empty in the repo (public, and the ID is what opens the guest list) — paste
+  it in the Apps Script editor at deploy time. The RSVP script writes to the
+  spreadsheet's *first* tab (`getSheets()[0]`), not the active one, so the
+  Songs tab (created after it on first use) can't catch RSVPs. The script
+  re-fetches the track from iTunes by id (client strings are never trusted),
+  dedupes, caps songs per guest
   (`MAX_SONGS_PER_GUEST`), and soft-deletes removals (`Status = removed`).
   Each row has an "Open in Spotify" link so the couple can move songs into a
   playlist. Songs iTunes doesn't know can be added "as typed" (`Source = typed`).

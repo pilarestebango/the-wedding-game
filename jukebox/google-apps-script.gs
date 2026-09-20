@@ -4,15 +4,21 @@
 // (Apple's iTunes Search API, straight from the browser); this script only
 // stores and serves the shared song list.
 //
-// Setup (one-time, ~5 minutes) — use a NEW Sheet, not the RSVP one:
-//   1. Create a new Google Sheet — this becomes the live song list. Every
-//      submitted song is a row; each row has an "Open in Spotify" link so
-//      adding it to your playlist is one click.
-//   2. Extensions > Apps Script. Delete the placeholder code and paste this
-//      whole file in.
+// The songs go in a "Songs" tab of the SAME spreadsheet as the RSVPs (the one
+// with the guest list), so everything lives in one file. Every submitted song
+// is a row; each row has an "Open in Spotify" link so adding it to your
+// playlist is one click. The tab is created on first use, after the RSVP tab.
+//
+// Setup (one-time, ~5 minutes). This is its own Apps Script project, separate
+// from the RSVP one (a project can only have one doPost), so don't paste it
+// into the RSVP Sheet's Extensions > Apps Script:
+//   1. Open the RSVP spreadsheet and copy its ID from the address bar — the
+//      long string between /d/ and /edit — into SPREADSHEET_ID below.
+//   2. Go to script.google.com > New project. Delete the placeholder code and
+//      paste this whole file in.
 //   3. Deploy > New deployment > type "Web app". Execute as "Me", who has
 //      access "Anyone". Deploy, and authorize it with the Google account
-//      that owns the Sheet.
+//      that owns the spreadsheet.
 //   4. Copy the Web app URL from the deployment dialog and paste it into
 //      JUKEBOX_ENDPOINT in jukebox/index.html.
 //   5. If you ever edit this script after redeploying, use Deploy > Manage
@@ -20,8 +26,10 @@
 //      doesn't update a live deployment.
 //
 // Removing a song from the page only marks its row Status = "removed" (the row
-// stays in the Sheet). You can delete rows or hand-edit Status any time.
+// stays in the Songs tab). You can delete rows or hand-edit Status any time.
 
+const SPREADSHEET_ID = '';        // the RSVP spreadsheet; empty = the Sheet this script is bound to
+const SHEET_NAME = 'Songs';       // the tab songs are written to
 const MAX_SONGS_PER_GUEST = 10;   // songs one guest can have on the list at once
 const MAX_ATTEMPTS_PER_GUEST = 30; // rows per guest ever, incl. removed ones (add/remove loops)
 const MAX_ROWS = 1500;            // whole-Sheet ceiling, in case someone scripts the endpoint
@@ -171,7 +179,9 @@ function readRows_(sheet) {
 }
 
 function getSheet_() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const ss = SPREADSHEET_ID ? SpreadsheetApp.openById(SPREADSHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+  // Added after the existing tabs, so the RSVP tab stays first.
+  const sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME, ss.getSheets().length);
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS);
     sheet.setFrozenRows(1);

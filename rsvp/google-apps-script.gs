@@ -4,6 +4,7 @@
 // Setup (one-time, ~5 minutes):
 //   1. Create a new Google Sheet — this becomes the live RSVP spreadsheet
 //      (Google Sheets, downloadable as .xlsx any time via File > Download).
+//      The jukebox's song list goes in a "Songs" tab of this same spreadsheet.
 //   2. Extensions > Apps Script. Delete the placeholder code and paste this
 //      whole file in.
 //   3. NOTIFY_EMAIL below already points at pilar.esteban@gmail.com — change
@@ -22,7 +23,9 @@ const HEADERS = ['Timestamp', 'Guests', 'Small humans', 'Levels', 'Special requi
 
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  // Always the first tab: the jukebox adds a "Songs" tab to this same spreadsheet
+  // (jukebox/google-apps-script.gs), and getActiveSheet() could land on it.
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
 
   // Row 1 is always the header. Rewriting it every time also brings a sheet
   // created by an older version of this script (a "Dietary" column, no

@@ -46,7 +46,12 @@
     gap: 22px;
   }
 
-  @media (max-width: 720px) {
+  /* The 3-across desktop row (Joe · title · Pilar) needs ~865px; below 900px
+     (iPad portrait, small windows) the hero switches to the stacked layout
+     the phone uses — characters side by side up top, title underneath —
+     instead of letting Pilar wrap onto a row of her own. The topbar and
+     hover hint below keep their 720px phone breakpoint. */
+  @media (max-width: 900px) {
     .hero { height: auto; min-height: 100vh; }
   }
 
@@ -90,7 +95,7 @@
     padding: min(20px, 2vh) 0;
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .hero-row { flex: 0 0 auto; align-items: flex-end; gap: 0; }
   }
 
@@ -105,8 +110,10 @@
   .sprite--joe { order: 1; }
   .sprite--pilar { order: 3; }
 
-  @media (max-width: 720px) {
-    .sprite { width: 46%; height: 30vh; flex: 0 0 46%; transform: translateY(-14px); }
+  @media (max-width: 900px) {
+    /* 46% of the row on a phone; capped so on a tablet the boxes (and the
+       characters centered in them) don't drift apart. */
+    .sprite { width: min(46%, 200px); height: 30vh; flex: 0 0 auto; transform: translateY(-14px); }
     .sprite--pilar { order: 2; }
   }
 
@@ -138,7 +145,7 @@
      point instead of jumping when it swaps in. Placed after the base
      ".sprite img" rule above so it actually wins — same specificity,
      later in source. */
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .sprite--joe img { left: calc(50% + 10px); }
     .sprite--pilar img { left: calc(50% - 10px); }
   }
@@ -150,7 +157,7 @@
     text-align: center;
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .title-block { order: 3; width: 100%; padding-top: 28px; }
   }
 
@@ -348,8 +355,8 @@
 
   <div class="hero-row">
     <div class="sprite sprite--joe">
-      <img src="assets/site/joe.png" alt="Joe, pixel art" decoding="async" />
-      <img class="wedding" src="assets/site/joe-wedding.png" alt="Joe in his suit, pixel art" decoding="async" />
+      <img src="assets/site/joe.webp" alt="Joe, pixel art" decoding="async" fetchpriority="high" />
+      <img class="wedding" src="assets/site/joe-wedding.webp" alt="Joe in his suit, pixel art" decoding="async" fetchpriority="low" />
     </div>
 
     <div class="title-block">
@@ -364,8 +371,8 @@
     </div>
 
     <div class="sprite sprite--pilar">
-      <img src="assets/site/pili.png" alt="Pilar, pixel art" decoding="async" />
-      <img class="wedding" src="assets/site/pili-wedding.png" alt="Pilar in her wedding dress, pixel art" decoding="async" />
+      <img src="assets/site/pili.webp" alt="Pilar, pixel art" decoding="async" fetchpriority="high" />
+      <img class="wedding" src="assets/site/pili-wedding.webp" alt="Pilar in her wedding dress, pixel art" decoding="async" fetchpriority="low" />
     </div>
   </div>
 
@@ -403,7 +410,7 @@
       title: 'Pilar y Joe — Boda',
       subtitle: 'DALE AL PLAY',
       rsvpPrompt: '&#9656; CONFIRMA PARA CONTINUAR',
-      hoverHint: 'PASA EL RAT&Oacute;N: &iexcl;CAMBIO DE LOOK!',
+      hoverHint: '&iexcl;DESCUBRE EL CAMBIO DE LOOK!',
       cardRsvp: 'NIVEL 0<br /><span class="title">&iexcl;CONFIRMA QUE VIENES!</span><br /><span class="caption">ANTES DEL 07&middot;01&middot;27</span>',
       cardWedding: 'NIVEL 1<br /><span class="title">LA BODA</span><br /><span class="caption">19&middot;09&middot;27 &middot; MADRID</span>',
       cardAfterparty: 'NIVEL 2<br /><span class="title">LA AFTER PARTY</span><br /><span class="caption">23&middot;10&middot;27 &middot; S&Iacute;DNEY</span>',

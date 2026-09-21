@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
 <title>RSVP — Pilar &amp; Joe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,6 +15,7 @@
     --red: #E5341F;
     --muted: #7a6fb0;
     --off-white: #F2F2F2;
+    --pink: #E96BC8; /* jukebox accent — see CLAUDE.md */
     --border: rgba(122, 111, 176, 0.55);
   }
 
@@ -337,6 +338,35 @@
     color: var(--off-white);
     line-height: 1.6;
   }
+
+  /* Follow-up to the confirmation: invites the guest into the jukebox. Pink
+     like the jukebox card on the landing page, gold on hover like the level
+     pages' RSVP button. */
+  .success .jukebox-ask {
+    margin: 44px auto 0;
+    max-width: 420px;
+    color: var(--muted);
+  }
+  .jukebox-cta {
+    display: block;
+    max-width: 420px;
+    margin: 16px auto 0;
+    padding: 18px 20px;
+    background: var(--pink);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 120ms steps(2);
+  }
+  .jukebox-cta .nowrap { white-space: nowrap; }
+  .jukebox-cta:hover,
+  .jukebox-cta:active { background: var(--gold); }
+  .jukebox-cta:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
 </style>
 </head>
 <body>
@@ -403,9 +433,11 @@
   </form>
 
   <div class="success" id="rsvp-success" hidden>
-    <img src="../assets/site/rsvp-success.png" alt="Pilar and Joe, pixel art" decoding="async" />
+    <img src="../assets/site/rsvp-success.webp" alt="Pilar and Joe, pixel art" decoding="async" fetchpriority="low" />
     <div class="checkmark">GG!</div>
     <p>RSVP RECEIVED &mdash; SEE YOU THERE.</p>
+    <p class="jukebox-ask" data-i18n="jukeboxAsk">BONUS ROUND: WHAT SONG WILL GET YOU ON THE DANCE FLOOR?</p>
+    <a class="jukebox-cta" href="../jukebox/" data-i18n="jukeboxCta">ADD YOUR SONGS TO THE <span class="nowrap">JUKE-BOX &#9656;</span></a>
   </div>
 
 </div>
@@ -449,6 +481,8 @@
       sendHintError: 'SOMETHING WENT WRONG — CHECK YOUR CONNECTION AND TRY AGAIN.',
       successOk: 'RSVP RECEIVED — SEE YOU THERE.',
       successNotConfigured: "This form isn't wired up to send yet — tell Joe.",
+      jukeboxAsk: 'BONUS ROUND: WHAT SONG WILL GET YOU ON THE DANCE FLOOR?',
+      jukeboxCta: 'ADD YOUR SONGS TO THE <span class="nowrap">JUKE-BOX &#9656;</span>',
     },
     es: {
       title: 'RSVP — Pilar y Joe',
@@ -479,6 +513,8 @@
       sendHintError: 'ALGO FALLÓ — REVISA TU CONEXIÓN E INTÉNTALO DE NUEVO.',
       successOk: 'RSVP RECIBIDO — ¡NOS VEMOS ALLÍ!',
       successNotConfigured: 'Este formulario aún no está conectado — avísale a Joe.',
+      jukeboxAsk: 'RONDA BONUS: &iquest;QU&Eacute; CANCI&Oacute;N TE SACA A BAILAR?',
+      jukeboxCta: 'A&Ntilde;ADE TUS CANCIONES A LA <span class="nowrap">JUKE-BOX &#9656;</span>',
     },
   };
 

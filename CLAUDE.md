@@ -55,6 +55,12 @@ if either changes.
 All pixel art must render with `image-rendering: pixelated` — never let the
 browser smooth/anti-alias it.
 
+The two pages with text fields (`rsvp/index.html`, `jukebox/index.html`) set
+`maximum-scale=1` in their viewport meta. Their inputs are well under 16px, so
+without it iOS Safari zooms the page in whenever a field is tapped. Don't "fix"
+that by bumping the input font-size to 16px — it would change the design (the
+jukebox sizes its text off the cabinet width).
+
 ### Jukebox accents
 
 The jukebox design adds colors that aren't in the shared palette above. They
@@ -63,7 +69,7 @@ jukebox card also uses); the game's `palette.js` doesn't have them.
 
 | Token | Value | Used for |
 |---|---|---|
-| `--pink` | `#E96BC8` | landing-page card, level-page RSVP button + timeline, jukebox result marks + send-button shadow |
+| `--pink` | `#E96BC8` | landing-page card, level-page RSVP button + timeline, RSVP success-screen jukebox button, jukebox result marks + send-button shadow |
 | `--magenta` | `#EB5CD4` | jukebox title bar, vinyl label, arch bulbs, equalizer (the hotter pink in the design) |
 | `--orchid` | `#D575E1` | jukebox right-hand pillar (+ glow) |
 | `--sky` | `#5CC8F5` | left-hand pillar (+ soft glow), cyan arch bulbs |
@@ -85,7 +91,7 @@ rsvp/                    # RSVP form + its Apps Script (google-apps-script.gs)
 wedding/                 # LVL 1 — the wedding (Madrid): index.html
 after-party/             # LVL 2 — the after party (Sydney): index.html
 jukebox/                 # the Juke-Box: index.html + google-apps-script.gs
-assets/site/             # site-only images (joe.png, pili.png, +wedding variants)
+assets/site/             # site-only images (joe, pili, +wedding variants, rsvp-success): .png + .webp
 game/                     # the game — see game/CLAUDE.md and game/GAME_SPEC.md
 reference/                # design source material, not shipped:
   website/                #   Claude Design handoff for the landing page
@@ -103,6 +109,23 @@ design-tool artifact (needs `window.React`/`ReactDOM` to run) and are never
 shipped or linked from the real site; they're kept only as the design
 reference. If the couple sends an updated `.dc.html` export, re-implement
 the diff into `index.html` by hand rather than embedding the runtime.
+
+## Image weight
+
+The site pages load the **`.webp`** twin of each image (`assets/site/*` and the
+four `game/assets/illustrations/locations/` prints), not the `.png`. The `.png`
+stays as the editable source; the `.webp` is a **lossless** re-encode (pixel-
+identical, ~35–50% smaller — don't switch to lossy, it would soften the pixel
+art). When a PNG changes, regenerate its twin or the site keeps showing the old
+art:
+
+```
+cwebp -lossless -z 9 "assets/site/joe.png" -o "assets/site/joe.webp"
+```
+
+Priorities on the landing page: the two visible sprites are `fetchpriority="high"`,
+the hover-only outfit sprites and the RSVP success image (hidden until submit)
+are `fetchpriority="low"`, so they never compete with what's on screen.
 
 Real event details pulled from that handoff (confirm before changing):
 - **Wedding:** Madrid, 2027-09-19
@@ -129,7 +152,8 @@ credits (hidden on narrow phones).
   the end of the page instead of covering the footnote.
 - **Art:** both pages use the same two-print composition: the first image
   behind, the second tilted on top. Images live in
-  `game/assets/illustrations/locations/`. The wedding page uses `casa de burgos
+  `game/assets/illustrations/locations/` (pages load the `.webp` twins — see
+  "Image weight"). The wedding page uses `casa de burgos
   01.png` (behind) and `02.png` (on top); their white frames are baked into the
   PNGs. The after party uses `pub 01.png` (Tempe Hotel front, behind) and `pub
   02.png` (beer garden, on top), which are **unframed** — `after-party/index.html`
@@ -214,6 +238,9 @@ How it works:
   page's `‹ EXIT` links back to `../`.
 - **Site → jukebox:** the "BONUS / THE JUKE-BOX" card in the same grid, links
   to `jukebox/`. The jukebox's `‹ EXIT` links back to `../`.
+- **RSVP → jukebox:** the RSVP page's success screen ("GG!") ends with a
+  pink "ADD YOUR SONGS TO THE JUKE-BOX ▸" button linking to `../jukebox/`, so
+  a guest who just confirmed is invited straight into the soundtrack list.
 - **Game → site:** `game/src/config/tuning.js` → `RSVP_URL`. Currently
   `null` (shows "RSVP details coming soon" on the game's ending screen).
   Once the site has a real RSVP destination, set it there — the game's

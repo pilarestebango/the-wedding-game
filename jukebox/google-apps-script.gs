@@ -30,8 +30,8 @@
 
 const SPREADSHEET_ID = '';        // the RSVP spreadsheet; empty = the Sheet this script is bound to
 const SHEET_NAME = 'Songs';       // the tab songs are written to
-const MAX_SONGS_PER_GUEST = 10;   // songs one guest can have on the list at once
-const MAX_ATTEMPTS_PER_GUEST = 30; // rows per guest ever, incl. removed ones (add/remove loops)
+const MAX_SONGS_PER_GUEST = 50;   // songs one guest can have on the list at once
+const MAX_ATTEMPTS_PER_GUEST = 70; // rows per guest ever, incl. removed ones (add/remove loops)
 const MAX_ROWS = 1500;            // whole-Sheet ceiling, in case someone scripts the endpoint
 const MAX_GUEST_LEN = 24;
 const MAX_TYPED_LEN = 80;
@@ -243,4 +243,28 @@ function json_(obj) {
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Run from the editor (pick checkSetup > Run) after pasting the script or whenever adding
+// songs fails. It walks the steps of adding a song without writing a row, so Google shows
+// its authorization prompt here and the first thing that breaks is named in the log,
+// instead of the page's bare "something went wrong".
+function checkSetup() {
+  if (!SPREADSHEET_ID && !SpreadsheetApp.getActiveSpreadsheet()) {
+    throw new Error('Paste the RSVP spreadsheet ID into SPREADSHEET_ID at the top of this file.');
+  }
+  const sheet = getSheet_();
+  console.log('Sheet OK: "' + SHEET_NAME + '" tab in "' + sheet.getParent().getName() + '", ' + readRows_(sheet).length + ' song rows.');
+
+  const testId = '1422648513'; // Dancing Queen
+  const code = UrlFetchApp.fetch('https://itunes.apple.com/lookup?id=' + testId, { muteHttpExceptions: true }).getResponseCode();
+  console.log('Apple lookup: HTTP ' + code + (code === 200 ? '' : ' - adding songs fails until this is 200.'));
+  const song = lookupTrack_(testId);
+  if (!song) throw new Error('Apple answered, but lookupTrack_ found no song in the reply.');
+  console.log('Song OK: ' + song.title + ' - ' + song.artist + (song.previewUrl ? ' (preview saved)' : ' (NO preview url)'));
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  lock.releaseLock();
+  console.log('Lock OK. Setup looks good.');
 }

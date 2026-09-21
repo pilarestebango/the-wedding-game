@@ -17,6 +17,13 @@ import { t } from '../config/i18n.js';
 
 const STYLE_ID = 'touch-controls-style';
 
+// The D-pad's arrow is drawn, not typed as "▶": Press Start 2P has no such glyph, so
+// each platform falls back to a system font whose line metrics leave the arrow off
+// centre in its button (and iOS swaps in a coloured emoji). The triangle's box is
+// symmetric about its middle, so the button's flex centring puts it dead centre.
+const PLAY_ICON = '<svg viewBox="0 0 10 10" width="18" height="18" aria-hidden="true">'
+  + '<polygon points="1,0 9,5 1,10" fill="currentColor"/></svg>';
+
 function injectStyles() {
   if (document.getElementById(STYLE_ID)) return;
   const style = document.createElement('style');
@@ -75,7 +82,7 @@ function injectStyles() {
       box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
     }
     .tc-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0,0,0,0.4); }
-    .tc-dpad { font-size: 20px; border-color: ${CSS_COLORS.gold}; }
+    .tc-dpad { border-color: ${CSS_COLORS.gold}; }
     .tc-jump { border-color: ${CSS_COLORS.gold}; }
     /* The primary mash/confirm button (READY!/DRINK!/TALK!/GO!/PROPOSE!/
        DANCE!) — a square, full-width bar rather than a small circle, since
@@ -110,7 +117,9 @@ export class TouchControls {
     this.root = document.createElement('div');
     this.root.className = 'touch-controls';
 
-    this.dpadRight = this._makeButton('▶', 'tc-btn tc-dpad');
+    this.dpadRight = this._makeButton('', 'tc-btn tc-dpad');
+    this.dpadRight.innerHTML = PLAY_ICON;
+    this.dpadRight.setAttribute('aria-label', '▶'); // the icon has no text of its own
     const leftGroup = document.createElement('div');
     leftGroup.className = 'tc-group';
     leftGroup.appendChild(this.dpadRight);

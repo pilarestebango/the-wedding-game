@@ -80,7 +80,7 @@ const STRINGS = {
     charSelectHint: 'TOCA A UN PERSONAJE PARA EMPEZAR',
     loading: 'CARGANDO... {pct}%',
 
-    level1Title: 'NIVEL 1 — SOLTERÍA',
+    level1Title: 'NIVEL 1 — LA VIDA LOCA',
 
     firstDateTitle: 'LA PRIMERA CITA',
     loopLabel: 'RONDA {n} / {total}',

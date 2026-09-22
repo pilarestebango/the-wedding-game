@@ -1062,36 +1062,51 @@
     state.searchState = 'searching';
     renderResults();
     searchAbort = new AbortController();
+    let data;
     try {
       const url = ITUNES_SEARCH + '?media=music&entity=song&limit=14&term=' + encodeURIComponent(term);
       const res = await fetch(url, { signal: searchAbort.signal });
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      const seen = new Set();
-      const results = [];
-      for (const r of data.results || []) {
-        if (r.kind !== 'song' || !r.trackName) continue;
-        const item = {
-          source: 'itunes',
-          trackId: String(r.trackId),
-          title: r.trackName,
-          artist: r.artistName || '',
-          previewUrl: r.previewUrl || '',
-        };
-        // The same song shows up once per album/single — keep the first.
-        if (seen.has(trackKey(item))) continue;
-        seen.add(trackKey(item));
-        results.push(item);
-        if (results.length === 8) break;
-      }
-      searchCache.set(cacheKey, results);
-      state.results = results;
-      state.searchState = 'done';
+      data = await res.json();
     } catch (err) {
       if (err.name === 'AbortError') return; // a newer search took over
-      state.results = [];
-      state.searchState = 'error';
+      // On real iPhone/iPad Safari, iTunes redirects this fetch to a musics:// deep link
+      // instead of returning JSON, which fetch() can't follow — it always fails, not just
+      // sometimes. Retry once through the Apps Script backend, which isn't a browser request
+      // and so never gets that redirect.
+      if (!JUKEBOX_ENDPOINT) { state.results = []; state.searchState = 'error'; renderResults(); return; }
+      try {
+        const res = await fetch(JUKEBOX_ENDPOINT + '?action=search&term=' + encodeURIComponent(term), { signal: searchAbort.signal });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        data = await res.json();
+      } catch (err2) {
+        if (err2.name === 'AbortError') return;
+        state.results = [];
+        state.searchState = 'error';
+        renderResults();
+        return;
+      }
     }
+    const seen = new Set();
+    const results = [];
+    for (const r of data.results || []) {
+      if (r.kind !== 'song' || !r.trackName) continue;
+      const item = {
+        source: 'itunes',
+        trackId: String(r.trackId),
+        title: r.trackName,
+        artist: r.artistName || '',
+        previewUrl: r.previewUrl || '',
+      };
+      // The same song shows up once per album/single — keep the first.
+      if (seen.has(trackKey(item))) continue;
+      seen.add(trackKey(item));
+      results.push(item);
+      if (results.length === 8) break;
+    }
+    searchCache.set(cacheKey, results);
+    state.results = results;
+    state.searchState = 'done';
     renderResults();
   }
 

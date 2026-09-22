@@ -1,8 +1,10 @@
 // Jukebox backend for Pilar & Joe's wedding site — same idea as the RSVP form's
 // script (rsvp/google-apps-script.gs): it runs on Google's infra, not ours, so
 // the site can stay a static/no-backend build. Guests search songs on the page
-// (Apple's iTunes Search API, straight from the browser); this script only
-// stores and serves the shared song list.
+// (Apple's iTunes Search API, straight from the browser); this script stores
+// and serves the shared song list, and also proxies a search when the guest's
+// own browser can't reach iTunes directly (see searchTracks_ below — this is
+// the common case on real iPhones, not an edge case).
 //
 // The songs go in a "Songs" tab of the SAME spreadsheet as the RSVPs (the one
 // with the guest list), so everything lives in one file. Every submitted song
@@ -46,7 +48,9 @@ const COL = {
 };
 
 function doGet(e) {
-  const guestId = cleanGuestId_(e && e.parameter && e.parameter.guestId);
+  const p = (e && e.parameter) || {};
+  if (p.action === 'search') return json_(searchTracks_(p.term));
+  const guestId = cleanGuestId_(p.guestId);
   return json_(Object.assign({ ok: true, status: 'list' }, buildList_(readRows_(getSheet_()), guestId)));
 }
 
@@ -188,6 +192,25 @@ function getSheet_() {
     sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
   }
   return sheet;
+}
+
+// Fallback for the page's own search: on real iPhone/iPad Safari, iTunes' search endpoint
+// redirects the browser's fetch() to a musics:// deep link instead of returning JSON (it's
+// trying to hand the tap off to the Music app), which fetch() can't follow and always fails.
+// A server-side request isn't sent by a browser at all, so it never gets that redirect — the
+// page calls this once its own direct attempt throws. Same endpoint and shape iTunes returns,
+// so the page's existing result-parsing code doesn't need to know which path it came from.
+function searchTracks_(rawTerm) {
+  const term = cleanText_(rawTerm, 100);
+  if (term.length < 2) return { results: [] };
+  const url = 'https://itunes.apple.com/search?media=music&entity=song&limit=14&term=' + encodeURIComponent(term);
+  const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  if (res.getResponseCode() !== 200) return { results: [] };
+  try {
+    return { results: JSON.parse(res.getContentText()).results || [] };
+  } catch (err) {
+    return { results: [] };
+  }
 }
 
 function lookupTrack_(rawId) {

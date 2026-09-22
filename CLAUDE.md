@@ -207,6 +207,20 @@ How it works:
   API** (free, no key, CORS-open, 30 s `previewUrl`). Spotify was ruled out:
   a dev app now needs a Premium owner, refresh tokens expire every 6 months,
   and new apps get no `preview_url`.
+  - **iOS Safari exception:** on real iPhone/iPad Safari, iTunes' search endpoint
+    redirects the browser's `fetch()` to a `musics://` deep link instead of
+    returning JSON (it's trying to hand the tap off to the Music app) — CORS
+    correctly refuses to follow a redirect to a non-http(s) scheme, so the
+    request always fails, every time, for every guest on that browser (verified
+    with real WebKit, not just Chromium — this isn't intermittent). Chrome/CriOS
+    on iOS, Android, and desktop Safari are unaffected; only genuine Mobile
+    Safari triggers it. `runSearch()` in `jukebox/index.html` catches that
+    failure and retries once through `JUKEBOX_ENDPOINT + '?action=search&term='`,
+    which `google-apps-script.gs`'s `doGet` proxies to the same iTunes endpoint
+    via `UrlFetchApp` — a server-side request never gets that redirect. Preview
+    playback itself is unaffected (it's a plain `<audio>` src to a static CDN
+    URL, not a fetch to `/search`). **Redeploy the Apps Script** (see the file's
+    header) whenever `searchTracks_`/`doGet` changes, same as any other edit to it.
 - **The list** lives in the **"Songs" tab of the RSVP spreadsheet** (the guest
   list), behind `jukebox/google-apps-script.gs` (`JUKEBOX_ENDPOINT` in the page
   — empty means "not wired up yet" and the page says so). It's a separate Apps

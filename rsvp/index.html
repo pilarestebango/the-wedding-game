@@ -387,8 +387,8 @@
   </div>
 
   <form id="rsvp-form">
-    <h1 class="heading" data-i18n="headingWho">WHO IS<br />COMING?</h1>
-    <p class="lead" data-i18n="lead">ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.</p>
+    <h1 class="heading" data-i18n="headingWho">ARE YOU PLANNING<br />TO COME?</h1>
+    <p class="lead" data-i18n="lead">LET US KNOW YOUR PLANS. ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.</p>
 
     <div class="players" id="players"></div>
 
@@ -419,7 +419,7 @@
     <hr class="divider" />
 
     <h2 class="field-heading" data-i18n="messageHeading">SEND US A MESSAGE</h2>
-    <p class="field-caption" data-i18n="messageCaption">WE REALLY WILL BE VERY HAPPY IF YOU DO. A JOKE, A MEMORY, A WISH &mdash; BONUS POINTS FOR PUNS.</p>
+    <p class="field-caption" data-i18n="messageCaption">WE REALLY WILL BE VERY HAPPY IF YOU DO. A JOKE, A MEMORY, A WISH. BONUS POINTS FOR PUNS.</p>
     <textarea class="note-field" id="message" placeholder="WRITE US SOMETHING NICE_" data-i18n-placeholder="messagePlaceholder"></textarea>
 
     <button type="button" class="requirements-link" id="requirements-toggle" aria-expanded="false" aria-controls="requirements-panel" data-i18n="requirementsLink">ANY SPECIAL REQUIREMENTS?</button>
@@ -434,8 +434,8 @@
 
   <div class="success" id="rsvp-success" hidden>
     <img src="../assets/site/rsvp-success.webp" alt="Pilar and Joe, pixel art" decoding="async" fetchpriority="low" />
-    <div class="checkmark">GG!</div>
-    <p>RSVP RECEIVED &mdash; SEE YOU THERE.</p>
+    <div class="checkmark" data-i18n="successCheckmark">THANKS!</div>
+    <p>MESSAGE RECEIVED &mdash; SEE YOU THERE.</p>
     <p class="jukebox-ask" data-i18n="jukeboxAsk">BONUS ROUND: WHAT SONG WILL GET YOU ON THE DANCE FLOOR?</p>
     <a class="jukebox-cta" href="../jukebox/" data-i18n="jukeboxCta">ADD YOUR SONGS TO THE <span class="nowrap">JUKE-BOX &#9656;</span></a>
   </div>
@@ -457,8 +457,8 @@
       exit: '&lsaquo; EXIT',
       topbarTitle: 'LVL 0 &middot; RSVP',
       creditsLabel: 'CREDITS {n}',
-      headingWho: 'WHO IS<br />COMING?',
-      lead: 'ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.',
+      headingWho: 'ARE YOU PLANNING<br />TO COME?',
+      lead: 'LET US KNOW YOUR PLANS. ONE ROW PER HUMAN. TICK THE BOX IF SAID HUMAN IS SMALL.',
       playerOneLabel: 'PLAYER 1',
       plusOneLabel: 'PLAYER {n}',
       removeLabel: '− REMOVE',
@@ -470,7 +470,7 @@
       levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">SYDNEY</span><span class="caption">23.10.27</span>',
       levelBoth: '<span class="kicker">BOTH!</span><span class="title2">LEGEND MODE</span><span class="caption">TWO CONTINENTS</span>',
       messageHeading: 'SEND US A MESSAGE',
-      messageCaption: 'WE REALLY WILL BE VERY HAPPY IF YOU DO. A JOKE, A MEMORY, A WISH &mdash; BONUS POINTS FOR PUNS.',
+      messageCaption: 'WE REALLY WILL BE VERY HAPPY IF YOU DO. A JOKE, A MEMORY, A WISH. BONUS POINTS FOR PUNS.',
       messagePlaceholder: 'WRITE US SOMETHING NICE_',
       requirementsLink: 'ANY SPECIAL REQUIREMENTS?',
       requirementsCaption: 'ALLERGIES, VEGAN, ACCESS NEEDS, &ldquo;NO CORIANDER EVER&rdquo;. BE HONEST.',
@@ -479,7 +479,8 @@
       sendingLabel: 'SENDING…',
       sendHintDefault: 'ENTER AT LEAST ONE NAME TO CONTINUE',
       sendHintError: 'SOMETHING WENT WRONG — CHECK YOUR CONNECTION AND TRY AGAIN.',
-      successOk: 'RSVP RECEIVED — SEE YOU THERE.',
+      successOk: 'MESSAGE RECEIVED — SEE YOU THERE.',
+      successCheckmark: 'THANKS!',
       successNotConfigured: "This form isn't wired up to send yet — tell Joe.",
       jukeboxAsk: 'BONUS ROUND: WHAT SONG WILL GET YOU ON THE DANCE FLOOR?',
       jukeboxCta: 'ADD YOUR SONGS TO THE <span class="nowrap">JUKE-BOX &#9656;</span>',
@@ -489,8 +490,8 @@
       exit: '&lsaquo; SALIR',
       topbarTitle: 'NIVEL 0 &middot; RSVP',
       creditsLabel: 'CRÉDITOS {n}',
-      headingWho: '&iquest;QUIEN<br />VIENE?',
-      lead: 'UNA FILA POR HUMANO. MARCA LA CASILLA SI ES UN PEQUE.',
+      headingWho: '&iquest;TE APETECE<br />APUNTARTE?',
+      lead: 'EARLY CHECK IN. UNA FILA POR HUMANO. MARCA LA CASILLA SI ES UN PEQUE.',
       playerOneLabel: 'JUGADOR 1',
       plusOneLabel: 'JUGADOR {n}',
       removeLabel: '− QUITAR',
@@ -502,7 +503,7 @@
       levelAfterparty: '<span class="kicker">AFTER PARTY</span><span class="title2">S&Iacute;DNEY</span><span class="caption">23.10.27</span>',
       levelBoth: '<span class="kicker">&iexcl;AMBOS!</span><span class="title2">MODO LEYENDA</span><span class="caption">DOS CONTINENTES</span>',
       messageHeading: 'M&Aacute;NDANOS UN MENSAJE',
-      messageCaption: 'DE VERDAD NOS HAR&Aacute;S MUY FELICES. UN CHISTE, UN RECUERDO, UN DESEO &mdash; PUNTOS EXTRA POR LOS JUEGOS DE PALABRAS.',
+      messageCaption: 'DE VERDAD NOS HAR&Aacute;S MUY FELICES. UN CHISTE, UN RECUERDO, UN DESEO. PUNTOS EXTRA SI HAY CACHONDEO.',
       messagePlaceholder: 'ESCRÍBENOS ALGO BONITO_',
       requirementsLink: '&iquest;ALG&Uacute;N REQUISITO ESPECIAL?',
       requirementsCaption: 'ALERGIAS, VEGANO, ACCESIBILIDAD, &laquo;NUNCA ESPECIALITO&raquo;. S&Eacute; SINCERO.',
@@ -511,7 +512,8 @@
       sendingLabel: 'ENVIANDO…',
       sendHintDefault: 'INTRODUCE AL MENOS UN NOMBRE PARA CONTINUAR',
       sendHintError: 'ALGO FALLÓ — REVISA TU CONEXIÓN E INTÉNTALO DE NUEVO.',
-      successOk: 'RSVP RECIBIDO — ¡NOS VEMOS ALLÍ!',
+      successOk: 'MENSAJE RECIBIDO — NOS VEMOS.',
+      successCheckmark: '&iexcl;GRACIAS!',
       successNotConfigured: 'Este formulario aún no está conectado — avísale a Joe.',
       jukeboxAsk: 'RONDA BONUS: &iquest;QU&Eacute; CANCI&Oacute;N TE SACA A BAILAR?',
       jukeboxCta: 'A&Ntilde;ADE TUS CANCIONES A LA <span class="nowrap">JUKE-BOX &#9656;</span>',

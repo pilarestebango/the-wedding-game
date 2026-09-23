@@ -19,7 +19,9 @@
 //      doesn't update a live deployment.
 
 const NOTIFY_EMAIL = 'pilar.esteban@gmail.com';
-const HEADERS = ['Timestamp', 'Guests', 'Small humans', 'Levels', 'Special requirements', 'Message'];
+// Email/Phone are appended at the end, not inserted earlier, so existing rows'
+// columns (Levels, Special requirements, Message) don't shift under the new header.
+const HEADERS = ['Timestamp', 'Guests', 'Small humans', 'Levels', 'Special requirements', 'Message', 'Email', 'Phone'];
 
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
@@ -43,6 +45,8 @@ function doPost(e) {
     data.levels || '—',
     data.requirements || '—',
     data.message || '—',
+    data.email || '—',
+    data.phone || '—',
   ]);
 
   MailApp.sendEmail({
@@ -51,6 +55,8 @@ function doPost(e) {
     body: [
       'Guests: ' + guestNames,
       'Small humans: ' + (childNames || 'none'),
+      'Email: ' + (data.email || 'none given'),
+      'Phone: ' + (data.phone || 'none given'),
       'Levels: ' + (data.levels || 'not specified'),
       'Special requirements: ' + (data.requirements || 'none given'),
       'Message: ' + (data.message || 'none given'),

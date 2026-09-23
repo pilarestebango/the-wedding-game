@@ -140,6 +140,8 @@
   .name-input:focus { border-color: var(--cyan); }
   .name-input::placeholder { color: #a79cd6; }
 
+  .contact-input { margin-top: 10px; }
+
   .child-check {
     display: flex;
     align-items: center;
@@ -463,6 +465,8 @@
       plusOneLabel: 'PLAYER {n}',
       removeLabel: '− REMOVE',
       namePlaceholder: 'YOUR NAME',
+      emailPlaceholder: 'YOUR EMAIL',
+      phonePlaceholder: 'YOUR PHONE',
       childLabel: 'SMALL HUMAN?',
       addPlusOne: '+ ADD PLUS ONE',
       headingLevels: 'PICK YOUR<br />LEVELS',
@@ -496,6 +500,8 @@
       plusOneLabel: 'JUGADOR {n}',
       removeLabel: '− QUITAR',
       namePlaceholder: 'TU NOMBRE',
+      emailPlaceholder: 'TU EMAIL',
+      phonePlaceholder: 'TU TELÉFONO',
       childLabel: '¿ES PEQUE?',
       addPlusOne: '+ A&Ntilde;ADIR ACOMPA&Ntilde;ANTE',
       headingLevels: 'ELIGE TU<br />NIVEL',
@@ -536,6 +542,7 @@
   const state = {
     players: [{ name: '', child: false }],
     level: null,
+    contact: { email: '', phone: '' },
   };
 
   // data-level stays "wedding"/"afterparty"/"both" (drives the CSS selected-
@@ -595,6 +602,24 @@
         updateSendState();
       });
       box.appendChild(input);
+
+      if (i === 0) {
+        const email = document.createElement('input');
+        email.type = 'email';
+        email.className = 'name-input contact-input';
+        email.placeholder = t('emailPlaceholder');
+        email.value = state.contact.email;
+        email.addEventListener('input', () => { state.contact.email = email.value; });
+        box.appendChild(email);
+
+        const phone = document.createElement('input');
+        phone.type = 'tel';
+        phone.className = 'name-input contact-input';
+        phone.placeholder = t('phonePlaceholder');
+        phone.value = state.contact.phone;
+        phone.addEventListener('input', () => { state.contact.phone = phone.value; });
+        box.appendChild(phone);
+      }
 
       if (i > 0) {
         const checkRow = document.createElement('label');
@@ -688,6 +713,8 @@
 
     const payload = {
       guests,
+      email: state.contact.email.trim(),
+      phone: state.contact.phone.trim(),
       levels: LEVEL_SAVE_VALUES[state.level] || 'not specified',
       message: messageEl.value.trim(),
       requirements: requirementsEl.value.trim(),

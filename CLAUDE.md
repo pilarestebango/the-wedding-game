@@ -15,7 +15,7 @@ This repo holds related, independently-browsable static sites for Pilar
   own **`game/CLAUDE.md`** and **`game/GAME_SPEC.md`** — read those before
   touching anything under `game/`; this file doesn't duplicate them.
 - **`/rsvp/`** — the RSVP form (posts to a Google Apps Script → Google Sheet,
-  see `rsvp/google-apps-script.gs`).
+  see `google-apps-script.gs` at the repo root).
 - **`/wedding/`** and **`/after-party/`** — the two level pages (LVL 1 Madrid,
   LVL 2 Sydney). See "The level pages" below.
 - **`/jukebox/`** — **the Juke-Box**, where guests search songs, hear a
@@ -26,10 +26,11 @@ This repo holds related, independently-browsable static sites for Pilar
 
 - Vanilla HTML/CSS/JS (ES6+), no framework, no bundler — same zero-build
   philosophy as the game (see `game/CLAUDE.md`).
-- No backend of our own. RSVP and the jukebox talk to Google Apps Script web
-  apps that run on Google's infrastructure, so the site itself stays static.
-  Both write to the same Google Sheet: RSVPs in its first tab, the jukebox's
-  songs in a "Songs" tab.
+- No backend of our own. RSVP and the jukebox both talk to the same Google
+  Apps Script web app (`google-apps-script.gs` at the repo root), which runs
+  on Google's infrastructure so the site itself stays static. It writes to
+  one Google Sheet: RSVPs in its first tab, the jukebox's songs in a "Songs"
+  tab.
 - Local dev: VS Code "Live Server" extension, or `npx serve .` from the repo
   root — this serves both `/` and `/game/` together.
 
@@ -87,10 +88,11 @@ deliberate exception to the "pixelated" rule above, per the design.
 
 ```
 index.html              # wedding site landing page
-rsvp/                    # RSVP form + its Apps Script (google-apps-script.gs)
+google-apps-script.gs    # shared RSVP + Jukebox backend (one Apps Script project — see "The jukebox")
+rsvp/                    # RSVP form: index.html
 wedding/                 # LVL 1 — the wedding (Madrid): index.html
 after-party/             # LVL 2 — the after party (Sydney): index.html
-jukebox/                 # the Juke-Box: index.html + google-apps-script.gs
+jukebox/                 # the Juke-Box: index.html
 assets/site/             # site-only images (joe, pili, +wedding variants, rsvp-success): .png + .webp
 game/                     # the game — see game/CLAUDE.md and game/GAME_SPEC.md
 reference/                # design source material, not shipped:
@@ -216,25 +218,30 @@ How it works:
     on iOS, Android, and desktop Safari are unaffected; only genuine Mobile
     Safari triggers it. `runSearch()` in `jukebox/index.html` catches that
     failure and retries once through `JUKEBOX_ENDPOINT + '?action=search&term='`,
-    which `google-apps-script.gs`'s `doGet` proxies to the same iTunes endpoint
-    via `UrlFetchApp` — a server-side request never gets that redirect. Preview
-    playback itself is unaffected (it's a plain `<audio>` src to a static CDN
-    URL, not a fetch to `/search`). **Redeploy the Apps Script** (see the file's
-    header) whenever `searchTracks_`/`doGet` changes, same as any other edit to it.
+    which the repo-root `google-apps-script.gs`'s `doGet` proxies to the same
+    iTunes endpoint via `UrlFetchApp` — a server-side request never gets that
+    redirect. Preview playback itself is unaffected (it's a plain `<audio>`
+    src to a static CDN URL, not a fetch to `/search`). **Redeploy the Apps
+    Script** (see the file's header) whenever `searchTracks_`/`doGet`
+    changes, same as any other edit to it.
 - **The list** lives in the **"Songs" tab of the RSVP spreadsheet** (the guest
-  list), behind `jukebox/google-apps-script.gs` (`JUKEBOX_ENDPOINT` in the page
-  — empty means "not wired up yet" and the page says so). It's a separate Apps
-  Script project from the RSVP one (a project can only have one `doPost`) that
-  opens the spreadsheet via `SPREADSHEET_ID`. That ID is deliberately left
-  empty in the repo (public, and the ID is what opens the guest list) — paste
-  it in the Apps Script editor at deploy time. The RSVP script writes to the
-  spreadsheet's *first* tab (`getSheets()[0]`), not the active one, so the
-  Songs tab (created after it on first use) can't catch RSVPs. The script
-  re-fetches the track from iTunes by id (client strings are never trusted),
-  dedupes, caps songs per guest
-  (`MAX_SONGS_PER_GUEST`), and soft-deletes removals (`Status = removed`).
-  Each row has an "Open in Spotify" link so the couple can move songs into a
-  playlist. Songs iTunes doesn't know can be added "as typed" (`Source = typed`).
+  list), behind the repo-root `google-apps-script.gs` (`JUKEBOX_ENDPOINT` in
+  the page — empty means "not wired up yet" and the page says so). One Apps
+  Script project serves both the jukebox and the RSVP form — a project can
+  only have one `doPost`/`doGet`, so `doPost` routes on the request shape
+  (the jukebox always sends `{action: 'add'|'remove', guestId, ...}`; the
+  RSVP form never does) and `doGet` is jukebox-only. It opens the spreadsheet
+  via `SPREADSHEET_ID` (empty = the Sheet it's bound to) — deliberately left
+  empty in the repo (public, and the ID is what opens the guest list); only
+  needed in the Apps Script editor if it's run as a standalone project rather
+  than bound to the Sheet. `submitRsvp_` writes to the spreadsheet's *first*
+  tab (`getSheets()[0]`), not the active one, so the Songs tab (created after
+  it on first use) can't catch RSVPs. The jukebox side re-fetches the track
+  from iTunes by id (client strings are never trusted), dedupes, caps songs
+  per guest (`MAX_SONGS_PER_GUEST`), and soft-deletes removals
+  (`Status = removed`). Each row has an "Open in Spotify" link so the couple
+  can move songs into a playlist. Songs iTunes doesn't know can be added "as
+  typed" (`Source = typed`).
 - A browser is identified only by a random `jukebox-guest-id` in localStorage —
   that's what makes "ADDED BY YOU" rows removable. It's a casual guard, not auth.
 - The POST uses `Content-Type: text/plain` on purpose: it keeps the request a CORS

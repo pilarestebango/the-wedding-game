@@ -449,7 +449,7 @@
 </div>
 
 <script>
-  // Google Apps Script Web App deployment (see rsvp/google-apps-script.gs).
+  // Google Apps Script Web App deployment (see google-apps-script.gs at the repo root).
   const RSVP_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzDaqij-lDDiusKhQbK4ZN6emuMoHLIZEgHYcJihCynHkdRdwGyYVFcG8XcH62WkjPP/exec';
 
   // EN/ES copy. Shared LANG_KEY with the main site (/index.html) and the
@@ -730,7 +730,7 @@
     hintEl.style.visibility = 'hidden';
 
     if (!RSVP_ENDPOINT) {
-      console.warn('RSVP_ENDPOINT is not configured yet — see rsvp/google-apps-script.gs for setup.');
+      console.warn('RSVP_ENDPOINT is not configured yet — see google-apps-script.gs at the repo root for setup.');
       successState = 'notConfigured';
       successEl.querySelector('p').textContent = t('successNotConfigured');
       formEl.hidden = true;

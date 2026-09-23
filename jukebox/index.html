@@ -1554,7 +1554,10 @@
 
   drawVinyl();
   els.nameInput.value = guestName; // remembered from last time, still editable
-  const storedLang = storeGet(LANG_KEY);
+  // A shared link like "?lang=es" overrides the stored choice, so it opens
+  // (and, via LANG_KEY above, keeps the rest of the site) in that language.
+  const urlLang = new URLSearchParams(location.search).get('lang');
+  const storedLang = (urlLang === 'en' || urlLang === 'es') ? urlLang : storeGet(LANG_KEY);
   applyLanguage(storedLang === 'en' || storedLang === 'es' ? storedLang : 'en');
   loadList();
 </script>

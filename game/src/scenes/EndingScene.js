@@ -56,7 +56,9 @@ export class EndingScene extends Phaser.Scene {
           color: CSS_COLORS.cyan,
         })
         .setOrigin(0.5);
-      btn.on('pointerdown', () => window.open(RSVP_URL, '_blank', 'noopener'));
+      btn.on('pointerdown', () => {
+        window.location.href = RSVP_URL;
+      });
     } else {
       this.add
         .text(centerX, height - 100, t('rsvpComingSoon'), {

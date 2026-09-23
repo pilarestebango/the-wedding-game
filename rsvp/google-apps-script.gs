@@ -1,12 +1,20 @@
 // RSVP form backend for Pilar & Joe's wedding site — runs on Google's
 // infra, not ours, so the site can stay a static/no-backend build.
 //
-// Setup (one-time, ~5 minutes):
+// Setup (one-time, ~5 minutes). This can be either bound to the Sheet
+// (Extensions > Apps Script from inside it, leaving SPREADSHEET_ID empty) or
+// its own standalone project at script.google.com, same as the jukebox's —
+// if you do the latter, paste the Sheet's ID into SPREADSHEET_ID below, or
+// every RSVP will silently fail to save (getActiveSpreadsheet() has nothing
+// to resolve to outside a bound script, and the page's fetch can't see the
+// failure — see the mode: 'no-cors' note in rsvp/index.html):
 //   1. Create a new Google Sheet — this becomes the live RSVP spreadsheet
 //      (Google Sheets, downloadable as .xlsx any time via File > Download).
 //      The jukebox's song list goes in a "Songs" tab of this same spreadsheet.
 //   2. Extensions > Apps Script. Delete the placeholder code and paste this
-//      whole file in.
+//      whole file in. (Or, for a standalone project instead, paste the
+//      spreadsheet's ID — the long string between /d/ and /edit in its URL —
+//      into SPREADSHEET_ID below first.)
 //   3. NOTIFY_EMAIL below already points at pilar.esteban@gmail.com — change
 //      it if you want notifications sent elsewhere.
 //   4. Deploy > New deployment > type "Web app". Execute as "Me", who has
@@ -18,6 +26,7 @@
 //      deployments > edit (pencil) > New version — editing the code alone
 //      doesn't update a live deployment.
 
+const SPREADSHEET_ID = '';        // only needed for a standalone project; empty = the Sheet this script is bound to
 const NOTIFY_EMAIL = 'pilar.esteban@gmail.com';
 // Email/Phone are appended at the end, not inserted earlier, so existing rows'
 // columns (Levels, Special requirements, Message) don't shift under the new header.
@@ -25,9 +34,10 @@ const HEADERS = ['Timestamp', 'Guests', 'Small humans', 'Levels', 'Special requi
 
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
+  const ss = SPREADSHEET_ID ? SpreadsheetApp.openById(SPREADSHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
   // Always the first tab: the jukebox adds a "Songs" tab to this same spreadsheet
   // (jukebox/google-apps-script.gs), and getActiveSheet() could land on it.
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const sheet = ss.getSheets()[0];
 
   // Row 1 is always the header. Rewriting it every time also brings a sheet
   // created by an older version of this script (a "Dietary" column, no

@@ -5,7 +5,7 @@
 export const MASH = {
   drinkTarget: 16, // presses to fill the "drink" meter to 100%
   talkTarget: 16, // presses to grow the "talk" speech bubble to full
-  payTarget: 24, // presses to fill the house "pay" meter
+  payTarget: 27, // presses to fill the house "pay" meter
   proposeTarget: 20, // presses to fill the kneel/propose meter
   tentTarget: 14, // presses to pop the tent
   islandTarget: 14, // presses to leave the island

@@ -131,7 +131,7 @@ are `fetchpriority="low"`, so they never compete with what's on screen.
 
 Real event details pulled from that handoff (confirm before changing):
 - **Wedding:** Madrid, 2027-09-19
-- **After Party:** Sydney, 2027-10-23
+- **After Party:** Sydney, 2027-10-30
 - **RSVP deadline:** 2027-01-07
 
 The site is being built **iteratively, section by section** — the landing

@@ -20,7 +20,8 @@ export class IntroScene extends Phaser.Scene {
 
     const title = this.add
       .text(centerX, height * 0.13, t('introTitle'), { fontFamily: FONTS.heading, fontSize: '40px', color: CSS_COLORS.gold })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(10); // above the black hole's turning aura, which reaches up behind it
     title.setShadow(TITLE_SHADOW.offsetX, TITLE_SHADOW.offsetY, TITLE_SHADOW.color, TITLE_SHADOW.blur);
     fitWidth(title, maxWidth);
 

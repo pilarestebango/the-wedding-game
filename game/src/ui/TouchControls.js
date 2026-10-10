@@ -96,6 +96,9 @@ function injectStyles() {
       border-color: ${CSS_COLORS.red};
       font-size: 16px;
     }
+    /* The getaway game's "continue" bar (START / RETRY / ...): it stands in
+       for the on-canvas button there, so it wears that button's cyan. */
+    .tc-action.tc-confirm { border-color: ${CSS_COLORS.cyan}; }
     .tc-yes { border-color: ${CSS_COLORS.gold}; }
     .tc-no { border-color: ${CSS_COLORS.red}; }
     .tc-hidden { display: none !important; }
@@ -202,9 +205,23 @@ export class TouchControls {
     this.noBtn.textContent = t('noChoice');
   }
 
+  // Whether the bar is on screen at all (a touch device or a narrow window) —
+  // the getaway game uses this to drop an on-canvas button the bar duplicates.
+  isVisible() {
+    return getComputedStyle(this.root).display !== 'none';
+  }
+
   bind(
     actions,
-    { showDpad = false, showLeft = false, showJump = false, showShoot = false, actionLabel = null, showYesNo = false } = {},
+    {
+      showDpad = false,
+      showLeft = false,
+      showJump = false,
+      showShoot = false,
+      actionLabel = null,
+      actionConfirm = false, // cyan "continue" look for the action bar (getaway only)
+      showYesNo = false,
+    } = {},
   ) {
     this.refreshStaticLabels();
     this.currentActions = actions;
@@ -214,6 +231,7 @@ export class TouchControls {
     this.shootBtn.classList.toggle('tc-hidden', !showShoot);
     this.yesBtn.classList.toggle('tc-hidden', !showYesNo);
     this.noBtn.classList.toggle('tc-hidden', !showYesNo);
+    this.actionBtn.classList.toggle('tc-confirm', actionConfirm);
     if (actionLabel) {
       this.actionBtn.textContent = actionLabel;
       this.actionBtn.classList.remove('tc-hidden');

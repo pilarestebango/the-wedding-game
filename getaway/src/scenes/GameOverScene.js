@@ -60,16 +60,32 @@ export class GameOverScene extends Phaser.Scene {
       fitWidth(why, maxWidth);
     }
 
+    // On a phone the touch bar's RETRY is the only button (see addContinueButton).
+    if (!touchControls.isVisible()) this.addRetryButton(centerX, height * 0.82);
+
+    this.actions = new InputActions();
+    this.actions.on('mash', () => this.retry());
+    this.input.keyboard.on('keydown-ENTER', () => this.actions.mash());
+    this.input.keyboard.on('keydown-SPACE', (event) => !event.repeat && this.actions.mash());
+    touchControls.bind(this.actions, { actionLabel: t('retry'), actionConfirm: true });
+    this.events.once('shutdown', () => touchControls.unbind());
+
+    // A player who dies mid-mash would otherwise retry before seeing this.
+    this.time.delayedCall(GAME_OVER.inputDelayMs, () => {
+      this.ready = true;
+    });
+
+    addMuteToggle(this);
+    addLangToggle(this);
+  }
+
+  addRetryButton(x, y) {
     const buttonText = this.add
-      .text(centerX, height * 0.82, t('retry'), {
-        fontFamily: FONTS.heading,
-        fontSize: '16px',
-        color: CSS_COLORS.offWhite,
-      })
+      .text(x, y, t('retry'), { fontFamily: FONTS.heading, fontSize: '16px', color: CSS_COLORS.offWhite })
       .setOrigin(0.5)
       .setDepth(1);
     const button = this.add
-      .rectangle(centerX, height * 0.82, buttonText.width + 56, 56, BLACK)
+      .rectangle(x, y, buttonText.width + 56, 56, BLACK)
       .setStrokeStyle(4, COLORS.offWhite)
       .setInteractive({ useHandCursor: true });
     button.on('pointerdown', () => this.retry());
@@ -83,21 +99,6 @@ export class GameOverScene extends Phaser.Scene {
         buttonText.setColor(this.buttonLit ? CSS_COLORS.red : CSS_COLORS.offWhite);
       },
     });
-
-    this.actions = new InputActions();
-    this.actions.on('mash', () => this.retry());
-    this.input.keyboard.on('keydown-ENTER', () => this.actions.mash());
-    this.input.keyboard.on('keydown-SPACE', (event) => !event.repeat && this.actions.mash());
-    touchControls.bind(this.actions, { actionLabel: t('retry') });
-    this.events.once('shutdown', () => touchControls.unbind());
-
-    // A player who dies mid-mash would otherwise retry before seeing this.
-    this.time.delayedCall(GAME_OVER.inputDelayMs, () => {
-      this.ready = true;
-    });
-
-    addMuteToggle(this);
-    addLangToggle(this);
   }
 
   // The skull, its red halo and its burning eyes, as one container so they

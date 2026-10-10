@@ -72,7 +72,8 @@ browser smooth/anti-alias the art.
 instead of copying them — the full list is `../getaway/src/shared.js`. A few
 things in this game exist only for it and are off by default: the
 `moveLeftStart`/`moveLeftEnd`/`shoot`/`choose` actions in `InputActions`, the left
-arrow and FIRE button in `TouchControls` (`showLeft` / `showShoot`),
+arrow and FIRE button in `TouchControls` (`showLeft` / `showShoot`), its
+`actionConfirm` option (cyan action bar) and `isVisible()`,
 `registerStrings()` in `i18n.js`, the `shoot`/`hit`/`die`/`explode`/`blip` sounds, and
 `CharacterSelectScene`'s overridable `titleKey` / `nextSceneKey`. Check
 `/getaway/` still works after changing any module that file lists. Its unit

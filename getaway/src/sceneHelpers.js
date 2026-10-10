@@ -63,24 +63,27 @@ export function fitWidth(textObj, maxWidth) {
 
 // The outlined button + keyboard (Enter/Space) + full-width touch button that
 // every between-levels screen ends with. All three call the same action.
+// Where the touch bar is showing (phones), its button is the only one: the
+// on-canvas button would just be a second copy of it right above.
 export function addContinueButton(scene, y, label, touchLabel, onPress) {
   const { width } = scene.scale;
-  const text = scene.add
-    .text(width / 2, y, label, { fontFamily: FONTS.heading, fontSize: '12px', color: CSS_COLORS.cyan })
-    .setOrigin(0.5)
-    .setDepth(1);
-  fitWidth(text, width - 72);
-  const box = scene.add
-    .rectangle(width / 2, y, text.displayWidth + 40, 50, COLORS.background)
-    .setStrokeStyle(4, COLORS.cyan)
-    .setInteractive({ useHandCursor: true });
-
   const actions = new InputActions();
   actions.on('mash', onPress);
-  box.on('pointerdown', () => actions.mash());
+  if (!touchControls.isVisible()) {
+    const text = scene.add
+      .text(width / 2, y, label, { fontFamily: FONTS.heading, fontSize: '12px', color: CSS_COLORS.cyan })
+      .setOrigin(0.5)
+      .setDepth(1);
+    fitWidth(text, width - 72);
+    scene.add
+      .rectangle(width / 2, y, text.displayWidth + 40, 50, COLORS.background)
+      .setStrokeStyle(4, COLORS.cyan)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => actions.mash());
+  }
   scene.input.keyboard.on('keydown-ENTER', () => actions.mash());
   scene.input.keyboard.on('keydown-SPACE', (event) => !event.repeat && actions.mash());
-  touchControls.bind(actions, { actionLabel: touchLabel });
+  touchControls.bind(actions, { actionLabel: touchLabel, actionConfirm: true });
   scene.events.once('shutdown', () => touchControls.unbind());
 }
 

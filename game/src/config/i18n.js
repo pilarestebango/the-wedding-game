@@ -73,6 +73,7 @@ const STRINGS = {
     sfxOn: 'SFX ON',
     sfxOff: 'SFX OFF',
     jumpLabel: 'JUMP',
+    shootLabel: 'FIRE',
   },
   es: {
     charSelectTitle: 'PILAR VS JOE',
@@ -141,8 +142,16 @@ const STRINGS = {
     sfxOn: 'SFX SÍ',
     sfxOff: 'SFX NO',
     jumpLabel: 'SALTAR',
+    shootLabel: 'FUEGO',
   },
 };
+
+// Lets a second game that shares these modules (/getaway/) add its own copy,
+// so t() and the shared toggles/touch controls work for both.
+export function registerStrings({ en = {}, es = {} } = {}) {
+  Object.assign(STRINGS.en, en);
+  Object.assign(STRINGS.es, es);
+}
 
 function readStoredLang() {
   try {

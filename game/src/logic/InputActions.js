@@ -3,7 +3,21 @@
 // same methods — game logic never branches on whether input came from a key
 // press or a touch event.
 
-const ACTION_NAMES = ['moveStart', 'moveEnd', 'jump', 'mash', 'confirmYes', 'confirmNo'];
+// moveStart/moveEnd are "move right" (the only direction PILAR vs JOE has);
+// moveLeftStart/moveLeftEnd, shoot and choose (pick dialogue option N) are used
+// by the getaway game (/getaway/).
+const ACTION_NAMES = [
+  'moveStart',
+  'moveEnd',
+  'moveLeftStart',
+  'moveLeftEnd',
+  'jump',
+  'shoot',
+  'mash',
+  'choose',
+  'confirmYes',
+  'confirmNo',
+];
 
 export class InputActions {
   constructor() {
@@ -36,12 +50,28 @@ export class InputActions {
     this.emit('moveEnd');
   }
 
+  moveLeftStart() {
+    this.emit('moveLeftStart');
+  }
+
+  moveLeftEnd() {
+    this.emit('moveLeftEnd');
+  }
+
   jump() {
     this.emit('jump');
   }
 
+  shoot() {
+    this.emit('shoot');
+  }
+
   mash() {
     this.emit('mash');
+  }
+
+  choose(index) {
+    this.emit('choose', index);
   }
 
   confirmYes() {

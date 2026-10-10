@@ -84,6 +84,8 @@ function injectStyles() {
     .tc-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0,0,0,0.4); }
     .tc-dpad { border-color: ${CSS_COLORS.gold}; }
     .tc-jump { border-color: ${CSS_COLORS.gold}; }
+    .tc-dpad-left svg { transform: scaleX(-1); }
+    .tc-shoot { border-color: ${CSS_COLORS.red}; }
     /* The primary mash/confirm button (READY!/DRINK!/TALK!/GO!/PROPOSE!/
        DANCE!) — a square, full-width bar rather than a small circle, since
        it's always the sole visible control when it's shown (see bind()). */
@@ -120,17 +122,24 @@ export class TouchControls {
     this.dpadRight = this._makeButton('', 'tc-btn tc-dpad');
     this.dpadRight.innerHTML = PLAY_ICON;
     this.dpadRight.setAttribute('aria-label', '▶'); // the icon has no text of its own
+    // Left arrow: only the getaway game (/getaway/) moves both ways, see bind().
+    this.dpadLeft = this._makeButton('', 'tc-btn tc-dpad tc-dpad-left');
+    this.dpadLeft.innerHTML = PLAY_ICON;
+    this.dpadLeft.setAttribute('aria-label', '◀');
     const leftGroup = document.createElement('div');
     leftGroup.className = 'tc-group';
+    leftGroup.appendChild(this.dpadLeft);
     leftGroup.appendChild(this.dpadRight);
 
     this.jumpBtn = this._makeButton(t('jumpLabel'), 'tc-btn tc-jump');
+    this.shootBtn = this._makeButton(t('shootLabel'), 'tc-btn tc-shoot');
     this.actionBtn = this._makeButton(t('goLabel'), 'tc-btn tc-action');
     this.yesBtn = this._makeButton(t('yesChoice'), 'tc-btn tc-yes');
     this.noBtn = this._makeButton(t('noChoice'), 'tc-btn tc-no');
     const rightGroup = document.createElement('div');
     rightGroup.className = 'tc-group tc-group-right';
     rightGroup.appendChild(this.jumpBtn);
+    rightGroup.appendChild(this.shootBtn);
     rightGroup.appendChild(this.actionBtn);
     rightGroup.appendChild(this.yesBtn);
     rightGroup.appendChild(this.noBtn);
@@ -140,7 +149,9 @@ export class TouchControls {
     (document.getElementById('app') ?? document.body).appendChild(this.root);
 
     this._wireHoldButton(this.dpadRight, () => this.currentActions?.moveStart(), () => this.currentActions?.moveEnd());
+    this._wireHoldButton(this.dpadLeft, () => this.currentActions?.moveLeftStart(), () => this.currentActions?.moveLeftEnd());
     this._wireTapButton(this.jumpBtn, () => this.currentActions?.jump());
+    this._wireTapButton(this.shootBtn, () => this.currentActions?.shoot());
     this._wireTapButton(this.actionBtn, () => this.currentActions?.mash());
     this._wireTapButton(this.yesBtn, () => this.currentActions?.confirmYes());
     this._wireTapButton(this.noBtn, () => this.currentActions?.confirmNo());
@@ -186,15 +197,21 @@ export class TouchControls {
   // onLangChange subscription.
   refreshStaticLabels() {
     this.jumpBtn.textContent = t('jumpLabel');
+    this.shootBtn.textContent = t('shootLabel');
     this.yesBtn.textContent = t('yesChoice');
     this.noBtn.textContent = t('noChoice');
   }
 
-  bind(actions, { showDpad = false, showJump = false, actionLabel = null, showYesNo = false } = {}) {
+  bind(
+    actions,
+    { showDpad = false, showLeft = false, showJump = false, showShoot = false, actionLabel = null, showYesNo = false } = {},
+  ) {
     this.refreshStaticLabels();
     this.currentActions = actions;
     this.dpadRight.parentElement.classList.toggle('tc-hidden', !showDpad);
+    this.dpadLeft.classList.toggle('tc-hidden', !showLeft);
     this.jumpBtn.classList.toggle('tc-hidden', !showJump);
+    this.shootBtn.classList.toggle('tc-hidden', !showShoot);
     this.yesBtn.classList.toggle('tc-hidden', !showYesNo);
     this.noBtn.classList.toggle('tc-hidden', !showYesNo);
     if (actionLabel) {
@@ -208,7 +225,9 @@ export class TouchControls {
   unbind() {
     this.currentActions = null;
     this.dpadRight.parentElement.classList.add('tc-hidden');
+    this.dpadLeft.classList.add('tc-hidden');
     this.jumpBtn.classList.add('tc-hidden');
+    this.shootBtn.classList.add('tc-hidden');
     this.actionBtn.classList.add('tc-hidden');
     this.yesBtn.classList.add('tc-hidden');
     this.noBtn.classList.add('tc-hidden');

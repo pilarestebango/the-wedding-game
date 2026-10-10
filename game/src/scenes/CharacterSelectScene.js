@@ -8,8 +8,12 @@ import { touchControls } from '../ui/touchControlsInstance.js';
 import { t } from '../config/i18n.js';
 
 export class CharacterSelectScene extends Phaser.Scene {
-  constructor() {
-    super('CharacterSelect');
+  // key/titleKey/nextSceneKey are overridable so the getaway game
+  // (/getaway/) can reuse this screen with its own title and first level.
+  constructor(key = 'CharacterSelect') {
+    super(key);
+    this.titleKey = 'charSelectTitle';
+    this.nextSceneKey = 'Level1DatingRace';
   }
 
   init(data) {
@@ -22,7 +26,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     touchControls.unbind(); // this screen has no gameplay actions to bind
 
     const title = this.add
-      .text(width / 2, 90, t('charSelectTitle'), {
+      .text(width / 2, 90, t(this.titleKey), {
         fontFamily: FONTS.heading,
         fontSize: '36px',
         color: CSS_COLORS.gold,
@@ -124,7 +128,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     });
     img.on('pointerdown', () => {
       gameState.setCharacter(char);
-      fadeToScene(this, 'Level1DatingRace', { char });
+      fadeToScene(this, this.nextSceneKey, { char });
     });
   }
 }

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Getaway — Pilar &amp; Joe</title>
+<!-- Invite-only: this page is deliberately not linked from the site and kept out of search results. -->
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="../../favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #120B2E;
+    --cyan: #00E5FF;
+    --gold: #FFD400;
+    --red: #E5341F;
+    --muted: #7a6fb0;
+    --off-white: #F2F2F2;
+    --pink: #E96BC8;
+    --border: rgba(122, 111, 176, 0.55);
+    --gutter: clamp(20px, 4vw, 64px);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--off-white);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { color: var(--gold); }
+  a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+  img { image-rendering: pixelated; }
+
+  .page {
+    padding: 28px var(--gutter) 40px;
+  }
+
+  /* ---- topbar: same structure as rsvp/index.html ---- */
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding-bottom: 32px;
+    gap: 12px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .topbar .exit { color: var(--off-white); text-decoration: none; }
+  .topbar .exit:hover { color: var(--gold); }
+  .topbar .date { color: var(--gold); font-weight: bold; }
+
+  @media (max-width: 520px) {
+    /* No room for a third item next to the level title on a phone — the date
+       is right there in the heading anyway. */
+    .topbar .date { display: none; }
+  }
+
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .lang-toggle button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+    font-size: inherit;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .lang-toggle button:hover { color: var(--gold); }
+  .lang-toggle button.active { color: var(--muted); opacity: 1; }
+  .lang-toggle button:not(.active) { opacity: 0.5; }
+
+  .lang-toggle .sep { color: var(--muted); opacity: 0.5; }
+
+  /* ---- layout ----
+     Desktop: info column on the left, photos on the right.
+     Phone: the info column dissolves (display: contents) so its blocks can be
+     interleaved with the photos — heading, photos, details, sticky RSVP bar. */
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(32px, 5vw, 96px);
+  }
+
+  .info {
+    flex: 1 1 0;
+    min-width: 0;
+    font-family: 'Press Start 2P', monospace;
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(30px, 4.1vw, 72px);
+    line-height: 1.35;
+    color: var(--gold);
+    text-shadow: 6px 6px 0 var(--red);
+    font-weight: normal;
+  }
+
+  .when,
+  .where {
+    margin: 0;
+    font-size: clamp(11px, 1.14vw, 20px);
+    line-height: 2.2;
+    text-wrap: balance;
+  }
+
+  .when { margin-top: clamp(24px, 1.9vw, 34px); }
+
+  .details {
+    margin-top: clamp(28px, 3.5vw, 60px);
+    font-size: 9px;
+  }
+
+  .address {
+    font-style: normal;
+    line-height: 2.2;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .t {
+    --c: var(--cyan);
+    display: grid;
+    grid-template-columns: 6em 1fr;
+    column-gap: 14px;
+    align-items: baseline;
+    line-height: 2;
+  }
+
+  .t--pink { --c: var(--pink); }
+  .t--gold { --c: var(--gold); }
+  .t--red { --c: var(--red); }
+
+  .t-time { color: var(--c); }
+
+  /* Hidden until CONTACT_URL is filled in (see the script below). */
+  .cta-bar[hidden] { display: none; }
+
+  .maps {
+    display: inline-block;
+    margin-top: 28px;
+  }
+
+  .cta-bar { margin-top: 30px; }
+
+  .cta {
+    display: inline-block;
+    padding: 20px 24px;
+    background: var(--pink);
+    color: var(--bg);
+    font-size: 10px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    transition: background 120ms steps(2);
+  }
+
+  .cta:hover,
+  .cta:active {
+    background: var(--gold);
+    color: var(--bg);
+  }
+
+  .note {
+    margin: 30px 0 0;
+    font-size: 9px;
+    line-height: 2;
+    color: var(--muted);
+  }
+
+  /* ---- photos: two stacked prints, the second tilted over the first ---- */
+
+  .pics {
+    flex: 1.1 1 0;
+    min-width: 0;
+    max-width: 720px;
+    position: relative;
+    aspect-ratio: 1.18 / 1;
+    margin-top: clamp(0px, 6.3vw, 108px);
+  }
+
+  /* Placeholder prints, drawn as inline SVG until the couple sends pictures
+     of the house. The white frame is CSS padding, as on after-party/ (whose
+     art is unframed too) — swap each .pic for an <img> when the art arrives. */
+  .pic {
+    position: absolute;
+    display: block;
+    width: 75%;
+    padding: 2.6%;
+    background: var(--off-white);
+  }
+
+  .pic svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    shape-rendering: crispEdges;
+  }
+
+  .pic--a { top: 0; left: 0; }
+  .pic--b { right: 4%; bottom: 6.5%; transform: rotate(-8deg); }
+
+  @media (max-width: 860px) {
+    .layout { flex-direction: column; align-items: stretch; gap: 0; }
+    .info { display: contents; }
+
+    .head { order: 1; }
+    .pics { order: 2; flex: none; width: 100%; max-width: none; margin-top: 40px; }
+    .details { order: 3; margin-top: 32px; font-size: 10px; }
+    .cta-bar { order: 4; }
+    .note { order: 5; }
+
+    .title { font-size: clamp(28px, 9vw, 44px); }
+    .when,
+    .where { font-size: 13px; }
+    .when { margin-top: 28px; }
+
+    /* Full-bleed bar pinned to the bottom of the screen. It's a direct flex
+       child of .layout (which spans the whole page), so it stays visible from
+       the first paint and settles into its natural spot at the end. */
+    .cta-bar {
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
+      margin: 36px calc(-1 * var(--gutter)) 0;
+      padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom, 0px));
+      background: var(--bg);
+      border-top: 2px solid var(--border);
+    }
+
+    .cta { display: block; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="exit" href="../../" data-i18n="exit">&lsaquo; EXIT</a>
+      <div class="lang-toggle">
+        <button type="button" class="active" data-lang="en">EN</button>
+        <span class="sep">/</span>
+        <button type="button" data-lang="es">ES</button>
+      </div>
+    </div>
+    <span data-i18n="topbarTitle">SECRET LEVEL &middot; THE GETAWAY</span>
+    <span class="date">13&ndash;18.09.27</span>
+  </div>
+
+  <main class="layout">
+
+    <div class="info">
+      <header class="head">
+        <h1 class="title" data-i18n="heading">THE<br />GETAWAY</h1>
+        <p class="when" data-i18n="when">13 &ndash; 18 SEPTEMBER 2027</p>
+        <p class="where" data-i18n="where">ROBLEDO DE CHAVELA, SIERRA DE MADRID</p>
+      </header>
+
+      <div class="details">
+        <p class="address" data-i18n="intro">A HOUSE IN THE MOUNTAINS NEXT TO MADRID,<br />THE WEEK BEFORE THE WEDDING</p>
+
+        <ul class="timeline">
+          <li class="t"><span class="t-time" data-i18n="f1Label">TRAIN</span><span data-i18n="f1">DIRECT TO MADRID &mdash; 55 MIN</span></li>
+          <li class="t t--pink"><span class="t-time" data-i18n="f2Label">SPOTS</span><span data-i18n="f2">ONLY 10</span></li>
+        </ul>
+
+        <a class="maps" href="https://www.google.com/maps/search/?api=1&amp;query=Robledo+de+Chavela%2C+Madrid" target="_blank" rel="noopener" data-i18n="maps">&#9656; OPEN IN MAPS</a>
+      </div>
+
+      <div class="cta-bar" id="contact-bar" hidden>
+        <a class="cta" id="contact" href="#" target="_blank" rel="noopener" data-i18n="cta">I&rsquo;M IN &mdash; TELL PILAR &amp; JOE &#9656;</a>
+      </div>
+
+      <p class="note" data-i18n="note">MORE DETAILS COMING EVENTUALLY&hellip;</p>
+    </div>
+
+    <div class="pics">
+      <div class="pic pic--a" role="img" aria-label="Placeholder pixel art of mountains under a starry sky">
+        <svg viewBox="0 0 64 48" aria-hidden="true">
+          <rect width="64" height="48" fill="#120B2E" />
+          <rect x="6" y="5" width="2" height="2" fill="#FFD400" /><rect x="22" y="9" width="2" height="2" fill="#00E5FF" />
+          <rect x="40" y="4" width="2" height="2" fill="#F2F2F2" /><rect x="54" y="10" width="2" height="2" fill="#FFD400" />
+          <polygon points="0,38 18,14 36,38" fill="#7a6fb0" />
+          <polygon points="24,38 46,8 64,32 64,38" fill="#7a6fb0" />
+          <polygon points="14,19 18,14 22,19" fill="#F2F2F2" /><polygon points="41,15 46,8 51,15" fill="#F2F2F2" />
+          <rect y="38" width="64" height="10" fill="#00E5FF" />
+        </svg>
+      </div>
+      <div class="pic pic--b" role="img" aria-label="Placeholder pixel art of a house in the mountains">
+        <svg viewBox="0 0 64 48" aria-hidden="true">
+          <rect width="64" height="48" fill="#120B2E" />
+          <polygon points="0,36 20,18 40,36" fill="#7a6fb0" />
+          <rect y="36" width="64" height="12" fill="#00E5FF" />
+          <polygon points="20,24 34,12 48,24" fill="#E5341F" />
+          <rect x="23" y="24" width="22" height="14" fill="#F2F2F2" />
+          <rect x="26" y="27" width="5" height="5" fill="#FFD400" /><rect x="37" y="27" width="5" height="5" fill="#FFD400" />
+          <rect x="32" y="31" width="4" height="7" fill="#120B2E" />
+        </svg>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  // EN/ES copy. Shared LANG_KEY with the main site (/index.html), the RSVP
+  // page and the games — localStorage is scoped per-origin, not per-path, so a
+  // language choice made anywhere carries over automatically.
+  const LANG_KEY = 'wedding-lang';
+
+  // Where the pink button goes — a WhatsApp link ("https://wa.me/34600000000?text=...")
+  // or a "mailto:" address. Empty means "not wired up yet": the button stays
+  // hidden. This repo is public, so whatever goes here is public too.
+  const CONTACT_URL = '';
+
+  const STRINGS = {
+    en: {
+      title: 'The Getaway — Pilar &amp; Joe',
+      exit: '&lsaquo; EXIT',
+      topbarTitle: 'SECRET LEVEL &middot; THE GETAWAY',
+      heading: 'THE<br />GETAWAY',
+      when: '13 &ndash; 18 SEPTEMBER 2027',
+      where: 'ROBLEDO DE CHAVELA, SIERRA DE MADRID',
+      intro: 'A HOUSE IN THE MOUNTAINS NEXT TO MADRID,<br />THE WEEK BEFORE THE WEDDING',
+      f1Label: 'TRAIN', f1: 'DIRECT TO MADRID &mdash; 55 MIN',
+      f2Label: 'SPOTS', f2: 'ONLY 10',
+      maps: '&#9656; OPEN IN MAPS',
+      cta: 'I&rsquo;M IN &mdash; TELL PILAR &amp; JOE &#9656;',
+      note: 'MORE DETAILS COMING EVENTUALLY&hellip;',
+    },
+    es: {
+      title: 'La Escapada — Pilar y Joe',
+      exit: '&lsaquo; SALIR',
+      topbarTitle: 'NIVEL SECRETO &middot; LA ESCAPADA',
+      heading: 'LA<br />ESCAPADA',
+      when: '13 &ndash; 18 DE SEPTIEMBRE DE 2027',
+      where: 'ROBLEDO DE CHAVELA, SIERRA DE MADRID',
+      intro: 'UNA CASA EN LA SIERRA DE MADRID,<br />LA SEMANA ANTES DE LA BODA',
+      f1Label: 'TREN', f1: 'DIRECTO A MADRID &mdash; 55 MIN',
+      f2Label: 'PLAZAS', f2: 'SOLO 10',
+      maps: '&#9656; ABRIR EN MAPS',
+      cta: 'ME APUNTO &mdash; AVISAR A PILAR Y JOE &#9656;',
+      note: 'MÁS DETALLES LLEGARÁN ALGÚN DÍA&hellip;',
+    },
+  };
+
+  if (CONTACT_URL) {
+    document.getElementById('contact').href = CONTACT_URL;
+    document.getElementById('contact-bar').hidden = false;
+  }
+
+  function applyLanguage(lang) {
+    const dict = STRINGS[lang] ?? STRINGS.en;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.dataset.i18n;
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+    document.title = dict.title.replace(/&amp;/g, '&');
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-toggle button').forEach((b) => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    try {
+      localStorage.setItem(LANG_KEY, lang);
+    } catch (e) {
+      // localStorage unavailable (private mode etc.) — language just won't persist
+    }
+  }
+
+  let storedLang = 'en';
+  try {
+    const v = localStorage.getItem(LANG_KEY);
+    if (v === 'en' || v === 'es') storedLang = v;
+  } catch (e) {
+    // ignore
+  }
+  // A shared link like "?lang=es" overrides the stored choice, so it opens
+  // (and, via LANG_KEY above, keeps the rest of the site) in that language.
+  const urlLang = new URLSearchParams(location.search).get('lang');
+  if (urlLang === 'en' || urlLang === 'es') storedLang = urlLang;
+  applyLanguage(storedLang);
+
+  document.querySelectorAll('.lang-toggle button').forEach((btn) => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
+  });
+</script>
+
+</body>
+</html>

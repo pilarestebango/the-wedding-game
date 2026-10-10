@@ -21,6 +21,10 @@ This repo holds related, independently-browsable static sites for Pilar
 - **`/jukebox/`** — **the Juke-Box**, where guests search songs, hear a
   preview and add them to the wedding-soundtrack list. See "The jukebox"
   below.
+- **`/getaway/`** — **THE GETAWAY**, a second, invite-only arcade game (plus a
+  details page at `/getaway/details/`) for the ~10 guests invited to the
+  pre-wedding getaway. **Deliberately not linked from anywhere on the site** —
+  see "The getaway" below.
 
 ## Tech stack
 
@@ -93,6 +97,7 @@ rsvp/                    # RSVP form: index.html
 wedding/                 # LVL 1 — the wedding (Madrid): index.html
 after-party/             # LVL 2 — the after party (Sydney): index.html
 jukebox/                 # the Juke-Box: index.html
+getaway/                 # THE GETAWAY (unlinked): index.html + src/ (the game), details/index.html
 assets/site/             # site-only images (joe, pili, +wedding variants, rsvp-success): .png + .webp
 game/                     # the game — see game/CLAUDE.md and game/GAME_SPEC.md
 reference/                # design source material, not shipped:
@@ -249,6 +254,111 @@ How it works:
   readable. Don't switch it to `application/json`.
 - Text set from JS is always `textContent`, and the Sheet's text columns are
   plain-text formatted before writing — don't loosen either (HTML / formula injection).
+
+## The getaway
+
+An invitation, as a game, to a pre-wedding getaway: **13–18 September 2027,
+Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
+**10 spots**. The couple sends the `/getaway/` link to the invited guests only.
+
+- **Not linked, on purpose.** No page on the site links to `/getaway/` or
+  `/getaway/details/`, and both carry `<meta name="robots" content="noindex">`.
+  Don't add a card, footer link or sitemap entry for them. That's a surprise
+  kept by obscurity, not privacy: the repo is public, so don't put a street
+  address or anything sensitive in either page.
+- **The game** (`getaway/index.html` + `getaway/src/`) is its own Phaser game
+  but borrows PILAR vs JOE's modules rather than copying them:
+  `getaway/src/shared.js` re-exports everything it uses from `../game/src/`
+  (palette, sprites, i18n, sfx, touch controls, toggles, character select), and
+  its Boot scene points the loader at `../game/` for the Pili/Joe sprites. So a
+  rename or behaviour change in those `game/src/` modules affects both games.
+  The same conventions apply (`game/CLAUDE.md`): input only through
+  `InputActions`, `?scene=<slug>&char=<pili|joe>` debug jumps (slugs in
+  `getaway/src/config/sceneRegistry.js`), numbers in `config/tuning.js`.
+- **Flow:** intro ("CONGRATS! YOU'VE BEEN CHOSEN" / accept the challenge) →
+  choose player → **Level 1, Space** (platformer; collect 69 of the ~119 coins
+  and reach the pirate flag) → conversation: the date → **Level 2, Mars Wastelands**
+  (three heights: ground plus two tiers of one-way rock ledges, with lava pits
+  that can only be crossed over the ledges; small blue monsters must be jumped
+  — shooting one splits it in two; big ones must be shot; and one giant with a
+  health bar at the very end, which fires a slow shot back now and then — layout
+  in `logic/MarsLayout.js`) → conversation: the location → **Boss** (saucer overhead, shoot
+  up, 3 hearts; below half health it steps up once, mildly — `BOSS.secondHalf`
+  in `tuning.js`. The couple found an earlier, steeper second half too
+  difficult, then asked for a gentler one back, so keep the step small) → conversation → finale: house picture +
+  `FULL DETAILS` button to `details/`. Each level is preceded by a
+  `LevelIntro` screen (name, art, goals); RETRY skips it.
+- **Conversations** (`scenes/ConversationScene.js`): every level ends with a
+  Monkey Island-style chat with the character the guest is playing, both
+  written as bickering pirates. Three rounds; a wrong reply gets a joke and is
+  crossed off, the right one moves on, and nobody can fail. The last answer
+  gives up one piece of the invitation (date, then location, then the finale),
+  followed by the reveal animation. **The whole script is data in
+  `config/conversations.js`** (EN and ES, Pili and Joe) — edit jokes there;
+  `game/tests/getaway/conversations.test.js` checks its shape and that the
+  facts are stated correctly. Don't put invented facts about the house in the
+  jokes. The round/crossed-off bookkeeping is `logic/Dialogue.js`. The avatar
+  is the character's portrait cropped by the `FACE` table in the scene.
+- **Dying** always goes to the shared `GameOver` scene: a **pure black** screen
+  (the one deliberate exception to the `#120B2E` background), a skull,
+  `YOU'RE DEAD` and `RETRY`, which restarts the level the player died in.
+  It's staged (`GameOverScene.js`): the skull drops in and laughs, its eyes
+  glow, the title slams down and drips, embers rise — the couple asked for it
+  to be "way cooler", so don't strip it back to a static screen.
+  Reaching level 1's flag short of the coin target is a death too. Unlike
+  PILAR vs JOE, this game has fail states on purpose.
+- The intro screen shows the site's RSVP success illustration
+  (`assets/site/rsvp-success.webp`), the only image this game loads from
+  outside `game/`. It stands in a code-drawn black hole (`addBlackHole()` in
+  `backdrops.js`): a black disc fading to purple then dark blue, inside a
+  slowly turning spiral aura.
+- **Backdrops** (`getaway/src/config/backdrops.js`) are several parallax layers
+  per level — starfield/nebulae/planets/asteroids in space; hazy sky, mountains,
+  mesas and rocks on Mars; a retro sci-fi city at dusk for the boss, after a
+  reference picture the couple supplied (black starry sky, big moons, a
+  purple-to-gold sunset, two rows of spired and domed towers with small yellow
+  windows, on a metal rooftop — the front row stays dark so the player reads
+  clearly; busier neon versions were rejected) — plus a plain starfield behind the in-between
+  screens. Every tone is a palette token or a `mix()` of two; keep it that way.
+- **Art is code-drawn placeholder** (`getaway/src/config/art.js`, in the shared
+  palette) and the house pictures in the finale and on the details page are
+  placeholders too, until the couple approves or replaces them.
+- **Level 2's giant is the couple's own art**, the exception to the line above.
+  The source is `assets/site/finalboss.png` (walk, walk, damage, attack); the
+  game loads `getaway/assets/monster-giant.webp`, which is that sheet re-cut
+  into even frames (each frame centred on the head, alpha made hard-edged,
+  lossless webp). Frame size, display height and which frame is which pose
+  live in `MONSTER_SHEETS` in `art.js` — if the source PNG changes, re-cut the
+  sheet and update those numbers (a unit test checks they match the file). The
+  giant's art faces left, so the scene flips it to face the player.
+- **Level 1's coins and the boss's ship are code-drawn at a finer grain** than
+  the first placeholders, and animated: the coin spins (four grids,
+  `COIN_FRAMES`) and the ship's lights pulse (two grids, `SHIP_FRAMES`). The
+  ship is a head-on fighter — ball cockpit with a red viewport between two
+  dagger-shaped wings — because the couple asked for something evil, "like
+  from Star Wars"; the code still calls it the saucer. Keep it about as flat
+  as it is (84px): on a short landscape phone there is little room between it
+  and the player's head.
+- **The pirate flag** that ends levels 1 and 2 ripples: six frames drawn by one
+  function (`flagKey(scene, frame)` in `art.js`), added with `addFlag()` in
+  `sceneHelpers.js`. The skull stays plain white on purpose — shading it with
+  the folds made it unreadable mid-ripple.
+- **Level 2's big monster is code-drawn**: a red box-headed imp with a
+  two-frame walk (`monster-big` / `monster-big-step` in `art.js`, 32×40 grids).
+  The couple supplied a red monster sprite for it (`assets/site/monster.png`),
+  rejected it as-is, then asked for a code-drawn one "like this but cooler" —
+  so the shape (box head, gold eyes, jagged grin, tiny body) follows that
+  sprite, with horns, a glare, a scar and a tail added. Don't wire the PNG
+  itself back in. (An orange horned beast was tried in between and dropped.)
+- **Details page** (`getaway/details/index.html`) is a sibling of the level
+  pages (same topbar, one DOM/two layouts, EN/ES), so layout fixes there
+  probably apply to it. Its pink button goes to `CONTACT_URL` (a WhatsApp or
+  `mailto:` link) at the top of its script — empty means "not wired up yet" and
+  the button stays hidden.
+- **Tests:** the game's pure logic is covered in `game/tests/getaway/` and runs
+  with the rest (`cd game && npm test`), including a check that every hop in
+  level 1 is jumpable with the tuned physics — rerun it after touching
+  `PlatformLayout.js` or `PLAYER` in `tuning.js`.
 
 ## Linking the two
 

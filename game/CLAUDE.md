@@ -66,6 +66,18 @@ All sprites/tiles must render with `pixelArt: true` in the Phaser config (or
 `image-rendering: pixelated` for any raw DOM/CSS elements) — never let the
 browser smooth/anti-alias the art.
 
+## Shared with the getaway game
+
+`../getaway/` is a second Phaser game that imports modules from `src/` here
+instead of copying them — the full list is `../getaway/src/shared.js`. A few
+things in this game exist only for it and are off by default: the
+`moveLeftStart`/`moveLeftEnd`/`shoot`/`choose` actions in `InputActions`, the left
+arrow and FIRE button in `TouchControls` (`showLeft` / `showShoot`),
+`registerStrings()` in `i18n.js`, the `shoot`/`hit`/`die`/`explode`/`blip` sounds, and
+`CharacterSelectScene`'s overridable `titleKey` / `nextSceneKey`. Check
+`/getaway/` still works after changing any module that file lists. Its unit
+tests live in `tests/getaway/`.
+
 ## Input handling
 
 Every gameplay action (move, jump, mash/action, yes/no) must go through a

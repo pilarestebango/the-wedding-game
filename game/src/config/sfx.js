@@ -16,7 +16,7 @@ function getCtx() {
   return ctx;
 }
 
-function tone({ freq = 440, duration = 0.12, type = 'square', volume = 0.15, startOffset = 0 }) {
+export function tone({ freq = 440, duration = 0.12, type = 'square', volume = 0.15, startOffset = 0 }) {
   if (gameState.muted) return;
   const audioCtx = getCtx();
   const start = audioCtx.currentTime + startOffset;
@@ -66,6 +66,25 @@ export const sfx = {
   fanfare() {
     [523, 659, 784, 1046].forEach((freq, i) => {
       tone({ freq, duration: 0.22, type: 'triangle', volume: 0.16, startOffset: i * 0.12 });
+    });
+  },
+  shoot() {
+    tone({ freq: 880, duration: 0.06, type: 'square', volume: 0.08 });
+  },
+  hit() {
+    tone({ freq: 180, duration: 0.08, type: 'square', volume: 0.14 });
+  },
+  blip() {
+    tone({ freq: 620, duration: 0.03, type: 'square', volume: 0.04 });
+  },
+  explode() {
+    tone({ freq: 240, duration: 0.12, type: 'sawtooth', volume: 0.16 });
+    tone({ freq: 120, duration: 0.2, type: 'square', volume: 0.14, startOffset: 0.05 });
+    tone({ freq: 60, duration: 0.3, type: 'sawtooth', volume: 0.14, startOffset: 0.12 });
+  },
+  die() {
+    [330, 262, 196, 131].forEach((freq, i) => {
+      tone({ freq, duration: 0.2, type: 'sawtooth', volume: 0.16, startOffset: i * 0.13 });
     });
   },
   heart() {

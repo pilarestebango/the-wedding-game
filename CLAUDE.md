@@ -324,13 +324,15 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   palette) and the house pictures in the finale and on the details page are
   placeholders too, until the couple approves or replaces them.
 - **Level 2's giant is the couple's own art**, the exception to the line above.
-  The source is `assets/site/finalboss.png` (walk, walk, damage, attack); the
-  game loads `getaway/assets/monster-giant.webp`, which is that sheet re-cut
-  into even frames (each frame centred on the head, alpha made hard-edged,
-  lossless webp). Frame size, display height and which frame is which pose
-  live in `MONSTER_SHEETS` in `art.js` — if the source PNG changes, re-cut the
-  sheet and update those numbers (a unit test checks they match the file). The
-  giant's art faces left, so the scene flips it to face the player.
+  The game loads `getaway/assets/monster-giant.webp`: the couple's sheet (walk,
+  walk, damage, attack) re-cut into even frames (each frame centred on the
+  head, alpha made hard-edged, lossless webp). The original PNG was removed
+  from the repo at the couple's request, so that `.webp` is the only copy here
+  (the original is in git history, commit 67ea945, `assets/site/finalboss.png`).
+  Frame size, display height and which frame is which pose live in
+  `MONSTER_SHEETS` in `art.js` — if the sheet is replaced, update those numbers
+  (a unit test checks they match the file). The giant's art faces left, so the
+  scene flips it to face the player.
 - **Level 1's coins and the boss's ship are code-drawn at a finer grain** than
   the first placeholders, and animated: the coin spins (four grids,
   `COIN_FRAMES`) and the ship's lights pulse (two grids, `SHIP_FRAMES`). The
@@ -345,11 +347,11 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   the folds made it unreadable mid-ripple.
 - **Level 2's big monster is code-drawn**: a red box-headed imp with a
   two-frame walk (`monster-big` / `monster-big-step` in `art.js`, 32×40 grids).
-  The couple supplied a red monster sprite for it (`assets/site/monster.png`),
-  rejected it as-is, then asked for a code-drawn one "like this but cooler" —
-  so the shape (box head, gold eyes, jagged grin, tiny body) follows that
-  sprite, with horns, a glare, a scar and a tail added. Don't wire the PNG
-  itself back in. (An orange horned beast was tried in between and dropped.)
+  The couple supplied a red monster sprite for it, rejected it as-is (the PNG
+  has since been removed from the repo), then asked for a code-drawn one "like
+  this but cooler" — so the shape (box head, gold eyes, jagged grin, tiny body)
+  follows that sprite, with horns, a glare, a scar and a tail added. (An orange
+  horned beast was tried in between and dropped.)
 - **Details page** (`getaway/details/index.html`) is a sibling of the level
   pages (same topbar, one DOM/two layouts, EN/ES), so layout fixes there
   probably apply to it. Its pink button goes to `CONTACT_URL` (a WhatsApp or

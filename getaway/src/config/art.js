@@ -430,8 +430,8 @@ export const GRIDS = {
   },
 };
 
-// The couple's own monster art: a sprite sheet sliced from assets/site/
-// finalboss.png into even frames (see the root CLAUDE.md).
+// The couple's own monster art: their sprite sheet, re-cut into even frames
+// (see the root CLAUDE.md).
 // `height` is how tall each one stands in the level; `frames` are indices
 // into the sheet. Paths are relative to game/, like everything Boot loads.
 export const MONSTER_SHEETS = {

@@ -99,6 +99,13 @@ function injectStyles() {
     /* The getaway game's "continue" bar (START / RETRY / ...): it stands in
        for the on-canvas button there, so it wears that button's cyan. */
     .tc-action.tc-confirm { border-color: ${CSS_COLORS.cyan}; }
+    /* The getaway game's death screen: RETRY's outline and label beat between
+       white and red, a hard switch like the on-canvas button it replaces. */
+    @keyframes tc-pulse {
+      0%, 49.9% { border-color: ${CSS_COLORS.offWhite}; color: ${CSS_COLORS.offWhite}; }
+      50%, 100% { border-color: ${CSS_COLORS.red}; color: ${CSS_COLORS.red}; }
+    }
+    .tc-action.tc-pulse { border-color: ${CSS_COLORS.offWhite}; animation: tc-pulse 0.9s steps(1, end) infinite; }
     .tc-yes { border-color: ${CSS_COLORS.gold}; }
     .tc-no { border-color: ${CSS_COLORS.red}; }
     .tc-hidden { display: none !important; }
@@ -220,6 +227,7 @@ export class TouchControls {
       showShoot = false,
       actionLabel = null,
       actionConfirm = false, // cyan "continue" look for the action bar (getaway only)
+      actionPulse = false, // white/red beat for the action bar (getaway's death screen)
       showYesNo = false,
     } = {},
   ) {
@@ -232,6 +240,7 @@ export class TouchControls {
     this.yesBtn.classList.toggle('tc-hidden', !showYesNo);
     this.noBtn.classList.toggle('tc-hidden', !showYesNo);
     this.actionBtn.classList.toggle('tc-confirm', actionConfirm);
+    this.actionBtn.classList.toggle('tc-pulse', actionPulse);
     if (actionLabel) {
       this.actionBtn.textContent = actionLabel;
       this.actionBtn.classList.remove('tc-hidden');

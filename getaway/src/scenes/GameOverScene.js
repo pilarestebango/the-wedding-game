@@ -60,14 +60,15 @@ export class GameOverScene extends Phaser.Scene {
       fitWidth(why, maxWidth);
     }
 
-    // On a phone the touch bar's RETRY is the only button (see addContinueButton).
+    // On a phone the touch bar's RETRY is the only button (see addContinueButton);
+    // it beats white and red like the on-canvas one (actionPulse, below).
     if (!touchControls.isVisible()) this.addRetryButton(centerX, height * 0.82);
 
     this.actions = new InputActions();
     this.actions.on('mash', () => this.retry());
     this.input.keyboard.on('keydown-ENTER', () => this.actions.mash());
     this.input.keyboard.on('keydown-SPACE', (event) => !event.repeat && this.actions.mash());
-    touchControls.bind(this.actions, { actionLabel: t('retry'), actionConfirm: true });
+    touchControls.bind(this.actions, { actionLabel: t('retry'), actionPulse: true });
     this.events.once('shutdown', () => touchControls.unbind());
 
     // A player who dies mid-mash would otherwise retry before seeing this.

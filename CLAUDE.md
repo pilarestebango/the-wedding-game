@@ -25,6 +25,9 @@ This repo holds related, independently-browsable static sites for Pilar
   details page at `/getaway/details/`) for the ~10 guests invited to the
   pre-wedding getaway. **Deliberately not linked from anywhere on the site** —
   see "The getaway" below.
+- **`/alba-sofia/`** — **ALBA & SOFIA ADVENTURE**, a copy of THE GETAWAY for
+  two guests, who play as themselves. Also unlinked. See "Alba & Sofia
+  Adventure" below.
 
 ## Tech stack
 
@@ -98,6 +101,7 @@ wedding/                 # LVL 1 — the wedding (Madrid): index.html
 after-party/             # LVL 2 — the after party (Sydney): index.html
 jukebox/                 # the Juke-Box: index.html
 getaway/                 # THE GETAWAY (unlinked): index.html + src/ (the game), details/index.html
+alba-sofia/              # ALBA & SOFIA ADVENTURE (unlinked): index.html + src/ + assets/ — a copy of getaway/
 assets/site/             # site-only images (joe, pili, +wedding variants, rsvp-success): .png + .webp
 game/                     # the game — see game/CLAUDE.md and game/GAME_SPEC.md
 reference/                # design source material, not shipped:
@@ -105,6 +109,7 @@ reference/                # design source material, not shipped:
     Arcade Wedding.dc.html #   (canvas export — reference only, see below)
     support.js
     uploads/
+  alba-sofia/             #   the pictures of Alba and Sofia the game's sprites were cut from
 ```
 
 ## Design source of truth
@@ -361,6 +366,68 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   with the rest (`cd game && npm test`), including a check that every hop in
   level 1 is jumpable with the tuned physics — rerun it after touching
   `PlatformLayout.js` or `PLAYER` in `tuning.js`.
+
+## Alba & Sofia Adventure
+
+`alba-sofia/` is THE GETAWAY again for Alba and Sofia: the same levels and the
+same invitation, but the guest plays **Sofia** (black t-shirt) or **Alba**
+(purple t-shirt), and Pili and Joe are the hosts instead of the players.
+
+- **A real copy, on purpose.** `alba-sofia/src/` started as a duplicate of
+  `getaway/src/` so the two can change independently. A fix to a level, the
+  boss, a backdrop or the death screen in one is **not** picked up by the
+  other: make it in both if it should apply to both. Like the getaway it
+  still imports the engine-level modules from `game/src/` through its own
+  `shared.js`. Everything in "The getaway" above applies here except what
+  this section says.
+- **Not linked, `noindex`**, same as the getaway. Its (now unreached)
+  finale's `FULL DETAILS` button goes to the getaway's page (`DETAILS_URL =
+  '../getaway/details/'`); there is no second details page.
+- **Spanish by default**, unlike everything else on the site
+  (`alba-sofia/src/config/lang.js`). The game keeps its own choice under
+  `alba-sofia-lang` and puts the site-wide `wedding-lang` value back after
+  every change, so its EN/ES toggle and the site's never affect each other.
+- **Characters** are in `alba-sofia/src/config/characters.js`: the players
+  (`sofia`, `alba`), the hosts (`pili`, `joe`), the image manifest, and which
+  player was picked (`setPlayer`/`getPlayer` — PILAR vs JOE's `gameState` only
+  accepts `pili`/`joe`, so it isn't used for this). Debug jumps take
+  `&char=sofia|alba`. The select screen is this game's own
+  (`scenes/SelectScene.js`), since the shared one hard-codes Pili and Joe.
+- **Art:** `alba-sofia/assets/` holds the four poses per player (idle, two
+  run frames, jump; idle is 80px tall like Pili's and Joe's), a portrait each,
+  `cover.webp` (the pair together, on the intro) and `high-five.webp`. They were cut from the
+  pictures in `reference/alba-sofia/`: each pose is one connected shape in
+  the `*_animation 1.png` sheets, scaled by one factor per sheet with the
+  alpha made hard-edged, then every pose of a player padded on top to the
+  same frame height (the physics body hangs off the feet, so a shorter jump
+  frame dropped Alba through the floor; a test checks this); the portraits and cover are the single pictures
+  trimmed, as lossless webp. Pili's and Joe's sprites and portraits are
+  loaded from `../game/assets/`.
+- **Who waits where:** Pili stands under level 1's flag and Joe under level
+  2's (`addHost()` in `sceneHelpers.js`). The conversation that follows is
+  with them: `date` with Pili, `location` with Joe, `full` (after the boss)
+  with both.
+- **Conversations** are keyed by step, not by the character played
+  (`config/conversations.js`; `SPEAKERS` says who talks in each), and they
+  are **about the adventure, not the getaway**: the girls are nine, so Auntie
+  Pili and Uncle Joe are galactic pirates (she is the bossy captain of the
+  starship Stinky Sock, he is "the bravest pirate in the galaxy" and scared
+  of everything) who tell the player what to do next — Pili how to cross
+  Mars, Joe how to beat the warship, both of them welcoming her into the
+  crew. The game **ends on the screen after that** (the pair high-fiving on
+  the intro's starfield, "the galaxy is safe thanks to Sofia & Alba", `PLAY
+  AGAIN` back to the select screen): the couple took the invitation out, so
+  `FinaleScene` is no longer reached (only by `?scene=finale`). Keep it silly, never mean or scary, and keep the
+  instructions true to the levels (a test checks them, and that no date or
+  place slips in). The step names (`date`, `location`, `full`) are left over
+  from the getaway. In the two-host one every line and answer is wrapped in
+  `pili(...)` or `joe(...)` to say whose it is. In the scene the hosts' faces
+  sit on top of the panel (the one talking is ringed in gold, nods and gets
+  the bubble's tail) and the player's own face is in a cyan ring at the
+  bottom-left, beside the replies. The `FACE` table there crops all four
+  portraits.
+- **Tests:** `game/tests/alba-sofia/` (same three files as the getaway's,
+  adapted), run by `cd game && npm test`.
 
 ## Linking the two
 

@@ -387,6 +387,9 @@ same invitation, but the guest plays **Sofia** (black t-shirt) or **Alba**
   (`alba-sofia/src/config/lang.js`). The game keeps its own choice under
   `alba-sofia-lang` and puts the site-wide `wedding-lang` value back after
   every change, so its EN/ES toggle and the site's never affect each other.
+- **Level 1 asks for 73 coins**, not the getaway's 69 (`coinTarget` in
+  `alba-sofia/src/config/tuning.js`); Pili's first line in the conversation
+  says the number, so change both together.
 - **Characters** are in `alba-sofia/src/config/characters.js`: the players
   (`sofia`, `alba`), the hosts (`pili`, `joe`), the image manifest, and which
   player was picked (`setPlayer`/`getPlayer` — PILAR vs JOE's `gameState` only

@@ -8,7 +8,7 @@ export const PLAYER = {
 };
 
 export const LEVEL1 = {
-  coinTarget: 69, // coins needed at the exit; the level holds far more, on purpose (see PlatformLayout.js)
+  coinTarget: 73, // coins needed at the exit; the level holds far more, on purpose (see PlatformLayout.js)
   maxRiseUnit: 60, // px per "rise" step between platforms on a tall screen
   minRiseUnit: 16, // ...and on a short landscape phone
   fallMargin: 100, // px below the screen before a fall counts as a death

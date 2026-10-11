@@ -49,7 +49,7 @@ function round(line, at, right, ...wrong) {
 const EN = {
   date: [
     round(
-      "Shiver me space-socks! 69 coins! Thank you, cadet. I am Auntie Pili, Terror of the Milky Way, Captain of the starship Stinky Sock. You may bow.",
+      "Shiver me space-socks! 73 coins! Thank you, cadet. I am Auntie Pili, Terror of the Milky Way, Captain of the starship Stinky Sock. You may bow.",
       1,
       ["Captain Auntie Pili! *bows so low her nose touches the moon*", "Perfect bow. Ten out of ten. You have moon dust on your nose now, but that's the pirate look."],
       ["Why is your ship called the Stinky Sock?", "Because Uncle Joe named it. After his sock. We can't find it, but we can ALWAYS smell it."],
@@ -121,7 +121,7 @@ const EN = {
 const ES = {
   date: [
     round(
-      "¡Rayos y centellas espaciales! ¡69 monedas! Gracias, grumete. Soy la tía Pili, el Terror de la Vía Láctea, capitana de la nave Calcetín Apestoso. Puedes hacer una reverencia.",
+      "¡Rayos y centellas espaciales! ¡73 monedas! Gracias, grumete. Soy la tía Pili, el Terror de la Vía Láctea, capitana de la nave Calcetín Apestoso. Puedes hacer una reverencia.",
       1,
       ["¡Capitana tía Pili! *hace una reverencia hasta tocar la luna con la nariz*", "Reverencia perfecta. Un diez. Te has puesto perdida de polvo de luna, pero eso es muy de pirata."],
       ["¿Por qué tu nave se llama Calcetín Apestoso?", "Porque el nombre se lo puso el tío Joe. Por su calcetín. No lo encontramos, pero SIEMPRE lo olemos."],

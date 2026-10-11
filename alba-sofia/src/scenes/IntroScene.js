@@ -1,6 +1,6 @@
 // The first screen: tells the guest they've been picked and asks them to
 // accept the challenge, before they choose a player.
-import { CSS_COLORS, FONTS, TITLE_SHADOW, touchControls, addMuteToggle, addLangToggle, addExitLink, fadeToScene, t } from '../shared.js';
+import { CSS_COLORS, FONTS, TITLE_SHADOW, touchControls, addMuteToggle, addLangToggle, fadeToScene, t } from '../shared.js';
 import { fitWidth, addContinueButton } from '../sceneHelpers.js';
 import { addStarfield, addBlackHole } from '../config/backdrops.js';
 
@@ -50,9 +50,7 @@ export class IntroScene extends Phaser.Scene {
     });
 
     addMuteToggle(this);
-    // Same corner arrangement as the character-select screen.
-    const exitLink = addExitLink(this);
-    addLangToggle(this, { x: exitLink.x + exitLink.width + 24 });
+    addLangToggle(this);
   }
 
   update() {

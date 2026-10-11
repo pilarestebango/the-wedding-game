@@ -11,7 +11,6 @@ export { FrameAnimator } from '../../game/src/logic/FrameAnimator.js';
 export { touchControls } from '../../game/src/ui/touchControlsInstance.js';
 export { addMuteToggle } from '../../game/src/ui/muteToggle.js';
 export { addLangToggle } from '../../game/src/ui/langToggle.js';
-export { addExitLink } from '../../game/src/ui/exitLink.js';
 export { fitTopTitle } from '../../game/src/ui/fitTopTitle.js';
 export { fadeToScene } from '../../game/src/ui/transitions.js';
 

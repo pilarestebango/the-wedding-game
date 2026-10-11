@@ -1,7 +1,7 @@
 // Choose your player: Sofia or Alba. Laid out like PILAR vs JOE's
 // character-select screen (game/src/scenes/CharacterSelectScene.js), which
 // can't be reused as it is because it only knows Pili and Joe.
-import { CSS_COLORS, FONTS, TITLE_SHADOW, touchControls, addMuteToggle, addLangToggle, addExitLink, fadeToScene, t } from '../shared.js';
+import { CSS_COLORS, FONTS, TITLE_SHADOW, touchControls, addMuteToggle, addLangToggle, fadeToScene, t } from '../shared.js';
 import { PLAYERS, portraitKey, setPlayer } from '../config/characters.js';
 import { addStarfield } from '../config/backdrops.js';
 import { fitWidth } from '../sceneHelpers.js';
@@ -59,8 +59,7 @@ export class SelectScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     addMuteToggle(this);
-    const exitLink = addExitLink(this);
-    addLangToggle(this, { x: exitLink.x + exitLink.width + 24 });
+    addLangToggle(this);
   }
 
   // `char`'s picture standing with its feet at (x, feetY), name underneath.

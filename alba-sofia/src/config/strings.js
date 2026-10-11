@@ -9,7 +9,7 @@ registerStrings({
   en: {
     gameTitle: 'ALBA & SOFIA ADVENTURE',
 
-    introTitle: 'SOFIA & ALBA',
+    introTitle: 'SOFIA AND ALBA',
     introText: 'AN INTERGALACTIC ADVENTURE',
     introAccept: 'ACCEPT THE CHALLENGE',
 
@@ -33,7 +33,7 @@ registerStrings({
     levelClearMars: 'MARS IS HISTORY\nNOW FOR THE BIG BOSS',
     levelClearNext: 'CONTINUE THE ADVENTURE',
     gameClearTitle: 'YOU DID IT',
-    gameClearText: 'THE GALAXY IS SAFE\nTHANKS TO SOFIA & ALBA',
+    gameClearText: 'THE GALAXY IS SAFE\nTHANKS TO SOFIA AND ALBA',
     gameClearNext: 'PLAY AGAIN',
 
     deadTitle: "YOU'RE DEAD",
@@ -47,7 +47,7 @@ registerStrings({
   es: {
     gameTitle: 'LA AVENTURA DE ALBA Y SOFIA',
 
-    introTitle: 'SOFIA & ALBA',
+    introTitle: 'SOFIA Y ALBA',
     introText: 'UNA AVENTURA INTERGALÁCTICA',
     introAccept: 'ACEPTAR EL RETO',
 
@@ -71,7 +71,7 @@ registerStrings({
     levelClearMars: 'MARTE YA ES HISTORIA\nA POR EL GRAN JEFE',
     levelClearNext: 'CONTINUAR AVENTURA',
     gameClearTitle: 'LO HABÉIS CONSEGUIDO',
-    gameClearText: 'LA GALAXIA ESTÁ A SALVO\nGRACIAS A SOFIA & ALBA',
+    gameClearText: 'LA GALAXIA ESTÁ A SALVO\nGRACIAS A SOFIA Y ALBA',
     gameClearNext: 'JUGAR OTRA VEZ',
 
     deadTitle: 'HAS MUERTO',

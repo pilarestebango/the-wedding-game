@@ -36,7 +36,7 @@ registerStrings({
     gameClearText: 'THE GALAXY IS SAFE\nTHANKS TO SOFIA AND ALBA',
     gameClearNext: 'PLAY AGAIN',
 
-    deadTitle: "YOU'RE DEAD",
+    deadTitle: 'GAME OVER',
     deadNotEnoughCoins: 'NOT ENOUGH COINS: {count} / {target}',
     retry: 'RETRY',
 
@@ -74,7 +74,7 @@ registerStrings({
     gameClearText: 'LA GALAXIA ESTÁ A SALVO\nGRACIAS A SOFIA Y ALBA',
     gameClearNext: 'JUGAR OTRA VEZ',
 
-    deadTitle: 'HAS MUERTO',
+    deadTitle: 'GAME OVER',
     deadNotEnoughCoins: 'FALTAN MONEDAS: {count} / {target}',
     retry: 'REINTENTAR',
 

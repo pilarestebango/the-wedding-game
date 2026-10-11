@@ -122,7 +122,7 @@ export function explode(scene, x, y, { colors = [COLORS.offWhite], count = 18, s
 }
 
 // Every death in the game ends up here: a beat to register what happened,
-// then the black "YOU'RE DEAD" screen, which retries the level named in `from`.
+// then the black "GAME OVER" screen, which retries the level named in `from`.
 export function die(scene, extra = {}) {
   if (scene.isOver) return;
   scene.isOver = true;

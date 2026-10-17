@@ -29,12 +29,14 @@ import { getConversation } from '../config/conversations.js';
 import { Dialogue } from '../logic/Dialogue.js';
 import { BLACK, CSS_BLACK } from '../config/art.js';
 import { addSpaceBackdrop, addMarsBackdrop, addMarsGround, addCityBackdrop, addCityGround } from '../config/backdrops.js';
-import { drawCalendar, drawTrainView, ART_WIDTH, ART_HEIGHT } from '../config/rewardArt.js';
+import { drawCalendar, drawLocationMap, ART_WIDTH, ART_HEIGHT, MAP_SIZE } from '../config/rewardArt.js';
 import { fitWidth, addContinueButton, explode } from '../sceneHelpers.js';
 
 const STEPS = {
   date: { backdrop: 'space', label: 'rewardDateLabel', value: 'rewardDateValue', button: 'rewardDateNext', nextLevel: 'level2', draw: drawCalendar },
-  location: { backdrop: 'mars', label: 'rewardLocationLabel', value: 'rewardLocationValue', button: 'rewardLocationNext', nextLevel: 'boss', draw: drawTrainView },
+  location: { backdrop: 'mars', label: 'rewardLocationLabel', value: 'rewardLocationValue', button: 'rewardLocationNext', nextLevel: 'boss', draw: drawLocationMap,
+    // The map is square and has labels to read, so it gets more of the screen.
+    art: { width: MAP_SIZE + 16, height: MAP_SIZE + 16, fraction: 0.34, max: 2 } },
   full: { backdrop: 'city' },
 };
 
@@ -402,7 +404,8 @@ export class ConversationScene extends Phaser.Scene {
     // The prize drops in from above and bounces to rest.
     const art = this.add.container(centerX, -ART_HEIGHT);
     this.step.draw(this, art);
-    art.setScale(Math.min(1.25, (height * 0.3) / ART_HEIGHT, maxWidth / ART_WIDTH));
+    const size = this.step.art ?? { width: ART_WIDTH, height: ART_HEIGHT, fraction: 0.3, max: 1.25 };
+    art.setScale(Math.min(size.max, (height * size.fraction) / size.height, maxWidth / size.width));
     this.tweens.add({ targets: art, y: height * 0.45, duration: 800, delay: 200, ease: 'Bounce.easeOut' });
 
     const value = this.add

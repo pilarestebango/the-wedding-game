@@ -1,6 +1,5 @@
 // The two prizes shown when a conversation gives up its secret: a calendar
-// page for the date and a view of the train crossing the sierra for the
-// location. Each is drawn at a fixed size around (0, 0) into a container the
+// page for the date and the couple's route map for the location. Each is drawn at a fixed size around (0, 0) into a container the
 // scene positions and scales.
 import { COLORS, CSS_COLORS, FONTS, t } from '../shared.js';
 
@@ -26,51 +25,23 @@ export function drawCalendar(scene, into) {
   into.add(text(50, '2027', '14px', CSS_COLORS.red));
 }
 
-// A framed view of the sierra with the train to Madrid crossing it.
-export function drawTrainView(scene, into) {
+// The couple's map of the train route from Madrid to the house, as a framed
+// print. Square, so it brings its own size (MAP_SIZE) instead of ART_WIDTH x
+// ART_HEIGHT. Loaded in BootScene as 'location-map' (getaway/assets/map-game.webp,
+// a 512px copy of map.jpeg).
+export const MAP_SIZE = 220;
+const MAP_FRAME = 8;
+
+export function drawLocationMap(scene, into) {
+  const outer = MAP_SIZE + MAP_FRAME * 2;
   const g = scene.add.graphics();
-  const w = ART_WIDTH;
-  const h = ART_HEIGHT;
-  g.fillStyle(COLORS.offWhite, 1);
-  g.fillRect(-w / 2, -h / 2, w, h);
-  const ix = -w / 2 + 8;
-  const iy = -h / 2 + 8;
-  const iw = w - 16;
-  const ih = h - 16;
-  g.fillStyle(COLORS.background, 1);
-  g.fillRect(ix, iy, iw, ih);
-  g.fillStyle(COLORS.gold, 1);
-  [[20, 14], [70, 30], [150, 12], [185, 34]].forEach(([x, y]) => g.fillRect(ix + x, iy + y, 4, 4));
-
-  const base = iy + ih - 34;
   g.fillStyle(COLORS.mutedPurple, 1);
-  g.fillTriangle(ix, base, ix + 62, iy + 30, ix + 124, base);
-  g.fillTriangle(ix + 84, base, ix + 150, iy + 18, ix + iw, iy + 70);
-  g.fillTriangle(ix + 84, base, ix + iw, iy + 70, ix + iw, base);
+  g.fillRect(-outer / 2 + 6, -outer / 2 + 6, outer, outer); // drop shadow
   g.fillStyle(COLORS.offWhite, 1);
-  g.fillTriangle(ix + 50, iy + 42, ix + 62, iy + 30, ix + 74, iy + 42);
-  g.fillTriangle(ix + 136, iy + 32, ix + 150, iy + 18, ix + 164, iy + 32);
-
-  g.fillStyle(COLORS.cyan, 1);
-  g.fillRect(ix, base, iw, ih - (base - iy)); // meadow
-  g.fillStyle(COLORS.background, 1);
-  g.fillRect(ix, base + 22, iw, 4); // rail
-  for (let x = ix + 4; x < ix + iw; x += 16) g.fillRect(x, base + 26, 6, 4); // sleepers
-
-  // Locomotive + two carriages, wheels on the rail.
-  const car = (x, width, color) => {
-    g.fillStyle(color, 1);
-    g.fillRect(x, base, width, 18);
-    g.fillStyle(COLORS.gold, 1);
-    for (let wx = x + 6; wx < x + width - 8; wx += 14) g.fillRect(wx, base + 4, 8, 6);
-    g.fillStyle(COLORS.background, 1);
-    g.fillRect(x + 6, base + 18, 8, 4);
-    g.fillRect(x + width - 14, base + 18, 8, 4);
-  };
-  car(ix + 26, 46, COLORS.offWhite);
-  car(ix + 76, 46, COLORS.offWhite);
-  car(ix + 126, 50, COLORS.red);
-  g.fillStyle(COLORS.red, 1);
-  g.fillRect(ix + 160, base - 8, 10, 8); // funnel
+  g.fillRect(-outer / 2, -outer / 2, outer, outer);
   into.add(g);
+  // A smooth picture, not pixel art: filter it smoothly despite pixelArt: true.
+  scene.textures.get('location-map').setFilter(Phaser.Textures.FilterMode.LINEAR);
+  into.add(scene.add.image(0, 0, 'location-map').setDisplaySize(MAP_SIZE, MAP_SIZE));
+  into.setAngle(-3);
 }

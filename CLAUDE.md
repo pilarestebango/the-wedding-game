@@ -329,6 +329,11 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   palette) and so is the house picture in the finale, until the couple
   approves or replaces it. The details page has the couple's real pictures
   (see below).
+- **The location reveal shows the couple's route map** (`drawLocationMap()` in
+  `config/rewardArt.js`, texture `location-map` = `getaway/assets/map-game.webp`,
+  a 512px copy of the details page's `map.jpeg`), drawn with smooth filtering
+  despite `pixelArt: true` since it's a picture, not pixel art. The date
+  reveal is still the code-drawn calendar.
 - **Level 2's giant is the couple's own art**, the exception to the line above.
   The game loads `getaway/assets/monster-giant.webp`: the couple's sheet (walk,
   walk, damage, attack) re-cut into even frames (each frame centred on the

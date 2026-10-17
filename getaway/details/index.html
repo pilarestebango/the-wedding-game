@@ -149,15 +149,14 @@
     margin: 24px 0 0;
     padding: 0;
     display: grid;
-    gap: 8px;
+    gap: 22px;
   }
 
+  /* Label on its own line, the text under it. */
   .t {
     --c: var(--cyan);
     display: grid;
-    grid-template-columns: 6em 1fr;
-    column-gap: 14px;
-    align-items: baseline;
+    row-gap: 4px;
     line-height: 2;
   }
 
@@ -167,15 +166,60 @@
 
   .t-time { color: var(--c); }
 
-  /* Hidden until CONTACT_URL is filled in (see the script below). */
-  .cta-bar[hidden] { display: none; }
-
-  .maps {
-    display: inline-block;
-    margin-top: 28px;
+  .links {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+    justify-items: start;
   }
 
+
+
   .cta-bar { margin-top: 30px; }
+
+  /* ---- pro tip: a white card at the bottom of the info column ---- */
+
+  .tipcard {
+    margin-top: 40px;
+    padding: 24px;
+    background: var(--off-white);
+    color: var(--bg);
+    font-size: 9px;
+    line-height: 2;
+  }
+
+  .tipcard-title {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: normal;
+    color: var(--bg);
+    text-shadow: 3px 3px 0 var(--pink);
+  }
+
+  .tipcard p { margin: 0 0 12px; }
+
+  .tipcard-link { color: var(--red); }
+  .tipcard-link:hover { color: var(--bg); }
+
+  .tipcard-pics {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .tipcard-pics img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  /* The map runs full width under the two hotel pictures, so its labels read. */
+  .tipcard-pics .wide { grid-column: 1 / -1; aspect-ratio: auto; }
 
   .cta {
     display: inline-block;
@@ -203,45 +247,58 @@
 
   /* ---- photos: two stacked prints, the second tilted over the first ---- */
 
-  .pics {
-    flex: 1.1 1 0;
+  .art {
+    flex: 1.3 1 0;
     min-width: 0;
-    max-width: 720px;
-    position: relative;
-    aspect-ratio: 1.18 / 1;
-    margin-top: clamp(0px, 6.3vw, 108px);
+    max-width: 900px;
+    margin-top: clamp(0px, 3vw, 56px);
   }
 
-  /* Placeholder prints, drawn as inline SVG until the couple sends pictures
-     of the house. The white frame is CSS padding, as on after-party/ (whose
-     art is unframed too) — swap each .pic for an <img> when the art arrives. */
+  .pics {
+    position: relative;
+    aspect-ratio: 1.22 / 1;
+  }
+
+  /* The house behind, the pool tilted in front. The pictures are unframed, so
+     the white frame is CSS padding, as on after-party/. */
   .pic {
     position: absolute;
     display: block;
-    width: 75%;
-    padding: 2.6%;
+    width: 80%;
+    padding: 2.2%;
     background: var(--off-white);
   }
 
-  .pic svg {
+  .pic img {
     display: block;
     width: 100%;
     height: auto;
-    shape-rendering: crispEdges;
+    image-rendering: pixelated;
   }
 
   .pic--a { top: 0; left: 0; }
-  .pic--b { right: 4%; bottom: 6.5%; transform: rotate(-8deg); }
+  .pic--b { right: 0; bottom: 3%; transform: rotate(-6deg); }
+
+  /* The route map: a third, square print, tucked under the pool print's
+     bottom-left corner (.pics stacks above it). */
+  .pics { z-index: 1; }
+  .pic.map {
+    position: relative;
+    width: 50%;
+    margin: -16% 0 0 4%;
+    transform: rotate(5deg);
+  }
 
   @media (max-width: 860px) {
     .layout { flex-direction: column; align-items: stretch; gap: 0; }
     .info { display: contents; }
 
     .head { order: 1; }
-    .pics { order: 2; flex: none; width: 100%; max-width: none; margin-top: 40px; }
+    .art { order: 2; flex: none; width: 100%; max-width: none; margin-top: 40px; }
     .details { order: 3; margin-top: 32px; font-size: 10px; }
     .cta-bar { order: 4; }
     .note { order: 5; }
+    .tipcard { order: 6; font-size: 10px; }
 
     .title { font-size: clamp(28px, 9vw, 44px); }
     .when,
@@ -292,46 +349,53 @@
       </header>
 
       <div class="details">
-        <p class="address" data-i18n="intro">A HOUSE IN THE MOUNTAINS NEXT TO MADRID,<br />THE WEEK BEFORE THE WEDDING</p>
+        <p class="address" data-i18n="intro">A HOUSE IN THE MOUNTAINS NEXT TO MADRID,<br />THE WEEK BEFORE THE WEDDING.<br />ALL ON US :P</p>
 
         <ul class="timeline">
-          <li class="t"><span class="t-time" data-i18n="f1Label">TRAIN</span><span data-i18n="f1">DIRECT TO MADRID &mdash; 55 MIN</span></li>
-          <li class="t t--pink"><span class="t-time" data-i18n="f2Label">SPOTS</span><span data-i18n="f2">ONLY 10</span></li>
+          <li class="t t--pink"><span class="t-time" data-i18n="f3Label">THE PLAN</span><span data-i18n="f3">CHILL, AMAZING FOOD, BEERS BY THE POOL, SUNSET BBQ, OPTIONAL HIKES</span></li>
+          <li class="t"><span class="t-time" data-i18n="f1Label">HOW TO GET THERE</span><span data-i18n="f1">DIRECT FROM PRINCIPE PIO, 55 MIN</span></li>
+          <li class="t"><span class="t-time" data-i18n="f2Label">TOWN</span><span data-i18n="f2">ROBLEDO DE CHAVELA</span></li>
         </ul>
 
-        <a class="maps" href="https://www.google.com/maps/search/?api=1&amp;query=Robledo+de+Chavela%2C+Madrid" target="_blank" rel="noopener" data-i18n="maps">&#9656; OPEN IN MAPS</a>
+        <ul class="links">
+          <li><a href="https://www.airbnb.com.au/rooms/1608096503011400881" target="_blank" rel="noopener" data-i18n="airbnb">&#9656; SEE THE HOUSE ON AIRBNB</a></li>
+          <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Robledo+de+Chavela%2C+Madrid" target="_blank" rel="noopener" data-i18n="maps">&#9656; OPEN IN MAPS</a></li>
+          <li><a href="https://venta.renfe.com/vol/buscarTrenEnlaces.do?c=_p39C" target="_blank" rel="noopener" data-i18n="train">&#9656; BUY TRAIN TICKETS</a></li>
+        </ul>
       </div>
 
-      <div class="cta-bar" id="contact-bar" hidden>
-        <a class="cta" id="contact" href="#" target="_blank" rel="noopener" data-i18n="cta">I&rsquo;M IN &mdash; TELL PILAR &amp; JOE &#9656;</a>
+      <div class="cta-bar" id="contact-bar">
+        <a class="cta" id="contact" href="#" data-i18n="cta">CONFIRM &mdash; I&rsquo;M IN &#9656;</a>
       </div>
 
       <p class="note" data-i18n="note">MORE DETAILS COMING EVENTUALLY&hellip;</p>
+
+      <section class="tipcard">
+        <h2 class="tipcard-title" data-i18n="tipLabel">PRO TIP</h2>
+        <p data-i18n="tip">WE&rsquo;LL BE STAYING AT THE SOCIAL HUB FROM THE 18TH TO THE 20TH OF SEPTEMBER, THE DAY BEFORE AND THE DAY AFTER THE WEDDING.</p>
+        <p data-i18n="tip2">IT&rsquo;S PERFECTLY LOCATED BETWEEN THE WEDDING VENUE AND THE CITY CENTRE, RIGHT NEXT TO THE ROYAL PALACE (SAY HI TO THE KING FROM US). AND NO, WE DON&rsquo;T GET ANY COMMISSION.</p>
+        <a class="tipcard-link" href="https://www.thesocialhub.co/madrid/hotel-stay/" target="_blank" rel="noopener" data-i18n="hub">&#9656; THE SOCIAL HUB MADRID</a>
+        <div class="tipcard-pics">
+          <img src="../assets/hotel1.webp" width="800" height="829" alt="The Social Hub's rooftop pool, with the Royal Palace behind" loading="lazy" />
+          <img src="../assets/hotel2.webp" width="800" height="829" alt="The Social Hub's roof terrace" loading="lazy" />
+          <img class="wide" src="../assets/map-hotel.webp" width="800" height="732" alt="Map: The Social Hub between Casa de Burgos and the city centre, next to the Royal Palace" loading="lazy" />
+        </div>
+      </section>
     </div>
 
+    <div class="art">
     <div class="pics">
-      <div class="pic pic--a" role="img" aria-label="Placeholder pixel art of mountains under a starry sky">
-        <svg viewBox="0 0 64 48" aria-hidden="true">
-          <rect width="64" height="48" fill="#120B2E" />
-          <rect x="6" y="5" width="2" height="2" fill="#FFD400" /><rect x="22" y="9" width="2" height="2" fill="#00E5FF" />
-          <rect x="40" y="4" width="2" height="2" fill="#F2F2F2" /><rect x="54" y="10" width="2" height="2" fill="#FFD400" />
-          <polygon points="0,38 18,14 36,38" fill="#7a6fb0" />
-          <polygon points="24,38 46,8 64,32 64,38" fill="#7a6fb0" />
-          <polygon points="14,19 18,14 22,19" fill="#F2F2F2" /><polygon points="41,15 46,8 51,15" fill="#F2F2F2" />
-          <rect y="38" width="64" height="10" fill="#00E5FF" />
-        </svg>
+      <div class="pic pic--a">
+        <img src="../assets/house.webp" width="1200" height="809" alt="The house: white walls covered in ivy, a stone chimney, a tall cypress" fetchpriority="high" />
       </div>
-      <div class="pic pic--b" role="img" aria-label="Placeholder pixel art of a house in the mountains">
-        <svg viewBox="0 0 64 48" aria-hidden="true">
-          <rect width="64" height="48" fill="#120B2E" />
-          <polygon points="0,36 20,18 40,36" fill="#7a6fb0" />
-          <rect y="36" width="64" height="12" fill="#00E5FF" />
-          <polygon points="20,24 34,12 48,24" fill="#E5341F" />
-          <rect x="23" y="24" width="22" height="14" fill="#F2F2F2" />
-          <rect x="26" y="27" width="5" height="5" fill="#FFD400" /><rect x="37" y="27" width="5" height="5" fill="#FFD400" />
-          <rect x="32" y="31" width="4" height="7" fill="#120B2E" />
-        </svg>
+      <div class="pic pic--b">
+        <img src="../assets/pool.webp" width="1200" height="670" alt="The pool and sun loungers, with trees and the mountains behind" fetchpriority="high" />
       </div>
+    </div>
+
+    <div class="pic map">
+      <img src="../assets/map.webp" width="1024" height="1024" alt="Map: the train from Madrid Principe Pio to the house near Robledo de Chavela, 56 minutes" loading="lazy" />
+    </div>
     </div>
 
   </main>
@@ -357,11 +421,17 @@
       heading: 'THE<br />GETAWAY',
       when: '13 &ndash; 18 SEPTEMBER 2027',
       where: 'ROBLEDO DE CHAVELA, SIERRA DE MADRID',
-      intro: 'A HOUSE IN THE MOUNTAINS NEXT TO MADRID,<br />THE WEEK BEFORE THE WEDDING',
-      f1Label: 'TRAIN', f1: 'DIRECT TO MADRID &mdash; 55 MIN',
-      f2Label: 'SPOTS', f2: 'ONLY 10',
+      intro: 'A HOUSE IN THE MOUNTAINS NEXT TO MADRID,<br />THE WEEK BEFORE THE WEDDING.<br />ALL ON US :P',
+      f1Label: 'HOW TO GET THERE', f1: 'DIRECT FROM PRINCIPE PIO, 55 MIN',
+      f2Label: 'TOWN', f2: 'ROBLEDO DE CHAVELA',
+      f3Label: 'THE PLAN', f3: 'CHILL, AMAZING FOOD, BEERS BY THE POOL, SUNSET BBQ, OPTIONAL HIKES',
+      tipLabel: 'PRO TIP', tip: 'WE&rsquo;LL BE STAYING AT THE SOCIAL HUB FROM THE 18TH TO THE 20TH OF SEPTEMBER, THE DAY BEFORE AND THE DAY AFTER THE WEDDING.',
+      tip2: 'IT&rsquo;S PERFECTLY LOCATED BETWEEN THE WEDDING VENUE AND THE CITY CENTRE, RIGHT NEXT TO THE ROYAL PALACE (SAY HI TO THE KING FROM US). AND NO, WE DON&rsquo;T GET ANY COMMISSION.',
+      hub: '&#9656; THE SOCIAL HUB MADRID',
       maps: '&#9656; OPEN IN MAPS',
-      cta: 'I&rsquo;M IN &mdash; TELL PILAR &amp; JOE &#9656;',
+      train: '&#9656; BUY TRAIN TICKETS',
+      airbnb: '&#9656; SEE THE HOUSE ON AIRBNB',
+      cta: 'CONFIRM &mdash; I&rsquo;M IN &#9656;',
       note: 'MORE DETAILS COMING EVENTUALLY&hellip;',
     },
     es: {
@@ -371,18 +441,29 @@
       heading: 'LA<br />ESCAPADA',
       when: '13 &ndash; 18 DE SEPTIEMBRE DE 2027',
       where: 'ROBLEDO DE CHAVELA, SIERRA DE MADRID',
-      intro: 'UNA CASA EN LA SIERRA DE MADRID,<br />LA SEMANA ANTES DE LA BODA',
-      f1Label: 'TREN', f1: 'DIRECTO A MADRID &mdash; 55 MIN',
-      f2Label: 'PLAZAS', f2: 'SOLO 10',
+      intro: 'UNA CASA EN LA SIERRA DE MADRID,<br />LA SEMANA ANTES DE LA BODA.<br />INVITAMOS NOSOTROS :P',
+      f1Label: 'COMO LLEGAR', f1: 'DIRECTO DESDE PRINCIPE PIO, 55 MIN',
+      f2Label: 'PUEBLO', f2: 'ROBLEDO DE CHAVELA',
+      f3Label: 'EL PLAN', f3: 'RELAX, COMIDA INCREIBLE, CERVEZAS EN LA PISCINA, BARBACOA AL ATARDECER, RUTAS OPCIONALES',
+      tipLabel: 'PRO TIP', tip: 'NOS QUEDAREMOS EN THE SOCIAL HUB DEL 18 AL 20 DE SEPTIEMBRE, EL DIA ANTES Y EL DIA DESPUES DE LA BODA.',
+      tip2: 'ESTA PERFECTAMENTE SITUADO ENTRE EL SITIO DE LA BODA Y EL CENTRO, JUSTO AL LADO DEL PALACIO REAL (SALUDAD AL REY DE NUESTRA PARTE). Y NO, NO NOS LLEVAMOS NINGUNA COMISION.',
+      hub: '&#9656; THE SOCIAL HUB MADRID',
       maps: '&#9656; ABRIR EN MAPS',
-      cta: 'ME APUNTO &mdash; AVISAR A PILAR Y JOE &#9656;',
+      train: '&#9656; COMPRAR BILLETES DE TREN',
+      airbnb: '&#9656; VER LA CASA EN AIRBNB',
+      cta: 'CONFIRMAR &mdash; ME APUNTO &#9656;',
       note: 'MÁS DETALLES LLEGARÁN ALGÚN DÍA&hellip;',
     },
   };
 
+  // The button always shows; until the form exists it does nothing.
+  const contact = document.getElementById('contact');
   if (CONTACT_URL) {
-    document.getElementById('contact').href = CONTACT_URL;
-    document.getElementById('contact-bar').hidden = false;
+    contact.href = CONTACT_URL;
+    contact.target = '_blank';
+    contact.rel = 'noopener';
+  } else {
+    contact.addEventListener('click', (e) => e.preventDefault());
   }
 
   function applyLanguage(lang) {

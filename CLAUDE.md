@@ -326,8 +326,9 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   clearly; busier neon versions were rejected) — plus a plain starfield behind the in-between
   screens. Every tone is a palette token or a `mix()` of two; keep it that way.
 - **Art is code-drawn placeholder** (`getaway/src/config/art.js`, in the shared
-  palette) and the house pictures in the finale and on the details page are
-  placeholders too, until the couple approves or replaces them.
+  palette) and so is the house picture in the finale, until the couple
+  approves or replaces it. The details page has the couple's real pictures
+  (see below).
 - **Level 2's giant is the couple's own art**, the exception to the line above.
   The game loads `getaway/assets/monster-giant.webp`: the couple's sheet (walk,
   walk, damage, attack) re-cut into even frames (each frame centred on the
@@ -359,9 +360,19 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   horned beast was tried in between and dropped.)
 - **Details page** (`getaway/details/index.html`) is a sibling of the level
   pages (same topbar, one DOM/two layouts, EN/ES), so layout fixes there
-  probably apply to it. Its pink button goes to `CONTACT_URL` (a WhatsApp or
-  `mailto:` link) at the top of its script — empty means "not wired up yet" and
-  the button stays hidden.
+  probably apply to it. Its pink `CONFIRM` button goes to `CONTACT_URL` at the
+  top of its script — empty (as now) leaves it showing but doing nothing. The couple will make a form for
+  it; don't put their email addresses there (the repo is public, they asked
+  for them to be taken out). The pictures are the couple's, in `getaway/assets/`: `house` behind,
+  `pool` tilted in front (they asked for the pool on top), and `map` (the train
+  route) as a third print tucked behind the pool's bottom-left corner. At the
+  bottom is a white PRO TIP card about The Social Hub Madrid (where the couple
+  stay around the wedding) with `hotel1`, `hotel2` and `map-hotel` (full width,
+  so its labels stay readable). The
+  `.jpeg`s are the sources they sent; the page loads lossy `.webp` copies
+  (`cwebp -q 85 -m 6`), since these are photos, not pixel art. Press Start 2P
+  has no accented capitals, so its copy is written without accents
+  (`PRINCIPE PIO`).
 - **Tests:** the game's pure logic is covered in `game/tests/getaway/` and runs
   with the rest (`cd game && npm test`), including a check that every hop in
   level 1 is jumpable with the tuned physics — rerun it after touching

@@ -2,7 +2,8 @@
 // ?scene=<slug>&char=<pili|joe> debug params (same convention as the other
 // game, see game/CLAUDE.md), and routes to the right scene. Everything else in
 // this game is drawn in code (config/art.js), bar level 2's two monster sheets
-// and the location reveal's map.
+// and the couple's pictures (the location reveal's map, the finale's house
+// and pool).
 import { CHARACTER_MANIFEST, GAME_ASSET_ROOT, CSS_COLORS, FONTS, gameState, t } from '../shared.js';
 import { entryForSlug, keyForSlug } from '../config/sceneRegistry.js';
 import { MONSTER_SHEETS } from '../config/art.js';
@@ -15,6 +16,9 @@ const EXTRA_IMAGES = [
   { key: 'rsvp-success', path: '../assets/site/rsvp-success.webp' },
   // The couple's route map, shown when the location is revealed (see rewardArt.js).
   { key: 'location-map', path: '../getaway/assets/map-game.webp' },
+  // The couple's house and pool pictures, on the finale (smaller copies of the details page's).
+  { key: 'finale-house', path: '../getaway/assets/house-game.webp' },
+  { key: 'finale-pool', path: '../getaway/assets/pool-game.webp' },
 ];
 
 export class BootScene extends Phaser.Scene {

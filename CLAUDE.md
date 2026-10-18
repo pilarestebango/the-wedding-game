@@ -326,9 +326,11 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   clearly; busier neon versions were rejected) — plus a plain starfield behind the in-between
   screens. Every tone is a palette token or a `mix()` of two; keep it that way.
 - **Art is code-drawn placeholder** (`getaway/src/config/art.js`, in the shared
-  palette) and so is the house picture in the finale, until the couple
-  approves or replaces it. The details page has the couple's real pictures
-  (see below).
+  palette). The exceptions are the couple's own pictures: the finale shows
+  their house and pool (house behind, pool tilted in front, as on the details
+  page — `finale-house` / `finale-pool`, 640px copies `house-game.webp` /
+  `pool-game.webp`), the location reveal shows their route map (below), and
+  the details page uses the full-size ones.
 - **The location reveal shows the couple's route map** (`drawLocationMap()` in
   `config/rewardArt.js`, texture `location-map` = `getaway/assets/map-game.webp`,
   a 512px copy of the details page's `map.jpeg`), drawn with smooth filtering

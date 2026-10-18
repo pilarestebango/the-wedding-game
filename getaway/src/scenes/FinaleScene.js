@@ -1,6 +1,6 @@
-// The last reward: a picture of the house and the link to the full details
-// page. The picture is a code-drawn placeholder until the couple sends the
-// real one — swap drawHousePlaceholder() for a loaded image then.
+// The last reward: the couple's pictures of the house and the pool (as on the
+// details page: house behind, pool tilted in front) and the link to the full
+// details page.
 import { COLORS, CSS_COLORS, FONTS, TITLE_SHADOW, sfx, touchControls, addMuteToggle, addLangToggle, fitTopTitle, fadeToScene, t } from '../shared.js';
 import { DETAILS_URL } from '../config/tuning.js';
 import { fitWidth, explode } from '../sceneHelpers.js';
@@ -25,10 +25,14 @@ export class FinaleScene extends Phaser.Scene {
     title.setShadow(TITLE_SHADOW.offsetX, TITLE_SHADOW.offsetY, TITLE_SHADOW.color, TITLE_SHADOW.blur);
     fitTopTitle(this, title);
 
-    // A 4:3 print, as big as fits between the title and the copy below.
-    const picHeight = Math.max(80, Math.min(height - 330, (width - 48) * 0.75, 300));
+    // A 4:3 area, as big as fits between the title and the copy below, and
+    // centred in that gap.
+    const gapTop = 115;
+    const gapBottom = height - 200;
+    const picHeight = Math.max(80, Math.min(gapBottom - gapTop - 10, (width - 48) * 0.75, 420));
     const picWidth = picHeight / 0.75;
-    this.drawHousePlaceholder(centerX - picWidth / 2, 120, picWidth, picHeight);
+    const picTop = Math.max(gapTop, (gapTop + gapBottom - picHeight) / 2);
+    this.drawPictures(centerX - picWidth / 2, picTop, picWidth, picHeight);
 
     const copy = this.add
       .text(centerX, height - 165, t('finaleText'), {
@@ -78,40 +82,34 @@ export class FinaleScene extends Phaser.Scene {
     this.backdrop.update();
   }
 
-  // White print frame (like the site's level pages) around a simple house in
-  // the mountains.
-  drawHousePlaceholder(x, y, w, h) {
-    const g = this.add.graphics();
-    const frame = Math.round(w * 0.04);
-    g.fillStyle(COLORS.offWhite, 1);
-    g.fillRect(x, y, w, h);
+  // Two framed prints in a w x h area: the house top-left, the pool
+  // bottom-right and tilted, dropping in on top a moment later.
+  drawPictures(x, y, w, h) {
+    const printWidth = w * 0.74;
+    const house = this.addPrint('finale-house', printWidth, 0);
+    house.setPosition(x + house.width / 2, y + house.height / 2);
+    const pool = this.addPrint('finale-pool', printWidth, -6);
+    const poolX = x + w - pool.width / 2;
+    const poolY = y + h - pool.height / 2;
+    pool.setPosition(poolX, poolY - h).setAlpha(0);
+    this.tweens.add({ targets: pool, y: poolY, alpha: 1, duration: 600, delay: 500, ease: 'Back.easeOut' });
+  }
 
-    const ix = x + frame;
-    const iy = y + frame;
-    const iw = w - frame * 2;
-    const ih = h - frame * 2;
-    const groundTop = iy + ih * 0.78;
-    g.fillStyle(COLORS.background, 1);
-    g.fillRect(ix, iy, iw, ih);
-    g.fillStyle(COLORS.mutedPurple, 1);
-    g.fillTriangle(ix, groundTop, ix + iw * 0.3, iy + ih * 0.25, ix + iw * 0.6, groundTop);
-    g.fillTriangle(ix + iw * 0.4, groundTop, ix + iw * 0.75, iy + ih * 0.12, ix + iw, iy + ih * 0.6);
-    g.fillTriangle(ix + iw * 0.4, groundTop, ix + iw, iy + ih * 0.6, ix + iw, groundTop);
-    g.fillStyle(COLORS.cyan, 1);
-    g.fillRect(ix, groundTop, iw, iy + ih - groundTop);
-
-    const hw = iw * 0.3;
-    const hh = ih * 0.26;
-    const hx = ix + iw * 0.5 - hw / 2;
-    const hy = groundTop - hh + ih * 0.04;
-    g.fillStyle(COLORS.red, 1);
-    g.fillTriangle(hx - hw * 0.12, hy, hx + hw / 2, hy - hh * 0.7, hx + hw * 1.12, hy);
-    g.fillStyle(COLORS.offWhite, 1);
-    g.fillRect(hx, hy, hw, hh);
-    g.fillStyle(COLORS.gold, 1);
-    g.fillRect(hx + hw * 0.12, hy + hh * 0.25, hw * 0.22, hh * 0.3);
-    g.fillRect(hx + hw * 0.66, hy + hh * 0.25, hw * 0.22, hh * 0.3);
-    g.fillStyle(COLORS.background, 1);
-    g.fillRect(hx + hw * 0.42, hy + hh * 0.45, hw * 0.16, hh * 0.55);
+  // A picture in a white frame (like the site's level pages), centred on the
+  // container. Smooth filtering: these are pictures, not pixel art.
+  addPrint(key, outerWidth, angle) {
+    const frame = Math.round(outerWidth * 0.035);
+    const texture = this.textures.get(key);
+    texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    const { width: tw, height: th } = texture.getSourceImage();
+    const imgWidth = outerWidth - frame * 2;
+    const imgHeight = (imgWidth * th) / tw;
+    const outerHeight = imgHeight + frame * 2;
+    const print = this.add.container(0, 0, [
+      this.add.rectangle(0, 0, outerWidth, outerHeight, COLORS.offWhite),
+      this.add.image(0, 0, key).setDisplaySize(imgWidth, imgHeight),
+    ]);
+    print.setSize(outerWidth, outerHeight).setAngle(angle);
+    return print;
   }
 }

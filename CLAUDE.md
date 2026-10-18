@@ -385,6 +385,13 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
   (`cwebp -q 85 -m 6`), since these are photos, not pixel art. Press Start 2P
   has no accented capitals, so its copy is written without accents
   (`PRINCIPE PIO`).
+- **Link previews:** `getaway/`, `getaway/details/` and `getaway/in/` carry
+  Open Graph tags, so a shared link shows a picture: the game shows the
+  couple's `getaway/assets/gameshare.png` (them in the black hole), the two
+  pages the pool (`getaway/assets/share.jpg`, a 1200×630 JPEG cut from
+  `pool.jpeg` — WhatsApp wants a small file, under ~300 KB). The URLs in them are absolute
+  (`https://pilarestebango.github.io/the-wedding-game/...`), so update them if
+  the site moves to a custom domain.
 - **Tests:** the game's pure logic is covered in `game/tests/getaway/` and runs
   with the rest (`cd game && npm test`), including a check that every hop in
   level 1 is jumpable with the tuned physics — rerun it after touching

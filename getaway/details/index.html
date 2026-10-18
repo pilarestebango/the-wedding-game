@@ -408,10 +408,9 @@
   // language choice made anywhere carries over automatically.
   const LANG_KEY = 'wedding-lang';
 
-  // Where the pink button goes — a WhatsApp link ("https://wa.me/34600000000?text=...")
-  // or a "mailto:" address. Empty means "not wired up yet": the button stays
-  // hidden. This repo is public, so whatever goes here is public too.
-  const CONTACT_URL = '';
+  // Where the pink button goes: the celebration page (fireworks, the couple
+  // dancing, "send us a WhatsApp"). Empty would leave the button doing nothing.
+  const CONTACT_URL = '../in/';
 
   const STRINGS = {
     en: {
@@ -456,12 +455,9 @@
     },
   };
 
-  // The button always shows; until the form exists it does nothing.
   const contact = document.getElementById('contact');
   if (CONTACT_URL) {
     contact.href = CONTACT_URL;
-    contact.target = '_blank';
-    contact.rel = 'noopener';
   } else {
     contact.addEventListener('click', (e) => e.preventDefault());
   }

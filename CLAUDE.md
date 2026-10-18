@@ -368,9 +368,14 @@ Robledo de Chavela** (Sierra de Madrid, direct train to Madrid in 55 min),
 - **Details page** (`getaway/details/index.html`) is a sibling of the level
   pages (same topbar, one DOM/two layouts, EN/ES), so layout fixes there
   probably apply to it. Its pink `CONFIRM` button goes to `CONTACT_URL` at the
-  top of its script — empty (as now) leaves it showing but doing nothing. The couple will make a form for
-  it; don't put their email addresses there (the repo is public, they asked
-  for them to be taken out). The pictures are the couple's, in `getaway/assets/`: `house` behind,
+  top of its script: `../in/`, the celebration page (`getaway/in/index.html`,
+  also `noindex`) — "YOU'RE IN!", pixel fireworks on a canvas (tap for more,
+  a static scatter under `prefers-reduced-motion`) and the couple doing a hula,
+  four frames in `getaway/assets/dance.webp`, cut from their `dance.jpeg` sheet
+  (background keyed out, Joe's rainbow in frame 3 painted out, each frame
+  aligned on the feet; the title stays still, the couple asked). It asks guests to
+  send a WhatsApp; don't put a phone number or email addresses there (the repo
+  is public, they asked for them to be taken out). The pictures are the couple's, in `getaway/assets/`: `house` behind,
   `pool` tilted in front (they asked for the pool on top), and `map` (the train
   route) as a third print tucked behind the pool's bottom-left corner. At the
   bottom is a white PRO TIP card about The Social Hub Madrid (where the couple

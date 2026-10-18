@@ -8,7 +8,7 @@ import { gameState, InputActions, touchControls, fadeToScene, sfx, t } from '../
 import { LEVEL2 } from '../config/tuning.js';
 import { buildMarsLevel } from '../logic/MarsLayout.js';
 import { Health } from '../logic/Health.js';
-import { COLORS } from '../shared.js';
+import { COLORS, PROP_COLORS } from '../shared.js';
 import { artKey, shotKey, FLAG_SIZE, MONSTER_SHEETS, monsterScale } from '../config/art.js';
 import {
   addMarsBackdrop,
@@ -190,7 +190,7 @@ export class Level2MarsScene extends Phaser.Scene {
     const shot = this.giantShots.create(
       giant.x + (dir * giant.displayWidth) / 2,
       giant.y - LEVEL2.giant.shotHeight,
-      shotKey(this, { color: COLORS.red, name: 'giant-shot' }),
+      shotKey(this, { color: PROP_COLORS.slimeGreen, name: 'giant-shot' }),
     );
     shot.setScale(1.5).setVelocityX(dir * LEVEL2.giant.shotSpeed);
     this.showPose(giant, 'attack', 450);

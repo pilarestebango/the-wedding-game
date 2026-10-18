@@ -30,6 +30,8 @@ export const PROP_COLORS = {
   skyLight: 0x3a2a6d,
   pigPink: 0xf3a6c9,
   pigPinkDark: 0xd9789f,
+  // The getaway's level 2 giant fires these, bright so they stand out on Mars.
+  slimeGreen: 0x39ff14,
 };
 
 export const FONTS = {
